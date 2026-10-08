@@ -2,8 +2,8 @@ package ec.edu.monster.seguridad;
 
 public final class AdministradorCredenciales {
 
-    private static final String USUARIO = "Monster";
-    private static String contrasenia = "Monster9";
+    private static final String USUARIO = "MONSTER";
+    private static String contrasenia = "MONSTER9";
 
     private AdministradorCredenciales() {
     }
