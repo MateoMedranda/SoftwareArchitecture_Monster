@@ -9,10 +9,10 @@ package ec.edu.monster.modelos.utilidades.enums;
  * @author USER
  */
 public enum UnidadLongitud {
-    MILIMETRO,
+    PIE,
     CENTIMETRO,
     METRO,
-    KILOMETRO,
+    MILLA,
     YARDA
 }
 

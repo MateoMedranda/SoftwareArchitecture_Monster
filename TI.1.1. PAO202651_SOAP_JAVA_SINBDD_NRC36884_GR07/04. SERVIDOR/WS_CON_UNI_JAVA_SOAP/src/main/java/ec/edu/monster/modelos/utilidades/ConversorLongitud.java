@@ -14,11 +14,11 @@ import java.util.Map;
 public class ConversorLongitud implements IConversor<UnidadLongitud> {
 
     private final Map<UnidadLongitud, Double> factores = Map.of(
-        UnidadLongitud.MILIMETRO, 0.001,
-        UnidadLongitud.CENTIMETRO, 0.01,
-        UnidadLongitud.METRO, 1.0,
-        UnidadLongitud.KILOMETRO, 1000.0,
-        UnidadLongitud.YARDA, 0.9144
+        UnidadLongitud.PIE, 30.48,
+        UnidadLongitud.CENTIMETRO, 1.0,
+        UnidadLongitud.METRO, 100.0,
+        UnidadLongitud.MILLA, 160900.0,
+        UnidadLongitud.YARDA, 91.44
     );
 
     public ConversorLongitud() {}
@@ -27,7 +27,7 @@ public class ConversorLongitud implements IConversor<UnidadLongitud> {
     public double convertir(double valor, UnidadLongitud unidadOrigen, UnidadLongitud unidadFinal) {
 
         if (unidadOrigen == null || unidadFinal == null) {
-            throw new IllegalArgumentException("Las unidades no pueden ser null");
+            throw new IllegalArgumentException("Debe enviarse una unidad de entrada y una de salida.");
         }
         if (!factores.containsKey(unidadOrigen) || !factores.containsKey(unidadFinal)) {
             throw new IllegalArgumentException("Unidad no soportada");
