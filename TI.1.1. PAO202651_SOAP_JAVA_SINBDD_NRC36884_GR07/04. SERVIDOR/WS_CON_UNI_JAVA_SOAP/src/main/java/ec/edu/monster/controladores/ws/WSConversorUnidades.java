@@ -2,7 +2,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/WebServices/WebService.java to edit this template
  */
-package ec.edu.monster.ws;
+package ec.edu.monster.controladores.ws;
 
 import ec.edu.monster.modelos.utilidades.ConversorLongitud;
 import ec.edu.monster.modelos.utilidades.ConversorMasa;
@@ -17,12 +17,16 @@ import ec.edu.monster.servicios.ServicioConversor;
 import jakarta.jws.WebService;
 import jakarta.jws.WebMethod;
 import jakarta.jws.WebParam;
+import jakarta.jws.HandlerChain;
 
 /**
  *
  * @author USER
  */
-@WebService(serviceName = "WSConversorUnidades")
+@WebService(
+        serviceName = "WSConversorUnidades",
+        targetNamespace = "http://ws.monster.edu.ec/")
+@HandlerChain(file = "manejador-auth.xml")
 public class WSConversorUnidades {
 
     private final ServicioConversor<UnidadLongitud> servicioLongitud =

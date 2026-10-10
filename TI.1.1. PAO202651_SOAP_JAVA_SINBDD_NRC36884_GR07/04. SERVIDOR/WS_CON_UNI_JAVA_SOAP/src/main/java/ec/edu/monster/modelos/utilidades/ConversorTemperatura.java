@@ -29,19 +29,23 @@ public class ConversorTemperatura implements IConversor<UnidadTemperatura> {
         }
         
 
-        switch(origen){
-            case CELSIUS:
-                 if(valor<-273.15||valor>100)
-                     throw new IllegalArgumentException("El valor de Celsius debe estar en el rango de -273.15 a 100 ºC)");
-            case FAHRENHEIT :
-                 if(valor<-459.67||valor>212)
-                     throw new IllegalArgumentException("El valor de Celsius debe estar en el rango de -459.67 a 212 ºF)");
-            case KELVIN:
-                 if(valor<0||valor>373.15)
-                     throw new IllegalArgumentException("El valor de Celsius debe estar en el rango de 0 a 373.15 ºK)");
-            case RANKINE:
-                 if(valor<0||valor>671.67)
-                     throw new IllegalArgumentException("El valor de Celsius debe estar en el rango de 0 a 671.67 ºR)");
+        switch (origen) {
+            case CELSIUS -> {
+                if (valor < -273.15 || valor > 100)
+                    throw new IllegalArgumentException("El valor de Celsius debe estar en el rango de -273.15 a 100 ºC");
+            }
+            case FAHRENHEIT -> {
+                if (valor < -459.67 || valor > 212)
+                    throw new IllegalArgumentException("El valor de Fahrenheit debe estar en el rango de -459.67 a 212 ºF");
+            }
+            case KELVIN -> {
+                if (valor < 0 || valor > 373.15)
+                    throw new IllegalArgumentException("El valor de Kelvin debe estar en el rango de 0 a 373.15 ºK");
+            }
+            case RANKINE -> {
+                if (valor < 0 || valor > 671.67)
+                    throw new IllegalArgumentException("El valor de Rankine debe estar en el rango de 0 a 671.67 ºR");
+            }
         }
 
         return switch (origen) {
