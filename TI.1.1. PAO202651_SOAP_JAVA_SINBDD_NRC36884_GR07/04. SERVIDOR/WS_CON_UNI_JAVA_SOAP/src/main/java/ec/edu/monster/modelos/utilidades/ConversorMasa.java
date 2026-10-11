@@ -32,6 +32,10 @@ public class ConversorMasa implements IConversor<UnidadMasa> {
         if (!factores.containsKey(unidadOrigen) || !factores.containsKey(unidadFinal)) {
             throw new IllegalArgumentException("Unidad no soportada");
         }
+        if (!Double.isFinite(valor) || valor < 0) {
+            throw new IllegalArgumentException(
+                    "El valor de masa debe ser un número finito mayor o igual a cero");
+        }
 
         double valorEnBase = valor * factores.get(unidadOrigen);
 
