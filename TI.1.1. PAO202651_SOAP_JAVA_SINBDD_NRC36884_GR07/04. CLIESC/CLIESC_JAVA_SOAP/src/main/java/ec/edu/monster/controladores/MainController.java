@@ -4,6 +4,7 @@
  */
 package ec.edu.monster.controladores;
 
+import ec.edu.monster.modelos.TipoConversion;
 import ec.edu.monster.servicios.WSConversorCliente;
 import ec.edu.monster.vistas.MainVista;
 
@@ -21,15 +22,9 @@ public class MainController {
     }
     
     public void init() {
-        
-
-        // --- Conversión de temperatura ---
-
-        // --- Conversión de longitud ---
-
-        // --- Conversión de masa ---
-
-        // --- Cambio de contraseña ---
+        for (TipoConversion tipo : TipoConversion.values()) {
+            new ConversionController(vista.getPanelConversion(tipo), client, tipo);
+        }
         vista.setLocationRelativeTo(null);
         vista.setVisible(true);
     }
