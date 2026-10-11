@@ -14,6 +14,7 @@ import ec.edu.monster.modelos.utilidades.mapeadores.UnidadMapper;
 import ec.edu.monster.seguridad.AdministradorCredenciales;
 import ec.edu.monster.seguridad.AdministradorTokens;
 import ec.edu.monster.servicios.ServicioConversor;
+import jakarta.enterprise.inject.spi.CDI;
 import jakarta.jws.WebService;
 import jakarta.jws.WebMethod;
 import jakarta.jws.WebParam;
@@ -43,8 +44,10 @@ public class WSConversorUnidades {
             @WebParam(name = "usuario") String usuario,
             @WebParam(name = "contrasenia") String contrasenia) {
         
+        AdministradorTokens administradorTokens = CDI.current().select(AdministradorTokens.class).get();
+        
         if (AdministradorCredenciales.validarCredenciales(usuario, contrasenia)) {
-            return AdministradorTokens.generarToken();
+            return administradorTokens.generarToken();
         }
         throw new RuntimeException("Credenciales incorrectas");
     }

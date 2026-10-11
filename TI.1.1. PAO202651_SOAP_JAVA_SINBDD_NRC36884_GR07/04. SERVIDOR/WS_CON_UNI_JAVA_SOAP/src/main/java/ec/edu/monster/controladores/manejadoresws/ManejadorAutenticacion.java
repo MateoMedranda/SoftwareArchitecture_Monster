@@ -1,9 +1,11 @@
 package ec.edu.monster.controladores.manejadoresws;
 
 import ec.edu.monster.seguridad.AdministradorTokens;
+import jakarta.enterprise.inject.spi.CDI;
 import jakarta.xml.ws.handler.soap.SOAPHandler;
 import jakarta.xml.ws.handler.soap.SOAPMessageContext;
 import jakarta.xml.ws.handler.MessageContext;
+
 import jakarta.xml.ws.soap.SOAPFaultException;
 
 import jakarta.xml.soap.SOAPBody;
@@ -36,7 +38,7 @@ public class ManejadorAutenticacion implements SOAPHandler<SOAPMessageContext> {
         }
 
         try {
-
+            AdministradorTokens adminTokens = CDI.current().select(AdministradorTokens.class).get();
             SOAPMessage mensajeSOAP = contexto.getMessage();
             SOAPBody cuerpo = mensajeSOAP.getSOAPBody();
 
@@ -58,7 +60,7 @@ public class ManejadorAutenticacion implements SOAPHandler<SOAPMessageContext> {
 
             String token = nodosToken.item(0).getTextContent();
 
-            if (token == null || !AdministradorTokens.validarToken(token.trim())) {
+            if (token == null || !adminTokens.validarToken(token.trim())) {
                 throw fault("Acceso denegado: Token inválido o expirado.");
             }
 
