@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">Conversor Monster</string>
+    <string name="login_title">Iniciar sesión</string>
+    <string name="hint_username">Usuario</string>
+    <string name="hint_password">Contraseña</string>
+    <string name="btn_login">Entrar</string>
+    <string name="home_token_label">Token de sesión:</string>
+</resources>
