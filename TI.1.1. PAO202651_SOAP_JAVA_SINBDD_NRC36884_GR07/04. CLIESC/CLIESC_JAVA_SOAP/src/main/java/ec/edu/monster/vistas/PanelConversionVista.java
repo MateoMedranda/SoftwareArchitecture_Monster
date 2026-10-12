@@ -17,6 +17,9 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
+import javax.swing.JOptionPane;
+import javax.swing.SwingUtilities;
+import java.awt.Window;
 
 public class PanelConversionVista extends JPanel {
 
@@ -116,6 +119,13 @@ public class PanelConversionVista extends JPanel {
     public void mostrarError(String mensaje) {
         mostrarMensaje(mensaje, new Color(180, 0, 0));
     }
+    
+    public int mostrarAlertaCierreSesion()
+    {
+        String[] opciones = {"Volver a iniciar sesión", "Salir"};
+        int dialogoAlerta = JOptionPane.showOptionDialog(this, "Sesion expirada.", "Aviso", WIDTH, HEIGHT, null, opciones, opciones[0]);
+        return dialogoAlerta;
+    }
 
     public void limpiarMensaje() {
         lblMensaje.setText(" ");
@@ -134,5 +144,12 @@ public class PanelConversionVista extends JPanel {
     private void mostrarMensaje(String mensaje, Color color) {
         lblMensaje.setForeground(color);
         lblMensaje.setText(mensaje);
+    }
+    
+    public void cerrarVentanaPadre() {
+        Window parentWindow = SwingUtilities.getWindowAncestor(this);
+        if (parentWindow != null) {
+            parentWindow.dispose(); // Cierra el JFrame/Window padre
+        }
     }
 }

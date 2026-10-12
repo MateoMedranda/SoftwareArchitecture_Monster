@@ -12,7 +12,7 @@ import java.nio.file.Paths;
 
 public final class SoapConfig {
 
-    private static final String ARCHIVO_ENV = ".development.env";
+    private static final String ARCHIVO_ENV = "development.env";
 
     private static final Dotenv DOTENV = cargar();
 

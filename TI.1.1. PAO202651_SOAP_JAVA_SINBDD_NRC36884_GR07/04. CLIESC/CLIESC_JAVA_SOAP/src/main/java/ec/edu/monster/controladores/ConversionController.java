@@ -3,6 +3,7 @@ package ec.edu.monster.controladores;
 import ec.edu.monster.modelos.ResultadoConversion;
 import ec.edu.monster.modelos.TipoConversion;
 import ec.edu.monster.servicios.WSConversorCliente;
+import ec.edu.monster.vistas.LoginVista;
 import ec.edu.monster.vistas.PanelConversionVista;
 import java.util.concurrent.ExecutionException;
 import javax.swing.SwingWorker;
@@ -70,7 +71,26 @@ public class ConversionController {
                     Thread.currentThread().interrupt();
                     vista.mostrarError("La conversión fue interrumpida.");
                 } catch (ExecutionException ex) {
-                    vista.mostrarError(obtenerMensaje(ex.getCause()));
+                    String mensaje = obtenerMensaje(ex.getCause());
+                    if(mensaje.contains("Token inválido o expirado"))
+                    {
+                        int eleccion = vista.mostrarAlertaCierreSesion();
+                        switch(eleccion){
+                            case 0: //Reiniciar sesion
+                                LoginVista vistaLogin = new LoginVista();
+                                LoginController controladorLogin = new LoginController(vistaLogin, cliente);
+                                vistaLogin.setVisible(true);
+                                vista.cerrarVentanaPadre();
+                                break;
+                            case 1:
+                                vista.cerrarVentanaPadre();
+                                System.exit(0);
+                                break;
+                        }
+                    }
+                    else{
+                        vista.mostrarError(mensaje);
+                    }
                 }
             }
         }.execute();
