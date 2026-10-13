@@ -32,6 +32,10 @@ public class ConversorLongitud implements IConversor<UnidadLongitud> {
         if (!factores.containsKey(unidadOrigen) || !factores.containsKey(unidadFinal)) {
             throw new IllegalArgumentException("Unidad no soportada");
         }
+        if (!Double.isFinite(valor) || valor<0)
+        {
+            throw new IllegalArgumentException("No se permite ingresar valores negativos");
+        }
 
         double valorEnBase = valor * factores.get(unidadOrigen);
 
