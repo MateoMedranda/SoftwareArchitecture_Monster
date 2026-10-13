@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="jakarta.faces.html"
+      xmlns:f="jakarta.faces.core"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:ui="jakarta.faces.facelets">
+<h:head>
+    <title>Conversor de Unidades</title>
+    <h:outputStylesheet name="css/estilos.css"/>
+</h:head>
+<h:body>
+    <div class="panel">
+        <div class="barra">
+            <h:outputText value="Bienvenido, #{sesionBean.usuarioAutenticado}"/>
+            <h:form>
+                <p:commandButton value="Cerrar sesion"
+                                 action="#{conversorBean.cerrarSesion}"
+                                 ajax="false"
+                                 styleClass="boton-secundario"/>
+            </h:form>
+        </div>
+
+        <h2 class="login-titulo">Conversor de Unidades</h2>
+
+        <h:form id="formConversor">
+            <div class="campo">
+                <p:outputLabel value="Tipo de conversion"/>
+                <p:selectOneRadio value="#{conversorBean.tipoConversion}" layout="responsive">
+                    <f:selectItem itemLabel="Longitud" itemValue="longitud"/>
+                    <f:selectItem itemLabel="Masa" itemValue="masa"/>
+                    <f:selectItem itemLabel="Temperatura" itemValue="temperatura"/>
+                    <p:ajax listener="#{conversorBean.onTipoCambio}" update="@form"/>
+                </p:selectOneRadio>
+            </div>
+
+            <div class="campo">
+                <p:outputLabel for="valor" value="Valor"/>
+                <p:inputNumber id="valor" value="#{conversorBean.valor}" decimalPlaces="4"/>
+            </div>
+
+            <ui:include src="#{conversorBean.vistaUnidades}"/>
+
+            <p:commandButton value="Convertir"
+                             action="#{conversorBean.convertir}"
+                             update="@form"
+                             ajax="true"
+                             styleClass="boton-login"/>
+
+            <div class="resultado">
+                <h:outputText value="Resultado: #{conversorBean.resultado}"/>
+            </div>
+
+            <p:messages id="msg" showDetail="true" closable="true"/>
+        </h:form>
+
+    </div>
+</h:body>
+</html>

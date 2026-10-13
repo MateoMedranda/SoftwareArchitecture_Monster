@@ -1,0 +1,109 @@
+/*
+ * Estilos del login y del conversor.
+ * Modifica aqui el centrado, tamanos y colores.
+ */
+
+body {
+    margin: 0;
+    font-family: "Segoe UI", Arial, sans-serif;
+    background: #eef2f7;
+    color: #24303f;
+}
+
+/* Contenedor que centra la tarjeta de login vertical y horizontalmente */
+.login-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 24px;
+    box-sizing: border-box;
+}
+
+/* Tarjeta central del login */
+.login-card {
+    width: 100%;
+    max-width: 380px;            /* ancho de la tarjeta */
+    background: #ffffff;
+    border-radius: 14px;
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.12);
+    padding: 32px 28px;
+    text-align: center;          /* centra titulo, imagenes y textos */
+}
+
+/* Titulo centrado */
+.login-titulo {
+    margin: 8px 0 24px 0;
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #1f2d3d;
+}
+
+/* Espacios reservados para imagenes (logo superior e imagen inferior) */
+.imagen-espacio {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 8px 0 16px 0;
+}
+
+.imagen-espacio img {
+    max-width: 180px;            /* tamano maximo de las imagenes */
+    max-height: 120px;
+}
+
+/* Cada campo (label + control) */
+.campo {
+    text-align: left;
+    margin-bottom: 16px;
+}
+
+.campo label {
+    display: block;
+    margin-bottom: 6px;
+    font-size: 0.85rem;
+    color: #5a6b7d;
+}
+
+/* El input de PrimeFaces ocupa todo el ancho de la tarjeta */
+.campo .ui-inputfield {
+    width: 100% !important;
+    box-sizing: border-box;
+}
+
+/* Boton principal */
+.boton-login {
+    width: 100%;
+    margin-top: 8px;
+}
+
+.boton-secundario {
+    margin-left: 8px;
+}
+
+/* Panel de la pagina de conversion */
+.panel {
+    max-width: 720px;
+    margin: 40px auto;
+    background: #ffffff;
+    border-radius: 14px;
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.10);
+    padding: 28px;
+}
+
+.barra {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #e3e8ee;
+    padding-bottom: 12px;
+    margin-bottom: 16px;
+}
+
+.resultado {
+    margin-top: 18px;
+    padding: 12px;
+    background: #f2f7ff;
+    border-radius: 8px;
+    font-weight: 600;
+}

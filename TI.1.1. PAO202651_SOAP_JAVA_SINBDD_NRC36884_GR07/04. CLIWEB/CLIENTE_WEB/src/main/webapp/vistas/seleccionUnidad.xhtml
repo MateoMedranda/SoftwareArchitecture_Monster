@@ -1,0 +1,11 @@
+<ui:composition xmlns:ui="jakarta.faces.facelets"
+                xmlns:f="jakarta.faces.core"
+                xmlns:p="http://primefaces.org/ui">
+    <div class="campo">
+        <p:outputLabel for="#{id}" value="#{texto}"/>
+        <p:selectOneMenu id="#{id}" value="#{valor}">
+            <f:selectItems value="#{unidades}" var="u"
+                           itemLabel="#{u.etiqueta}" itemValue="#{u.name()}"/>
+        </p:selectOneMenu>
+    </div>
+</ui:composition>
