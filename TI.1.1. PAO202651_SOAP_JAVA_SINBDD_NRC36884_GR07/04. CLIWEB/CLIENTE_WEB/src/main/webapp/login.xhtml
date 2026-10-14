@@ -26,9 +26,7 @@
                     <p:outputLabel for="usuario" value="Usuario"/>
                     <p:inputText id="usuario"
                                  value="#{loginBean.credenciales.usuario}"
-                                 placeholder="Ingrese su usuario"
-                                 required="true"
-                                 requiredMessage="El usuario es obligatorio"/>
+                                 placeholder="Ingrese su usuario"/>
                 </div>
 
                 <!-- Contrasenia -->
@@ -37,8 +35,6 @@
                     <p:password id="contrasenia"
                                 value="#{loginBean.credenciales.contrasenia}"
                                 placeholder="Ingrese su contrasena"
-                                required="true"
-                                requiredMessage="La contrasena es obligatoria"
                                 feedback="false"/>
                 </div>
 

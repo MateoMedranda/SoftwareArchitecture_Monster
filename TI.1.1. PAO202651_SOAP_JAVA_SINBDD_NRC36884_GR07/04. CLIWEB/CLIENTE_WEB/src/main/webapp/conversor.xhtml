@@ -26,11 +26,16 @@
         <h:form id="formConversor">
             <div class="campo">
                 <p:outputLabel value="Tipo de conversion"/>
-                <p:selectOneRadio value="#{conversorBean.tipoConversion}" layout="responsive">
+                <p:selectOneRadio value="#{conversorBean.tipoConversion}" 
+                                  layout="responsive"
+                                  styleClass="radio-espaciado">
                     <f:selectItem itemLabel="Longitud" itemValue="longitud"/>
                     <f:selectItem itemLabel="Masa" itemValue="masa"/>
                     <f:selectItem itemLabel="Temperatura" itemValue="temperatura"/>
-                    <p:ajax listener="#{conversorBean.onTipoCambio}" update="@form"/>
+                    <f:ajax event="change" 
+                            listener="#{conversorBean.onTipoCambio}" 
+                            execute="@this" 
+                            render="@form"/>
                 </p:selectOneRadio>
             </div>
 

@@ -1,16 +1,11 @@
-/*
- * Estilos del login y del conversor.
- * Modifica aqui el centrado, tamanos y colores.
- */
 
 body {
     margin: 0;
     font-family: "Segoe UI", Arial, sans-serif;
-    background: #eef2f7;
+    background: #cbdff7 ;
     color: #24303f;
 }
 
-/* Contenedor que centra la tarjeta de login vertical y horizontalmente */
 .login-wrapper {
     display: flex;
     justify-content: center;
@@ -23,15 +18,14 @@ body {
 /* Tarjeta central del login */
 .login-card {
     width: 100%;
-    max-width: 380px;            /* ancho de la tarjeta */
+    max-width: 380px;            
     background: #ffffff;
     border-radius: 14px;
     box-shadow: 0 12px 30px rgba(0, 0, 0, 0.12);
     padding: 32px 28px;
-    text-align: center;          /* centra titulo, imagenes y textos */
+    text-align: center;         
 }
 
-/* Titulo centrado */
 .login-titulo {
     margin: 8px 0 24px 0;
     font-size: 1.5rem;
@@ -39,7 +33,6 @@ body {
     color: #1f2d3d;
 }
 
-/* Espacios reservados para imagenes (logo superior e imagen inferior) */
 .imagen-espacio {
     display: flex;
     justify-content: center;
@@ -48,11 +41,10 @@ body {
 }
 
 .imagen-espacio img {
-    max-width: 180px;            /* tamano maximo de las imagenes */
+    max-width: 180px;          
     max-height: 120px;
 }
 
-/* Cada campo (label + control) */
 .campo {
     text-align: left;
     margin-bottom: 16px;
@@ -65,13 +57,18 @@ body {
     color: #5a6b7d;
 }
 
-/* El input de PrimeFaces ocupa todo el ancho de la tarjeta */
 .campo .ui-inputfield {
     width: 100% !important;
     box-sizing: border-box;
 }
 
-/* Boton principal */
+.campo .ui-outputlabel {
+    display: block;
+    margin-bottom: 6px;
+    font-size: 1 rem;
+    color: #5a6b7d;
+}
+
 .boton-login {
     width: 100%;
     margin-top: 8px;
@@ -81,7 +78,6 @@ body {
     margin-left: 8px;
 }
 
-/* Panel de la pagina de conversion */
 .panel {
     max-width: 720px;
     margin: 40px auto;

@@ -11,6 +11,7 @@ import jakarta.faces.context.FacesContext;
 import jakarta.faces.view.ViewScoped;
 import jakarta.inject.Inject;
 import jakarta.inject.Named;
+import jakarta.xml.ws.soap.SOAPFaultException;
 import java.io.Serializable;
 
 @Named("conversorBean")
@@ -40,12 +41,16 @@ public class ControladorConversorBean implements Serializable {
                         .redirect(FacesContext.getCurrentInstance().getExternalContext()
                                 .getRequestContextPath() + "/login.xhtml");
             } catch (Exception e) {
-              
+               
             }
         }
     }
 
     public void convertir() {
+        if (unidadInicial == null || unidadInicial.isBlank() || unidadFinal == null || unidadFinal.isBlank()) {
+            mensaje(FacesMessage.SEVERITY_WARN, "Debe seleccionar ambas unidades (inicial y final).");
+            return;
+        }
         try {
             switch (tipoConversion) {
                 case "masa":
@@ -63,8 +68,16 @@ public class ControladorConversorBean implements Serializable {
                     break;
             }
             mensaje(FacesMessage.SEVERITY_INFO, "Conversion realizada: " + resultado);
+        } catch (SOAPFaultException e) {
+            String fault = e.getFault().getFaultString();
+            String clean = fault.replaceAll(" Please see the server log.*", "");
+            mensaje(FacesMessage.SEVERITY_ERROR, "Error al convertir: " + clean);
         } catch (Exception e) {
-            mensaje(FacesMessage.SEVERITY_ERROR, "Error al convertir: " + e.getMessage());
+            String msg = e.getMessage();
+            if (msg != null) {
+                msg = msg.replaceAll(" Please see the server log.*", "");
+            }
+            mensaje(FacesMessage.SEVERITY_ERROR, "Error al convertir: " + msg);
         }
     }
 
@@ -74,7 +87,7 @@ public class ControladorConversorBean implements Serializable {
     }
 
     private void mensaje(FacesMessage.Severity severidad, String texto) {
-        FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(severidad, texto, texto));
+        FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(severidad, "", texto));
     }
 
     public double getValor() {

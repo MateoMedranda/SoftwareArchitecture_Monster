@@ -19,6 +19,12 @@ import jakarta.jws.WebService;
 import jakarta.jws.WebMethod;
 import jakarta.jws.WebParam;
 import jakarta.jws.HandlerChain;
+import jakarta.xml.soap.SOAPConstants;
+import jakarta.xml.soap.SOAPException;
+import jakarta.xml.soap.SOAPFactory;
+import jakarta.xml.soap.SOAPFault;
+import jakarta.xml.ws.soap.SOAPFaultException;
+import javax.xml.namespace.QName;
 
 /**
  *
@@ -49,15 +55,27 @@ public class WSConversorUnidades {
         if (AdministradorCredenciales.validarCredenciales(usuario, contrasenia)) {
             return administradorTokens.generarToken();
         }
-        throw new RuntimeException("Credenciales incorrectas");
+        
+        try {
+            SOAPFault fault = SOAPFactory.newInstance(SOAPConstants.SOAP_1_1_PROTOCOL).createFault();
+            fault.setFaultCode(new QName(SOAPConstants.URI_NS_SOAP_ENVELOPE, "Client"));
+            fault.setFaultString("Usuario o contraseña incorrectos");
+            throw new SOAPFaultException(fault);
+        } catch (SOAPException e) {
+            throw new RuntimeException("Error de autenticación", e);
+        }
     }
 
     @WebMethod(operationName = "cambiarContrasenia")
     public String cambiarContrasenia(
             @WebParam(name = "contraseniaActual") String contraseniaActual,
             @WebParam(name = "contraseniaNueva") String contraseniaNueva) {
-        AdministradorCredenciales.cambiarContrasenia(contraseniaActual, contraseniaNueva);
-        return "Contrasenia actualizada correctamente";
+        try {
+            AdministradorCredenciales.cambiarContrasenia(contraseniaActual, contraseniaNueva);
+            return "Contrasenia actualizada correctamente";
+        } catch (IllegalArgumentException e) {
+            throw crearFaultValidacion(e.getMessage());
+        }
     }
    
     @WebMethod(operationName = "convertirLongitud")
@@ -66,10 +84,14 @@ public class WSConversorUnidades {
             @WebParam(name = "unidadInicial") String unidadInicial,
             @WebParam(name = "unidadFinal") String unidadFinal) {
 
-        UnidadLongitud origen = UnidadMapper.toLongitud(unidadInicial);
-        UnidadLongitud destino = UnidadMapper.toLongitud(unidadFinal);
+        try {
+            UnidadLongitud origen = UnidadMapper.toLongitud(unidadInicial);
+            UnidadLongitud destino = UnidadMapper.toLongitud(unidadFinal);
 
-        return servicioLongitud.convertir(valor, origen, destino);
+            return servicioLongitud.convertir(valor, origen, destino);
+        } catch (IllegalArgumentException e) {
+            throw crearFaultValidacion(e.getMessage());
+        }
     }
     
     @WebMethod(operationName = "convertirMasa")
@@ -78,10 +100,14 @@ public class WSConversorUnidades {
             @WebParam(name = "unidadInicial") String unidadInicial,
             @WebParam(name = "unidadFinal") String unidadFinal) {
 
-        UnidadMasa origen = UnidadMapper.toMasa(unidadInicial);
-        UnidadMasa destino = UnidadMapper.toMasa(unidadFinal);
+        try {
+            UnidadMasa origen = UnidadMapper.toMasa(unidadInicial);
+            UnidadMasa destino = UnidadMapper.toMasa(unidadFinal);
 
-        return servicioMasa.convertir(valor, origen, destino);
+            return servicioMasa.convertir(valor, origen, destino);
+        } catch (IllegalArgumentException e) {
+            throw crearFaultValidacion(e.getMessage());
+        }
     }
 
     @WebMethod(operationName = "convertirTemperatura")
@@ -90,9 +116,24 @@ public class WSConversorUnidades {
             @WebParam(name = "unidadInicial") String unidadInicial,
             @WebParam(name = "unidadFinal") String unidadFinal) {
 
-        UnidadTemperatura origen = UnidadMapper.toTemperatura(unidadInicial);
-        UnidadTemperatura destino = UnidadMapper.toTemperatura(unidadFinal);
+        try {
+            UnidadTemperatura origen = UnidadMapper.toTemperatura(unidadInicial);
+            UnidadTemperatura destino = UnidadMapper.toTemperatura(unidadFinal);
 
-        return servicioTemperatura.convertir(valor, origen, destino);
+            return servicioTemperatura.convertir(valor, origen, destino);
+        } catch (IllegalArgumentException e) {
+            throw crearFaultValidacion(e.getMessage());
+        }
+    }
+
+    private SOAPFaultException crearFaultValidacion(String mensaje) {
+        try {
+            SOAPFault fault = SOAPFactory.newInstance(SOAPConstants.SOAP_1_1_PROTOCOL).createFault();
+            fault.setFaultCode(new QName(SOAPConstants.URI_NS_SOAP_ENVELOPE, "Client"));
+            fault.setFaultString(mensaje);
+            return new SOAPFaultException(fault);
+        } catch (SOAPException e) {
+            throw new RuntimeException("Error de validación", e);
+        }
     }
 }

@@ -4,6 +4,7 @@
     <div class="campo">
         <p:outputLabel for="#{id}" value="#{texto}"/>
         <p:selectOneMenu id="#{id}" value="#{valor}">
+            <f:selectItem itemLabel="Seleccione..." itemValue="" noSelectionOption="true"/>
             <f:selectItems value="#{unidades}" var="u"
                            itemLabel="#{u.etiqueta}" itemValue="#{u.name()}"/>
         </p:selectOneMenu>

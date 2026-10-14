@@ -8,6 +8,7 @@ import jakarta.faces.context.FacesContext;
 import jakarta.faces.view.ViewScoped;
 import jakarta.inject.Inject;
 import jakarta.inject.Named;
+import jakarta.xml.ws.soap.SOAPFaultException;
 import java.io.Serializable;
 
 @Named("loginBean")
@@ -32,27 +33,36 @@ public class ControladorLoginBean implements Serializable {
         String contrasenia = credenciales.getContrasenia();
 
         if (usuario == null || usuario.isBlank() || contrasenia == null || contrasenia.isBlank()) {
-            mensaje(FacesMessage.SEVERITY_WARN, "Debe ingresar usuario y contrasenia.");
+            mensaje(FacesMessage.SEVERITY_WARN, "", "Debe ingresar usuario y contrasenia.");
             return null;
         }
 
         try {
             String token = autenticacionServicio.login(usuario, contrasenia);
-            if (token == null || token.isBlank()) {
-                mensaje(FacesMessage.SEVERITY_ERROR, "Credenciales invalidas.");
-                return null;
-            }
             sesionBean.iniciarSesion(usuario, token);
             return "conversor?faces-redirect=true";
+        } catch (SOAPFaultException e) {
+            String faultString = e.getFault().getFaultString();
+            String friendlyMsg = switch (faultString) {
+                case "Usuario o contraseña incorrectos" -> "Usuario o contraseña incorrectos";
+                case "Acceso denegado: Se requiere encabezado SOAP con el token de seguridad." ->
+                    "Sesión expirada. Inicie sesión nuevamente.";
+                case "Acceso denegado: No se encontró el token. Inicie sesión primero." ->
+                    "Sesión expirada. Inicie sesión nuevamente.";
+                case "Acceso denegado: Token inválido o expirado." ->
+                    "Sesión expirada. Inicie sesión nuevamente.";
+                default -> "Error de autenticación: " + faultString;
+            };
+            mensaje(FacesMessage.SEVERITY_ERROR, "", friendlyMsg);
+            return null;
         } catch (Exception e) {
-            mensaje(FacesMessage.SEVERITY_ERROR,
-                    "Error al conectar con el servidor: " + e.getMessage());
+            mensaje(FacesMessage.SEVERITY_ERROR, "", "Error de conexión: " + e.getMessage());
             return null;
         }
     }
 
-    private void mensaje(FacesMessage.Severity severidad, String texto) {
-        FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(severidad, texto, texto));
+    private void mensaje(FacesMessage.Severity severidad, String texto, String error) {
+        FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(severidad, texto, error));
     }
 
     public Credenciales getCredenciales() {
