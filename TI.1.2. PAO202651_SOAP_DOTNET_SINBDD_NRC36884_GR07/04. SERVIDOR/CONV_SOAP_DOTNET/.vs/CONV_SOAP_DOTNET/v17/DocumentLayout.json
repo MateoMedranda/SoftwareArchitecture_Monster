@@ -1,0 +1,105 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "C:\\Users\\gmlop\\Desktop\\ESPE\\Octavo\\Arquitectura\\SoftwareArchitecture_Monster\\TI.1.2. PAO202651_SOAP_DOTNET_SINBDD_NRC36884_GR07\\04. SERVIDOR\\CONV_SOAP_DOTNET\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{6241DE4F-F1EF-47C4-A378-167F23DB157C}|CONV_SOAP_DOTNET.csproj|c:\\users\\gmlop\\desktop\\espe\\octavo\\arquitectura\\softwarearchitecture_monster\\ti.1.2. pao202651_soap_dotnet_sinbdd_nrc36884_gr07\\04. servidor\\conv_soap_dotnet\\modelos\\unidadtemperatura.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{6241DE4F-F1EF-47C4-A378-167F23DB157C}|CONV_SOAP_DOTNET.csproj|solutionrelative:modelos\\unidadtemperatura.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{6241DE4F-F1EF-47C4-A378-167F23DB157C}|CONV_SOAP_DOTNET.csproj|c:\\users\\gmlop\\desktop\\espe\\octavo\\arquitectura\\softwarearchitecture_monster\\ti.1.2. pao202651_soap_dotnet_sinbdd_nrc36884_gr07\\04. servidor\\conv_soap_dotnet\\modelos\\unidadmasa.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{6241DE4F-F1EF-47C4-A378-167F23DB157C}|CONV_SOAP_DOTNET.csproj|solutionrelative:modelos\\unidadmasa.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{6241DE4F-F1EF-47C4-A378-167F23DB157C}|CONV_SOAP_DOTNET.csproj|c:\\users\\gmlop\\desktop\\espe\\octavo\\arquitectura\\softwarearchitecture_monster\\ti.1.2. pao202651_soap_dotnet_sinbdd_nrc36884_gr07\\04. servidor\\conv_soap_dotnet\\modelos\\unidadlongitud.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{6241DE4F-F1EF-47C4-A378-167F23DB157C}|CONV_SOAP_DOTNET.csproj|solutionrelative:modelos\\unidadlongitud.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{6241DE4F-F1EF-47C4-A378-167F23DB157C}|CONV_SOAP_DOTNET.csproj|c:\\users\\gmlop\\desktop\\espe\\octavo\\arquitectura\\softwarearchitecture_monster\\ti.1.2. pao202651_soap_dotnet_sinbdd_nrc36884_gr07\\04. servidor\\conv_soap_dotnet\\modelos\\rangos.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{6241DE4F-F1EF-47C4-A378-167F23DB157C}|CONV_SOAP_DOTNET.csproj|solutionrelative:modelos\\rangos.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{6241DE4F-F1EF-47C4-A378-167F23DB157C}|CONV_SOAP_DOTNET.csproj|c:\\users\\gmlop\\desktop\\espe\\octavo\\arquitectura\\softwarearchitecture_monster\\ti.1.2. pao202651_soap_dotnet_sinbdd_nrc36884_gr07\\04. servidor\\conv_soap_dotnet\\modelos\\categoriaunidad.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{6241DE4F-F1EF-47C4-A378-167F23DB157C}|CONV_SOAP_DOTNET.csproj|solutionrelative:modelos\\categoriaunidad.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 0,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "UnidadTemperatura.cs",
+              "DocumentMoniker": "C:\\Users\\gmlop\\Desktop\\ESPE\\Octavo\\Arquitectura\\SoftwareArchitecture_Monster\\TI.1.2. PAO202651_SOAP_DOTNET_SINBDD_NRC36884_GR07\\04. SERVIDOR\\CONV_SOAP_DOTNET\\Modelos\\UnidadTemperatura.cs",
+              "RelativeDocumentMoniker": "Modelos\\UnidadTemperatura.cs",
+              "ToolTip": "C:\\Users\\gmlop\\Desktop\\ESPE\\Octavo\\Arquitectura\\SoftwareArchitecture_Monster\\TI.1.2. PAO202651_SOAP_DOTNET_SINBDD_NRC36884_GR07\\04. SERVIDOR\\CONV_SOAP_DOTNET\\Modelos\\UnidadTemperatura.cs",
+              "RelativeToolTip": "Modelos\\UnidadTemperatura.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAsAAAASAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-10-15T20:07:57.465Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "UnidadMasa.cs",
+              "DocumentMoniker": "C:\\Users\\gmlop\\Desktop\\ESPE\\Octavo\\Arquitectura\\SoftwareArchitecture_Monster\\TI.1.2. PAO202651_SOAP_DOTNET_SINBDD_NRC36884_GR07\\04. SERVIDOR\\CONV_SOAP_DOTNET\\Modelos\\UnidadMasa.cs",
+              "RelativeDocumentMoniker": "Modelos\\UnidadMasa.cs",
+              "ToolTip": "C:\\Users\\gmlop\\Desktop\\ESPE\\Octavo\\Arquitectura\\SoftwareArchitecture_Monster\\TI.1.2. PAO202651_SOAP_DOTNET_SINBDD_NRC36884_GR07\\04. SERVIDOR\\CONV_SOAP_DOTNET\\Modelos\\UnidadMasa.cs",
+              "RelativeToolTip": "Modelos\\UnidadMasa.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-10-15T20:07:57.421Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "UnidadLongitud.cs",
+              "DocumentMoniker": "C:\\Users\\gmlop\\Desktop\\ESPE\\Octavo\\Arquitectura\\SoftwareArchitecture_Monster\\TI.1.2. PAO202651_SOAP_DOTNET_SINBDD_NRC36884_GR07\\04. SERVIDOR\\CONV_SOAP_DOTNET\\Modelos\\UnidadLongitud.cs",
+              "RelativeDocumentMoniker": "Modelos\\UnidadLongitud.cs",
+              "ToolTip": "C:\\Users\\gmlop\\Desktop\\ESPE\\Octavo\\Arquitectura\\SoftwareArchitecture_Monster\\TI.1.2. PAO202651_SOAP_DOTNET_SINBDD_NRC36884_GR07\\04. SERVIDOR\\CONV_SOAP_DOTNET\\Modelos\\UnidadLongitud.cs",
+              "RelativeToolTip": "Modelos\\UnidadLongitud.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-10-15T20:07:57.383Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "Rangos.cs",
+              "DocumentMoniker": "C:\\Users\\gmlop\\Desktop\\ESPE\\Octavo\\Arquitectura\\SoftwareArchitecture_Monster\\TI.1.2. PAO202651_SOAP_DOTNET_SINBDD_NRC36884_GR07\\04. SERVIDOR\\CONV_SOAP_DOTNET\\Modelos\\Rangos.cs",
+              "RelativeDocumentMoniker": "Modelos\\Rangos.cs",
+              "ToolTip": "C:\\Users\\gmlop\\Desktop\\ESPE\\Octavo\\Arquitectura\\SoftwareArchitecture_Monster\\TI.1.2. PAO202651_SOAP_DOTNET_SINBDD_NRC36884_GR07\\04. SERVIDOR\\CONV_SOAP_DOTNET\\Modelos\\Rangos.cs",
+              "RelativeToolTip": "Modelos\\Rangos.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-10-15T20:07:57.308Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "CategoriaUnidad.cs",
+              "DocumentMoniker": "C:\\Users\\gmlop\\Desktop\\ESPE\\Octavo\\Arquitectura\\SoftwareArchitecture_Monster\\TI.1.2. PAO202651_SOAP_DOTNET_SINBDD_NRC36884_GR07\\04. SERVIDOR\\CONV_SOAP_DOTNET\\Modelos\\CategoriaUnidad.cs",
+              "RelativeDocumentMoniker": "Modelos\\CategoriaUnidad.cs",
+              "ToolTip": "C:\\Users\\gmlop\\Desktop\\ESPE\\Octavo\\Arquitectura\\SoftwareArchitecture_Monster\\TI.1.2. PAO202651_SOAP_DOTNET_SINBDD_NRC36884_GR07\\04. SERVIDOR\\CONV_SOAP_DOTNET\\Modelos\\CategoriaUnidad.cs",
+              "RelativeToolTip": "Modelos\\CategoriaUnidad.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-10-15T20:07:56.921Z",
+              "EditorCaption": ""
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
