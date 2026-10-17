@@ -17,4 +17,5 @@ object SoapConfig {
     const val SOAP_CONNECT_TIMEOUT = BuildConfig.SOAP_CONNECT_TIMEOUT
     const val SOAP_READ_TIMEOUT = BuildConfig.SOAP_READ_TIMEOUT
     const val INSECURE_TLS = BuildConfig.SOAP_INSECURE_TLS
+    const val SOAP_SECURITY_NAMESPACE = BuildConfig.SOAP_SECURITY_NAMESPACE
 }

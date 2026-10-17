@@ -1,5 +1,6 @@
 package com.marpa.practica.model.network
 
+import android.util.Log
 import com.marpa.practica.model.SoapConfig
 import com.marpa.practica.model.seguridad.TlsInseguro
 import java.io.StringReader
@@ -9,7 +10,10 @@ import org.xmlpull.v1.XmlPullParser
 import org.xmlpull.v1.XmlPullParserFactory
 
 /** Error de red o de protocolo SOAP (incluye SOAP Fault). */
-class SoapException(message: String, cause: Throwable? = null) : Exception(message, cause)
+open class SoapException(message: String, cause: Throwable? = null) : Exception(message, cause)
+
+/** El token venció o es inválido: hay que iniciar sesión de nuevo. */
+class SessionExpiredException(message: String) : SoapException(message)
 
 /**
  * Cliente SOAP mínimo basado en HttpURLConnection, sin librerías externas.
@@ -17,24 +21,57 @@ class SoapException(message: String, cause: Throwable? = null) : Exception(messa
  */
 class SoapClient(
     private val endpoint: String = SoapConfig.ENDPOINT,
-    private val namespace: String = SoapConfig.NAMESPACE
+    private val namespace: String = SoapConfig.NAMESPACE,
+    private val security: String = SoapConfig.SOAP_SECURITY_NAMESPACE
 ) {
 
-    /** Envía la operación Login y devuelve el valor del elemento <token>. */
-    fun login(username: String, password: String): String {
+    /** Devuelve el token UUID. El login es la única operación que no lleva token. */
+    fun login(usuario: String, contrasenia: String): String =
+        call("login", listOf("usuario" to usuario, "contrasenia" to contrasenia))
+
+    /** Llama a convertirLongitud / convertirMasa / convertirTemperatura enviando el token en el header. */
+    fun convert(
+        operacion: String,
+        valor: Double,
+        unidadInicial: String,
+        unidadFinal: String,
+        token: String?
+    ): Double {
+        val text = call(
+            operacion,
+            listOf(
+                "valor" to valor.toString(),
+                "unidadInicial" to unidadInicial,
+                "unidadFinal" to unidadFinal
+            ),
+            token
+        )
+        return text.toDoubleOrNull() ?: throw SoapException("Respuesta inválida del servidor: $text")
+    }
+
+    /**
+     * Envía <ws:operation> con los parámetros dados y devuelve el texto de <return>.
+     * Si [token] no es null, va en <soapenv:Header><seg:token>.
+     */
+    fun call(operation: String, params: List<Pair<String, String>>, token: String? = null): String {
+        val header = if (token != null) {
+            "<soapenv:Header>\n    <seg:token>${escapeXml(token)}</seg:token>\n  </soapenv:Header>"
+        } else {
+            "<soapenv:Header/>"
+        }
+        val body = params.joinToString("\n") { (name, value) ->
+            "      <$name>${escapeXml(value)}</$name>"
+        }
         val envelope = """<?xml version="1.0" encoding="UTF-8"?>
-<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ws="$namespace">
-  <soapenv:Header/>
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ws="$namespace" xmlns:seg="$security">
+  $header
   <soapenv:Body>
-    <ws:login>
-      <usuario>${escapeXml(username)}</usuario>
-      <contrasenia>${escapeXml(password)}</contrasenia>
-    </ws:login>
+    <ws:$operation>
+$body
+    </ws:$operation>
   </soapenv:Body>
 </soapenv:Envelope>"""
-
-        val responseXml = post(envelope)
-        return parseToken(responseXml)
+        return parseReturn(post(envelope))
     }
 
     private fun post(body: String): String {
@@ -42,13 +79,13 @@ class SoapClient(
         val conn = (url.openConnection() as HttpURLConnection).apply {
             requestMethod = "POST"
             connectTimeout = 10_000
-            readTimeout = 30_000
+            readTimeout = 15_000
             doOutput = true
             setRequestProperty("Content-Type", "text/xml; charset=utf-8")
-            setRequestProperty("SOAPAction", "\"\"")
+            setRequestProperty("SOAPAction", "\"\"")   // el WSDL declara soapAction=""
         }
+        TlsInseguro.aplicarA(conn, url.host)           // solo debug; en release no hace nada
         try {
-            TlsInseguro.aplicarA(conn, url.host)
             conn.outputStream.use { it.write(body.toByteArray(Charsets.UTF_8)) }
             // Los SOAP Fault llegan con HTTP 500 pero con cuerpo XML útil.
             val stream = if (conn.responseCode in 200..299) conn.inputStream else conn.errorStream
@@ -58,32 +95,39 @@ class SoapClient(
         } catch (e: SoapException) {
             throw e
         } catch (e: Exception) {
-            android.util.Log.e("SoapClient", "Fallo SOAP hacia $endpoint", e)
+            Log.e("SoapClient", "Fallo SOAP hacia $endpoint", e)
             throw SoapException("No se pudo conectar con el servidor", e)
         } finally {
             conn.disconnect()
         }
     }
-
     /** Extrae <token> o lanza SoapException si hay <faultstring>. */
-    private fun parseToken(xml: String): String {
+    /** Extrae <return> (JAX-WS) o <token>; lanza SoapException si hay <faultstring>. */
+    private fun parseReturn(xml: String): String {
         val parser = XmlPullParserFactory.newInstance().newPullParser()
         parser.setInput(StringReader(xml))
-        var token: String? = null
+        var result: String? = null
         var fault: String? = null
         var event = parser.eventType
         while (event != XmlPullParser.END_DOCUMENT) {
             if (event == XmlPullParser.START_TAG) {
                 when (parser.name) {
-                    "return" -> token = parser.nextText().trim()
+                    "return", "token" -> result = parser.nextText().trim()
                     "faultstring" -> fault = parser.nextText().trim()
                 }
             }
             event = parser.next()
         }
-        fault?.let { throw SoapException(it) }
-        return token?.takeIf { it.isNotEmpty() }
-            ?: throw SoapException("La respuesta no contiene un token")
+        fault?.let {
+            throw if (isSessionExpired(it)) SessionExpiredException(it) else SoapException(it)
+        }
+        return result?.takeIf { it.isNotEmpty() }
+            ?: throw SoapException("La respuesta no contiene un resultado")
+    }
+
+    private fun isSessionExpired(fault: String): Boolean {
+        val f = fault.lowercase()
+        return f.contains("token") && f.contains("expirado")
     }
 
     private fun escapeXml(s: String) = s

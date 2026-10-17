@@ -1,8 +1,17 @@
 <resources>
     <string name="app_name">Conversor Monster</string>
-    <string name="login_title">Iniciar sesión</string>
+    <string name="title">Convertidor de unidades monster</string>
     <string name="hint_username">Usuario</string>
     <string name="hint_password">Contraseña</string>
     <string name="btn_login">Entrar</string>
     <string name="home_token_label">Token de sesión:</string>
+    <string name="converter_title">Convertidor de Unidades</string>
+    <string name="logo_description">Logo de la aplicación</string>
+    <string name="label_from">De</string>
+    <string name="label_to">A</string>
+    <string name="btn_convert">Convertir</string>
+    <string name="session_expired_title">Sesión expirada</string>
+    <string name="session_expired_message">Tu sesión ha caducado. Inicia sesión de nuevo para continuar o sal de la aplicación.</string>
+    <string name="action_login_again">Iniciar sesión</string>
+    <string name="action_exit">Salir</string>
 </resources>

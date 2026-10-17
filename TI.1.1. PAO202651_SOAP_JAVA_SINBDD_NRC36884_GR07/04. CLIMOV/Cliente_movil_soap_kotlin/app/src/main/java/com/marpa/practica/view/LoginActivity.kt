@@ -53,12 +53,14 @@ class LoginActivity : AppCompatActivity(), LoginView {
     }
 
     override fun showError(message: String) {
+        binding.tilUsername.error = " "
+        binding.tilPassword.error = " "
         Toast.makeText(this, message, Toast.LENGTH_LONG).show()
     }
 
     override fun navigateToHome(token: String) {
         startActivity(
-            Intent(this, HomeActivity::class.java).putExtra(HomeActivity.EXTRA_TOKEN, token)
+            Intent(this, ConverterActivity::class.java).putExtra(ConverterActivity.EXTRA_TOKEN, token)
         )
         finish()
     }
