@@ -13,13 +13,13 @@ plugins {
 }
 
 android {
-    namespace = "com.marpa.practica"
+    namespace = "ec.edu.monster"
     compileSdk {
         version = release(37)
     }
 
     defaultConfig {
-        applicationId = "com.marpa.practica"
+        applicationId = "ec.edu.monster"
         minSdk = 24
         targetSdk = 37
         versionCode = 1
