@@ -22,14 +22,13 @@
 		<url/>
 	</scm>
 	<properties>
-		<java.version>25</java.version>
-		<jersey.version>3.1.5</jersey.version>
-		<jjwt.version>0.12.6</jjwt.version>
-		<maven.compiler.source>25</maven.compiler.source>
-		<maven.compiler.target>25</maven.compiler.target>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<failOnMissingWebXml>false</failOnMissingWebXml>
-	</properties>
+            <java.version>21</java.version>
+            <maven.compiler.release>21</maven.compiler.release>
+            <jersey.version>3.1.5</jersey.version>
+            <jjwt.version>0.12.6</jjwt.version>
+            <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+            <failOnMissingWebXml>false</failOnMissingWebXml>
+        </properties>
 	<dependencies>
 		<!-- Jakarta EE API (provided by Payara 7 - Jakarta EE 11) -->
 		<dependency>
@@ -107,15 +106,14 @@
 		<finalName>WS_CON_UNI_JAVA_RESTFUL-1.0</finalName>
 		<plugins>
 			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<version>3.13.0</version>
-				<configuration>
-					<source>25</source>
-					<target>25</target>
-					<encoding>UTF-8</encoding>
-				</configuration>
-			</plugin>
+                            <groupId>org.apache.maven.plugins</groupId>
+                            <artifactId>maven-compiler-plugin</artifactId>
+                            <version>3.13.0</version>
+                            <configuration>
+                                <release>21</release>
+                                <encoding>UTF-8</encoding>
+                            </configuration>
+                        </plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-war-plugin</artifactId>
