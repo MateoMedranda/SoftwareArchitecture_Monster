@@ -35,14 +35,14 @@ public class MainVista extends JFrame {
     private void configurarVentana(String usuario) {
         setTitle("MONSTER · Conversor de unidades");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setMinimumSize(new Dimension(1040, 700));
+        setMinimumSize(new Dimension(980, 660));
 
         AppTheme.FondoDegradado fondo = new AppTheme.FondoDegradado();
         fondo.setLayout(new GridBagLayout());
         AppTheme.PanelRedondeado tarjeta = new AppTheme.PanelRedondeado(26, Color.WHITE);
         tarjeta.setLayout(new BorderLayout(0, 18));
-        tarjeta.setPreferredSize(new Dimension(960, 625));
-        tarjeta.setBorder(BorderFactory.createEmptyBorder(22, 30, 28, 30));
+        tarjeta.setPreferredSize(new Dimension(900, 590));
+        tarjeta.setBorder(BorderFactory.createEmptyBorder(18, 28, 22, 28));
 
         tarjeta.add(crearEncabezado(usuario), BorderLayout.NORTH);
 

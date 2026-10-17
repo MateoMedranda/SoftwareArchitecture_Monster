@@ -46,8 +46,8 @@ public class PanelConversionVista extends JPanel {
 
     private void configurarComponentes(TipoConversion tipo) {
         setOpaque(false);
-        setLayout(new BorderLayout(0, 14));
-        setBorder(BorderFactory.createEmptyBorder(22, 14, 10, 14));
+        setLayout(new BorderLayout(0, 10));
+        setBorder(BorderFactory.createEmptyBorder(18, 14, 8, 14));
 
         JPanel introduccion = new JPanel(new BorderLayout(0, 3));
         introduccion.setOpaque(false);
@@ -55,10 +55,10 @@ public class PanelConversionVista extends JPanel {
         introduccion.add(AppTheme.etiqueta("Ingresa un valor, elige las unidades y obtén el resultado al instante.", 13, Font.PLAIN, AppTheme.TEXTO_SUAVE), BorderLayout.SOUTH);
         add(introduccion, BorderLayout.NORTH);
 
-        JPanel contenido = new JPanel(new BorderLayout(0, 14));
+        JPanel contenido = new JPanel(new BorderLayout(0, 12));
         contenido.setOpaque(false);
         contenido.add(crearFormulario(), BorderLayout.NORTH);
-        contenido.add(crearResultado(), BorderLayout.CENTER);
+        contenido.add(crearResultado(), BorderLayout.SOUTH);
         add(contenido, BorderLayout.CENTER);
     }
 
@@ -67,7 +67,7 @@ public class PanelConversionVista extends JPanel {
         tarjeta.setLayout(new GridBagLayout());
         tarjeta.setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createLineBorder(new Color(226, 235, 244), 1, true),
-                BorderFactory.createEmptyBorder(20, 24, 20, 24)));
+                BorderFactory.createEmptyBorder(16, 24, 16, 24)));
 
         AppTheme.configurarCampo(txtValor);
         txtValor.setToolTipText("Por ejemplo: 25.5");
@@ -82,7 +82,7 @@ public class PanelConversionVista extends JPanel {
         c.gridy = 0;
         c.gridwidth = 3;
         c.weightx = 1;
-        c.insets = new Insets(0, 0, 6, 0);
+        c.insets = new Insets(0, 0, 4, 0);
         tarjeta.add(AppTheme.etiqueta("Valor a convertir", 13, Font.PLAIN, AppTheme.TEXTO_SUAVE), c);
 
         c.gridy++;
@@ -90,7 +90,7 @@ public class PanelConversionVista extends JPanel {
         tarjeta.add(txtValor, c);
 
         c.gridy++;
-        c.insets = new Insets(0, 0, 18, 0);
+        c.insets = new Insets(0, 0, 11, 0);
         tarjeta.add(AppTheme.etiqueta("Ejemplo: 25.5", 11, Font.PLAIN, new Color(125, 143, 162)), c);
 
         c.gridy++;
@@ -131,8 +131,8 @@ public class PanelConversionVista extends JPanel {
         c.weightx = 1;
         c.anchor = GridBagConstraints.LINE_END;
         c.fill = GridBagConstraints.NONE;
-        c.insets = new Insets(20, 0, 0, 0);
-        btnConvertir.setPreferredSize(new Dimension(180, 44));
+        c.insets = new Insets(14, 0, 0, 0);
+        btnConvertir.setPreferredSize(new Dimension(180, 40));
         tarjeta.add(btnConvertir, c);
         return tarjeta;
     }
@@ -140,7 +140,9 @@ public class PanelConversionVista extends JPanel {
     private JPanel crearResultado() {
         AppTheme.PanelRedondeado resultado = new AppTheme.PanelRedondeado(18, AppTheme.AZUL_SUAVE);
         resultado.setLayout(new GridBagLayout());
-        resultado.setBorder(BorderFactory.createEmptyBorder(22, 28, 22, 28));
+        resultado.setPreferredSize(new Dimension(0, 112));
+        resultado.setMinimumSize(new Dimension(0, 112));
+        resultado.setBorder(BorderFactory.createEmptyBorder(16, 28, 16, 28));
         GridBagConstraints c = new GridBagConstraints();
         c.gridx = 0;
         c.weightx = 1;
