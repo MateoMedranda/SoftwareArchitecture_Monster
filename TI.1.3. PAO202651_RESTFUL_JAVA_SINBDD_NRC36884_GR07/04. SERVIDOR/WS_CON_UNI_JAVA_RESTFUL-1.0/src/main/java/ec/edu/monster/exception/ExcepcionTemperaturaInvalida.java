@@ -1,6 +1,6 @@
 package ec.edu.monster.exception;
 
-public class ExcepcionTemperaturaInvalida extends RuntimeException {
+public class ExcepcionTemperaturaInvalida extends IllegalArgumentException {
 
     public ExcepcionTemperaturaInvalida(String mensaje) {
         super(mensaje);

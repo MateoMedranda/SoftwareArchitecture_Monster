@@ -14,7 +14,7 @@ public class FiltroAutenticacionJwt implements ContainerRequestFilter {
 
     private static final String ENCABEZADO_AUTH = "Authorization";
     private static final String PREFIJO_BEARER = "Bearer ";
-    private static final String[] RUTAS_PROTEGIDAS = {"/conversion/"};
+    private static final String[] RUTAS_PROTEGIDAS = {"conversion"};
 
     @Inject
     ProveedorTokenJwt proveedorTokenJwt;
