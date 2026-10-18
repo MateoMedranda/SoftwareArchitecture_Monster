@@ -4,33 +4,36 @@ import ec.edu.monster.modelos.ResultadoConversion;
 import ec.edu.monster.modelos.TipoConversion;
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.awt.Window;
 import java.awt.event.ActionListener;
 import java.text.DecimalFormat;
+import java.util.Locale;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
-import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
-import java.awt.Window;
 
+/** Formulario de conversión con un flujo compacto y resultado de ancho completo. */
 public class PanelConversionVista extends JPanel {
 
     private static final DecimalFormat FORMATO_RESULTADO = new DecimalFormat("0.##########");
 
-    private final JTextField txtValor = new JTextField(16);
+    private final JTextField txtValor = new JTextField();
     private final JComboBox<String> cmbOrigen;
     private final JComboBox<String> cmbDestino;
-    private final JButton btnConvertir = new JButton("Convertir");
-    private final JLabel lblResultado = new JLabel("Ingrese un valor y presione Convertir.");
-    private final JLabel lblMensaje = new JLabel(" ");
+    private final JButton btnConvertir = AppTheme.botonPrincipal("Convertir");
+    private final JLabel lblResultado = AppTheme.etiqueta("—", 30, Font.BOLD, AppTheme.AZUL_OSCURO);
+    private final JLabel lblMensaje = AppTheme.etiqueta("Completa los campos para realizar una conversión.", 13, Font.PLAIN, AppTheme.TEXTO_SUAVE);
 
     public PanelConversionVista(TipoConversion tipo) {
         cmbOrigen = new JComboBox<>(tipo.getUnidades().toArray(String[]::new));
@@ -42,55 +45,120 @@ public class PanelConversionVista extends JPanel {
     }
 
     private void configurarComponentes(TipoConversion tipo) {
-        setLayout(new BorderLayout(12, 12));
-        setBorder(BorderFactory.createEmptyBorder(20, 28, 20, 28));
+        setOpaque(false);
+        setLayout(new BorderLayout(0, 10));
+        setBorder(BorderFactory.createEmptyBorder(18, 14, 8, 14));
 
-        JLabel titulo = new JLabel("Conversión de " + tipo.getTitulo());
-        titulo.setFont(titulo.getFont().deriveFont(Font.BOLD, 19f));
-        add(titulo, BorderLayout.NORTH);
+        JPanel introduccion = new JPanel(new BorderLayout(0, 3));
+        introduccion.setOpaque(false);
+        introduccion.add(AppTheme.etiqueta("Conversión de " + tipo.getTitulo(), 20, Font.BOLD, AppTheme.AZUL_OSCURO), BorderLayout.NORTH);
+        introduccion.add(AppTheme.etiqueta("Ingresa un valor, elige las unidades y obtén el resultado al instante.", 13, Font.PLAIN, AppTheme.TEXTO_SUAVE), BorderLayout.SOUTH);
+        add(introduccion, BorderLayout.NORTH);
 
-        JPanel formulario = new JPanel(new GridBagLayout());
-        GridBagConstraints restricciones = new GridBagConstraints();
-        restricciones.insets = new Insets(6, 6, 6, 6);
-        restricciones.fill = GridBagConstraints.HORIZONTAL;
-
-        agregarFila(formulario, restricciones, 0, "Valor:", txtValor);
-        agregarFila(formulario, restricciones, 1, "Unidad de origen:", cmbOrigen);
-        agregarFila(formulario, restricciones, 2, "Unidad de destino:", cmbDestino);
-
-        restricciones.gridx = 1;
-        restricciones.gridy = 3;
-        restricciones.anchor = GridBagConstraints.LINE_START;
-        restricciones.fill = GridBagConstraints.NONE;
-        formulario.add(btnConvertir, restricciones);
-
-        add(formulario, BorderLayout.CENTER);
-
-        JPanel estado = new JPanel(new GridBagLayout());
-        GridBagConstraints estadoRestricciones = new GridBagConstraints();
-        estadoRestricciones.gridx = 0;
-        estadoRestricciones.gridy = 0;
-        estadoRestricciones.anchor = GridBagConstraints.LINE_START;
-        lblResultado.setFont(lblResultado.getFont().deriveFont(Font.BOLD));
-        estado.add(lblResultado, estadoRestricciones);
-        estadoRestricciones.gridy = 1;
-        lblMensaje.setHorizontalAlignment(SwingConstants.LEFT);
-        estado.add(lblMensaje, estadoRestricciones);
-        add(estado, BorderLayout.SOUTH);
+        JPanel contenido = new JPanel(new BorderLayout(0, 12));
+        contenido.setOpaque(false);
+        contenido.add(crearFormulario(), BorderLayout.NORTH);
+        contenido.add(crearResultado(), BorderLayout.SOUTH);
+        add(contenido, BorderLayout.CENTER);
     }
 
-    private void agregarFila(JPanel panel, GridBagConstraints restricciones, int fila,
-            String textoEtiqueta, java.awt.Component componente) {
-        restricciones.gridx = 0;
-        restricciones.gridy = fila;
-        restricciones.weightx = 0;
-        restricciones.anchor = GridBagConstraints.LINE_END;
-        panel.add(new JLabel(textoEtiqueta), restricciones);
+    private JPanel crearFormulario() {
+        AppTheme.PanelRedondeado tarjeta = new AppTheme.PanelRedondeado(18, Color.WHITE);
+        tarjeta.setLayout(new GridBagLayout());
+        tarjeta.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(new Color(226, 235, 244), 1, true),
+                BorderFactory.createEmptyBorder(16, 24, 16, 24)));
 
-        restricciones.gridx = 1;
-        restricciones.weightx = 1;
-        restricciones.anchor = GridBagConstraints.LINE_START;
-        panel.add(componente, restricciones);
+        AppTheme.configurarCampo(txtValor);
+        txtValor.setToolTipText("Por ejemplo: 25.5");
+        AppTheme.configurarCombo(cmbOrigen);
+        AppTheme.configurarCombo(cmbDestino);
+
+        GridBagConstraints c = new GridBagConstraints();
+        c.anchor = GridBagConstraints.LINE_START;
+        c.fill = GridBagConstraints.HORIZONTAL;
+
+        c.gridx = 0;
+        c.gridy = 0;
+        c.gridwidth = 3;
+        c.weightx = 1;
+        c.insets = new Insets(0, 0, 4, 0);
+        tarjeta.add(AppTheme.etiqueta("Valor a convertir", 13, Font.PLAIN, AppTheme.TEXTO_SUAVE), c);
+
+        c.gridy++;
+        c.insets = new Insets(0, 0, 3, 0);
+        tarjeta.add(txtValor, c);
+
+        c.gridy++;
+        c.insets = new Insets(0, 0, 11, 0);
+        tarjeta.add(AppTheme.etiqueta("Ejemplo: 25.5", 11, Font.PLAIN, new Color(125, 143, 162)), c);
+
+        c.gridy++;
+        c.gridx = 0;
+        c.gridwidth = 1;
+        c.weightx = .46;
+        c.insets = new Insets(0, 0, 6, 12);
+        tarjeta.add(AppTheme.etiqueta("Desde", 13, Font.PLAIN, AppTheme.TEXTO_SUAVE), c);
+
+        c.gridx = 2;
+        c.weightx = .46;
+        c.insets = new Insets(0, 12, 6, 0);
+        tarjeta.add(AppTheme.etiqueta("Hacia", 13, Font.PLAIN, AppTheme.TEXTO_SUAVE), c);
+
+        c.gridy++;
+        c.gridx = 0;
+        c.weightx = .46;
+        c.insets = new Insets(0, 0, 0, 12);
+        tarjeta.add(cmbOrigen, c);
+
+        JLabel flecha = AppTheme.etiqueta("→", 24, Font.BOLD, AppTheme.AZUL_PRINCIPAL);
+        flecha.setHorizontalAlignment(SwingConstants.CENTER);
+        c.gridx = 1;
+        c.weightx = .08;
+        c.fill = GridBagConstraints.NONE;
+        c.insets = new Insets(0, 0, 0, 0);
+        tarjeta.add(flecha, c);
+
+        c.gridx = 2;
+        c.weightx = .46;
+        c.fill = GridBagConstraints.HORIZONTAL;
+        c.insets = new Insets(0, 12, 0, 0);
+        tarjeta.add(cmbDestino, c);
+
+        c.gridy++;
+        c.gridx = 0;
+        c.gridwidth = 3;
+        c.weightx = 1;
+        c.anchor = GridBagConstraints.LINE_END;
+        c.fill = GridBagConstraints.NONE;
+        c.insets = new Insets(14, 0, 0, 0);
+        btnConvertir.setPreferredSize(new Dimension(180, 40));
+        tarjeta.add(btnConvertir, c);
+        return tarjeta;
+    }
+
+    private JPanel crearResultado() {
+        AppTheme.PanelRedondeado resultado = new AppTheme.PanelRedondeado(18, AppTheme.AZUL_SUAVE);
+        resultado.setLayout(new GridBagLayout());
+        resultado.setPreferredSize(new Dimension(0, 112));
+        resultado.setMinimumSize(new Dimension(0, 112));
+        resultado.setBorder(BorderFactory.createEmptyBorder(16, 28, 16, 28));
+        GridBagConstraints c = new GridBagConstraints();
+        c.gridx = 0;
+        c.weightx = 1;
+        c.fill = GridBagConstraints.HORIZONTAL;
+        c.anchor = GridBagConstraints.LINE_START;
+
+        c.gridy = 0;
+        resultado.add(AppTheme.etiqueta("RESULTADO DE LA CONVERSIÓN", 11, Font.BOLD, AppTheme.AZUL_PRINCIPAL), c);
+        c.gridy++;
+        c.insets = new Insets(8, 0, 7, 0);
+        lblResultado.setHorizontalAlignment(SwingConstants.LEFT);
+        resultado.add(lblResultado, c);
+        c.gridy++;
+        c.insets = new Insets(0, 0, 0, 0);
+        resultado.add(lblMensaje, c);
+        return resultado;
     }
 
     public String getValor() {
@@ -111,24 +179,33 @@ public class PanelConversionVista extends JPanel {
     }
 
     public void mostrarResultado(ResultadoConversion resultado) {
-        lblResultado.setText(String.format("Resultado: %s %s",
-                FORMATO_RESULTADO.format(resultado.getResultado()), resultado.getUnidadFin()));
-        mostrarMensaje("Conversión realizada correctamente.", new Color(0, 128, 0));
+        String unidad = nombreLegible(resultado.getUnidadFin());
+        lblResultado.setText(FORMATO_RESULTADO.format(resultado.getResultado()) + " " + unidad);
+        mostrarMensaje("Conversión realizada correctamente.", AppTheme.EXITO);
+    }
+
+    private String nombreLegible(String unidad) {
+        if (unidad == null || unidad.isBlank()) {
+            return "";
+        }
+        String texto = unidad.toLowerCase(Locale.ROOT).replace('_', ' ');
+        return Character.toUpperCase(texto.charAt(0)) + texto.substring(1);
     }
 
     public void mostrarError(String mensaje) {
-        mostrarMensaje(mensaje, new Color(180, 0, 0));
+        lblResultado.setText("—");
+        mostrarMensaje(mensaje, AppTheme.ERROR);
     }
-    
-    public int mostrarAlertaCierreSesion()
-    {
+
+    public int mostrarAlertaCierreSesion() {
         String[] opciones = {"Volver a iniciar sesión", "Salir"};
-        int dialogoAlerta = JOptionPane.showOptionDialog(this, "Sesion expirada.", "Aviso", WIDTH, HEIGHT, null, opciones, opciones[0]);
-        return dialogoAlerta;
+        return JOptionPane.showOptionDialog(this, "Tu sesión expiró. Inicia sesión de nuevo para continuar.",
+                "Sesión finalizada", JOptionPane.DEFAULT_OPTION, JOptionPane.WARNING_MESSAGE,
+                null, opciones, opciones[0]);
     }
 
     public void limpiarMensaje() {
-        lblMensaje.setText(" ");
+        mostrarMensaje("Convirtiendo tus unidades...", AppTheme.TEXTO_SUAVE);
     }
 
     public void setProcesando(boolean procesando) {
@@ -136,20 +213,18 @@ public class PanelConversionVista extends JPanel {
         txtValor.setEnabled(!procesando);
         cmbOrigen.setEnabled(!procesando);
         cmbDestino.setEnabled(!procesando);
-        if (procesando) {
-            mostrarMensaje("Convirtiendo...", Color.DARK_GRAY);
-        }
+        btnConvertir.setText(procesando ? "Convirtiendo..." : "Convertir");
     }
 
     private void mostrarMensaje(String mensaje, Color color) {
         lblMensaje.setForeground(color);
         lblMensaje.setText(mensaje);
     }
-    
+
     public void cerrarVentanaPadre() {
-        Window parentWindow = SwingUtilities.getWindowAncestor(this);
-        if (parentWindow != null) {
-            parentWindow.dispose(); // Cierra el JFrame/Window padre
+        Window ventanaPadre = SwingUtilities.getWindowAncestor(this);
+        if (ventanaPadre != null) {
+            ventanaPadre.dispose();
         }
     }
 }

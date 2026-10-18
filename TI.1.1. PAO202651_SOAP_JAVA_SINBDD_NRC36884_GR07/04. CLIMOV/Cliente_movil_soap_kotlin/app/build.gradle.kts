@@ -13,13 +13,13 @@ plugins {
 }
 
 android {
-    namespace = "com.marpa.practica"
+    namespace = "ec.edu.monster"
     compileSdk {
         version = release(37)
     }
 
     defaultConfig {
-        applicationId = "com.marpa.practica"
+        applicationId = "ec.edu.monster"
         minSdk = 24
         targetSdk = 37
         versionCode = 1
@@ -40,6 +40,7 @@ android {
         buildConfigField("String", "SOAP_CONNECT_TIMEOUT", "\"${env("SOAP_CONNECT_TIMEOUT")}\"")
         buildConfigField("String", "SOAP_READ_TIMEOUT", "\"${env("SOAP_READ_TIMEOUT")}\"")
         buildConfigField("String", "SOAP_INSECURE_TLS", "\"${env("SOAP_INSECURE_TLS")}\"")
+        buildConfigField("String", "SOAP_SECURITY_NAMESPACE", "\"${env("SOAP_SECURITY_NAMESPACE")}\"")
     }
 
     buildFeatures{
@@ -72,5 +73,6 @@ dependencies {
     androidTestImplementation(libs.androidx.junit)
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.11.0")
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.11.0")
-
+    implementation("androidx.viewpager2:viewpager2:1.1.0")
+    implementation("androidx.fragment:fragment-ktx:1.8.5")
 }

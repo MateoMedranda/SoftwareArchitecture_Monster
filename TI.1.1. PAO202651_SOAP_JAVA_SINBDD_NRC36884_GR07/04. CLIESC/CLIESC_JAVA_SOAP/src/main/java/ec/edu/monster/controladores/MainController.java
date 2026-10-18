@@ -6,6 +6,7 @@ package ec.edu.monster.controladores;
 
 import ec.edu.monster.modelos.TipoConversion;
 import ec.edu.monster.servicios.WSConversorCliente;
+import ec.edu.monster.vistas.LoginVista;
 import ec.edu.monster.vistas.MainVista;
 
 /**
@@ -25,7 +26,15 @@ public class MainController {
         for (TipoConversion tipo : TipoConversion.values()) {
             new ConversionController(vista.getPanelConversion(tipo), client, tipo);
         }
+        vista.getBtnCerrarSesion().addActionListener(evento -> cerrarSesion());
         vista.setLocationRelativeTo(null);
         vista.setVisible(true);
+    }
+
+    private void cerrarSesion() {
+        vista.dispose();
+        LoginVista login = new LoginVista();
+        new LoginController(login, client);
+        login.setVisible(true);
     }
 }

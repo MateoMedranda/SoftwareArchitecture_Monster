@@ -20,22 +20,32 @@ public class LoginController {
     public LoginController(LoginVista vista, WSConversorCliente cliente) {
         this.vista = vista;
         this.client = cliente;
-        vista.getBtnLogin().addActionListener(e-> onLogin()); 
+        vista.getBtnLogin().addActionListener(e -> onLogin());
+        vista.getBtnSalir().addActionListener(e -> System.exit(0));
     }
     
      private void onLogin() {
         String user = vista.getUsuario();
         String pass = vista.getPassword();
 
+        if (user.isBlank() || pass.isBlank()) {
+            vista.setMensaje("Ingresa tu usuario y contraseña para continuar.");
+            return;
+        }
+
+        vista.setMensaje("Verificando tus credenciales...");
+        vista.setProcesando(true);
+
          SwingWorker<Boolean, Void> worker = new SwingWorker<>() {
             @Override protected Boolean doInBackground() {
                 return client.login(user, pass);
             }
             @Override protected void done() {
+                vista.setProcesando(false);
                 try {
                     if (get()) {
                         vista.dispose();
-                        new MainController(new MainVista(), client).init();
+                        new MainController(new MainVista(user), client).init();
                     } else {
                         vista.setMensaje("Credenciales inválidas");
                     }

@@ -7,6 +7,7 @@ package ec.edu.monster;
 import ec.edu.monster.controladores.LoginController;
 import ec.edu.monster.servicios.WSConversorCliente;
 import ec.edu.monster.vistas.LoginVista;
+import ec.edu.monster.vistas.AppTheme;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 
@@ -19,6 +20,7 @@ public class CLIESC_JAVA_SOAP {
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
             try {
+                AppTheme.instalar();
                 WSConversorCliente client = new WSConversorCliente();
                 LoginVista login = new LoginVista();
                 new LoginController(login, client);
