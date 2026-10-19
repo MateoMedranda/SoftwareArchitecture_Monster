@@ -35,6 +35,7 @@ public class ControladorLongitud {
     @POST
     @SecurityRequirement(name = "bearerAuth")
     @Operation(
+        operationId = "convertirLpngitud",
         summary = "Convertir unidades de longitud",
         description = "Convierte un valor de una unidad de longitud a otra."
     )

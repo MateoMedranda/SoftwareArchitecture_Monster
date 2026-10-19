@@ -35,6 +35,7 @@ public class ControladorTemperatura {
     @POST
     @SecurityRequirement(name = "bearerAuth")
     @Operation(
+        operationId = "convertirTemperatura",
         summary = "Convertir unidades de temperatura",
         description = "Convierte un valor de una unidad de temperatura a otra."
     )
