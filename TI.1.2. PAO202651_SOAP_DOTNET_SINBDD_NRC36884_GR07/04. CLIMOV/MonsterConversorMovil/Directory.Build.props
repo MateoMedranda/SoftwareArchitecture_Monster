@@ -1,0 +1,8 @@
+<Project>
+  <!-- Android genera nombres Java extensos; se usa una ruta temporal corta para evitar el límite de Windows. -->
+  <PropertyGroup>
+    <BaseIntermediateOutputPath>$(TEMP)\MonsterConversorMovil\obj\</BaseIntermediateOutputPath>
+    <MSBuildProjectExtensionsPath>$(BaseIntermediateOutputPath)</MSBuildProjectExtensionsPath>
+    <DefaultItemExcludes>$(DefaultItemExcludes);$(MSBuildProjectDirectory)\obj\**\*</DefaultItemExcludes>
+  </PropertyGroup>
+</Project>
