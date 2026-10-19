@@ -100,6 +100,18 @@
 			<version>3.0</version>
 			<scope>provided</scope>
 		</dependency>
+                <!-- MicroProfile OpenAPI API para Payara 7 (MicroProfile 7.1) -->
+                <dependency>
+                    <groupId>org.eclipse.microprofile.openapi</groupId>
+                    <artifactId>microprofile-openapi-api</artifactId>
+                    <version>4.1.1</version>
+                    <scope>provided</scope>
+                </dependency>
+                <dependency>
+                    <groupId>org.webjars</groupId>
+                    <artifactId>swagger-ui</artifactId>
+                    <version>5.17.14</version>
+                </dependency>
 	</dependencies>
 
 	<build>
