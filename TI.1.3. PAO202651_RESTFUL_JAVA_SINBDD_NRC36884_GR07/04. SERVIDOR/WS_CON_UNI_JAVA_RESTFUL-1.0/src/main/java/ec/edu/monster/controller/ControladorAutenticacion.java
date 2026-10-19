@@ -1,6 +1,7 @@
 package ec.edu.monster.controller;
 
 import ec.edu.monster.model.RespuestaLogin;
+import ec.edu.monster.model.RespuestaError;
 import ec.edu.monster.model.SolicitudLogin;
 import ec.edu.monster.service.ServicioAutenticacion;
 import jakarta.inject.Inject;
@@ -46,7 +47,10 @@ public class ControladorAutenticacion {
         ),
         @APIResponse(
             responseCode = "401",
-            description = "Credenciales Inválidas"
+            description = "Credenciales inválidas",
+            content = @Content(mediaType = MediaType.APPLICATION_JSON,
+                    schema = @Schema(implementation = RespuestaError.class)
+            )
         )
     })
     public Response iniciarSesion(@RequestBody(
