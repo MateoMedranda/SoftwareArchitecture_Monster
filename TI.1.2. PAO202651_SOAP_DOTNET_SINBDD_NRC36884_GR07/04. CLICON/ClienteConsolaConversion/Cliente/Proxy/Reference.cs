@@ -7,7 +7,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace ClienteConsolaConversion.Servicios
+namespace ClienteConsolaConversion.Servicio
 {
     using System.Runtime.Serialization;
     
@@ -221,18 +221,18 @@ namespace ClienteConsolaConversion.Servicios
     }
     
     [System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Tools.ServiceModel.Svcutil", "8.0.0")]
-    [System.ServiceModel.ServiceContractAttribute(Namespace="http://monster/servicioconversionunidades", ConfigurationName="ClienteConsolaConversion.Servicios.IServicioConversionUnidades")]
+    [System.ServiceModel.ServiceContractAttribute(Namespace="http://monster/servicioconversionunidades", ConfigurationName="ClienteConsolaConversion.Servicio.IServicioConversionUnidades")]
     public interface IServicioConversionUnidades
     {
         
         [System.ServiceModel.OperationContractAttribute(Action="http://monster/servicioconversionunidades/IServicioConversionUnidades/IniciarSesi" +
             "on", ReplyAction="http://monster/servicioconversionunidades/IServicioConversionUnidades/IniciarSesi" +
             "onResponse")]
-        System.Threading.Tasks.Task<ClienteConsolaConversion.Servicios.RespuestaInicioSesion> IniciarSesionAsync(ClienteConsolaConversion.Servicios.SolicitudInicioSesion solicitud);
+        System.Threading.Tasks.Task<ClienteConsolaConversion.Servicio.RespuestaInicioSesion> IniciarSesionAsync(ClienteConsolaConversion.Servicio.SolicitudInicioSesion solicitud);
         
         [System.ServiceModel.OperationContractAttribute(Action="http://monster/servicioconversionunidades/IServicioConversionUnidades/Convertir", ReplyAction="http://monster/servicioconversionunidades/IServicioConversionUnidades/ConvertirRe" +
             "sponse")]
-        System.Threading.Tasks.Task<ClienteConsolaConversion.Servicios.RespuestaConversionMensaje> ConvertirAsync(ClienteConsolaConversion.Servicios.SolicitudConversionMensaje request);
+        System.Threading.Tasks.Task<ClienteConsolaConversion.Servicio.RespuestaConversionMensaje> ConvertirAsync(ClienteConsolaConversion.Servicio.SolicitudConversionMensaje request);
     }
     
     [System.Diagnostics.DebuggerStepThroughAttribute()]
@@ -246,13 +246,13 @@ namespace ClienteConsolaConversion.Servicios
         public string Token;
         
         [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://monster/servicioconversionunidades", Order=0)]
-        public ClienteConsolaConversion.Servicios.SolicitudConversion Conversion;
+        public ClienteConsolaConversion.Servicio.SolicitudConversion Conversion;
         
         public SolicitudConversionMensaje()
         {
         }
         
-        public SolicitudConversionMensaje(string Token, ClienteConsolaConversion.Servicios.SolicitudConversion Conversion)
+        public SolicitudConversionMensaje(string Token, ClienteConsolaConversion.Servicio.SolicitudConversion Conversion)
         {
             this.Token = Token;
             this.Conversion = Conversion;
@@ -267,26 +267,26 @@ namespace ClienteConsolaConversion.Servicios
     {
         
         [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://monster/servicioconversionunidades", Order=0)]
-        public ClienteConsolaConversion.Servicios.RespuestaConversion ConvertirResult;
+        public ClienteConsolaConversion.Servicio.RespuestaConversion ConvertirResult;
         
         public RespuestaConversionMensaje()
         {
         }
         
-        public RespuestaConversionMensaje(ClienteConsolaConversion.Servicios.RespuestaConversion ConvertirResult)
+        public RespuestaConversionMensaje(ClienteConsolaConversion.Servicio.RespuestaConversion ConvertirResult)
         {
             this.ConvertirResult = ConvertirResult;
         }
     }
     
     [System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Tools.ServiceModel.Svcutil", "8.0.0")]
-    public interface IServicioConversionUnidadesChannel : ClienteConsolaConversion.Servicios.IServicioConversionUnidades, System.ServiceModel.IClientChannel
+    public interface IServicioConversionUnidadesChannel : ClienteConsolaConversion.Servicio.IServicioConversionUnidades, System.ServiceModel.IClientChannel
     {
     }
     
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Tools.ServiceModel.Svcutil", "8.0.0")]
-    public partial class ServicioConversionUnidadesClient : System.ServiceModel.ClientBase<ClienteConsolaConversion.Servicios.IServicioConversionUnidades>, ClienteConsolaConversion.Servicios.IServicioConversionUnidades
+    public partial class ServicioConversionUnidadesClient : System.ServiceModel.ClientBase<ClienteConsolaConversion.Servicio.IServicioConversionUnidades>, ClienteConsolaConversion.Servicio.IServicioConversionUnidades
     {
         
         /// <summary>
@@ -329,23 +329,23 @@ namespace ClienteConsolaConversion.Servicios
         {
         }
         
-        public System.Threading.Tasks.Task<ClienteConsolaConversion.Servicios.RespuestaInicioSesion> IniciarSesionAsync(ClienteConsolaConversion.Servicios.SolicitudInicioSesion solicitud)
+        public System.Threading.Tasks.Task<ClienteConsolaConversion.Servicio.RespuestaInicioSesion> IniciarSesionAsync(ClienteConsolaConversion.Servicio.SolicitudInicioSesion solicitud)
         {
             return base.Channel.IniciarSesionAsync(solicitud);
         }
         
         [System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Advanced)]
-        System.Threading.Tasks.Task<ClienteConsolaConversion.Servicios.RespuestaConversionMensaje> ClienteConsolaConversion.Servicios.IServicioConversionUnidades.ConvertirAsync(ClienteConsolaConversion.Servicios.SolicitudConversionMensaje request)
+        System.Threading.Tasks.Task<ClienteConsolaConversion.Servicio.RespuestaConversionMensaje> ClienteConsolaConversion.Servicio.IServicioConversionUnidades.ConvertirAsync(ClienteConsolaConversion.Servicio.SolicitudConversionMensaje request)
         {
             return base.Channel.ConvertirAsync(request);
         }
         
-        public System.Threading.Tasks.Task<ClienteConsolaConversion.Servicios.RespuestaConversionMensaje> ConvertirAsync(string Token, ClienteConsolaConversion.Servicios.SolicitudConversion Conversion)
+        public System.Threading.Tasks.Task<ClienteConsolaConversion.Servicio.RespuestaConversionMensaje> ConvertirAsync(string Token, ClienteConsolaConversion.Servicio.SolicitudConversion Conversion)
         {
-            ClienteConsolaConversion.Servicios.SolicitudConversionMensaje inValue = new ClienteConsolaConversion.Servicios.SolicitudConversionMensaje();
+            ClienteConsolaConversion.Servicio.SolicitudConversionMensaje inValue = new ClienteConsolaConversion.Servicio.SolicitudConversionMensaje();
             inValue.Token = Token;
             inValue.Conversion = Conversion;
-            return ((ClienteConsolaConversion.Servicios.IServicioConversionUnidades)(this)).ConvertirAsync(inValue);
+            return ((ClienteConsolaConversion.Servicio.IServicioConversionUnidades)(this)).ConvertirAsync(inValue);
         }
         
         public virtual System.Threading.Tasks.Task OpenAsync()

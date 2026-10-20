@@ -1,6 +1,6 @@
 using System.Globalization;
 
-namespace ClienteConsolaConversion.Vistas
+namespace ClienteConsolaConversion.Interfaz
 {
     /// <summary>
     /// Lectura de valores numéricos desde la consola.

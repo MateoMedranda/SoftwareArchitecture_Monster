@@ -1,4 +1,4 @@
-namespace ClienteConsolaConversion.Modelos
+namespace ClienteConsolaConversion.Estado
 {
     /// <summary>
     /// Token de la sesión en memoria del cliente.

@@ -1,9 +1,17 @@
 using System.Globalization;
 using System.ServiceModel;
-using ClienteConsolaConversion.Modelos;
+using ClienteConsolaConversion.Servicio;
 
-namespace ClienteConsolaConversion.Servicios
+namespace ClienteConsolaConversion.Cliente
 {
+    /// <summary>Categorías de conversión publicadas por el servidor.</summary>
+    public enum CategoriaUnidad
+    {
+        Temperatura,
+        Longitud,
+        Masa
+    }
+
     /// <summary>
     /// Wrapper del cliente WCF generado con dotnet-svcutil desde el WSDL del servidor.
     /// Traduce las excepciones de red a respuestas con Exito = false y un mensaje amigable,

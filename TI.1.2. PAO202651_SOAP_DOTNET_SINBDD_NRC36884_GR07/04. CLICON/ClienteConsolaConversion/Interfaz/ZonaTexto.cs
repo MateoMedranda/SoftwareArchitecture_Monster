@@ -1,4 +1,4 @@
-namespace ClienteConsolaConversion.Vistas
+namespace ClienteConsolaConversion.Interfaz
 {
     /// <summary>
     /// Región borruble de la consola.

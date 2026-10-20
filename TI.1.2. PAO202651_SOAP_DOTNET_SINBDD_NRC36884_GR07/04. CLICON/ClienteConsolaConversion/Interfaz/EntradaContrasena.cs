@@ -1,6 +1,6 @@
 using System.Text;
 
-namespace ClienteConsolaConversion.Vistas
+namespace ClienteConsolaConversion.Interfaz
 {
     /// <summary>
     /// Lectura de contraseña enmascarada: muestra '*' por carácter,
