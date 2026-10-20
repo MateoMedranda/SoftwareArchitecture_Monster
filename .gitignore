@@ -1,0 +1,8 @@
+# Artefactos de compilación de .NET
+bin/
+obj/
+
+# Archivos de usuario de Visual Studio
+*.user
+.vs/
+.development.env
