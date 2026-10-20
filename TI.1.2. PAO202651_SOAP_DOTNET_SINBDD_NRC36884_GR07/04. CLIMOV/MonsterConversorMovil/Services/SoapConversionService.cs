@@ -28,7 +28,7 @@ public sealed class SoapConversionService : ISoapConversionService
 
         try
         {
-            var document = await SendAsync("IniciarSesion", body, cancellationToken);
+            var document = await SendAsync("IniciarSesion", body, null, cancellationToken);
             var result = Find(document, "IniciarSesionResult");
             return new LoginResponse
             {
@@ -45,17 +45,18 @@ public sealed class SoapConversionService : ISoapConversionService
 
     public async Task<ConversionResponse> ConvertAsync(ConversionRequest request, CancellationToken cancellationToken = default)
     {
-        var body = new XElement(XName.Get("Convertir", ContractNamespace),
-            new XElement(XName.Get("solicitud", ContractNamespace),
-                new XElement(XName.Get("Token", ContractNamespace), request.Token),
+        var body = new XElement(XName.Get("solicitud", ContractNamespace),
+            new XElement(XName.Get("Conversion", ContractNamespace),
                 new XElement(XName.Get("Categoria", ContractNamespace), request.Category),
                 new XElement(XName.Get("UnidadOrigen", ContractNamespace), request.SourceUnit),
                 new XElement(XName.Get("UnidadDestino", ContractNamespace), request.TargetUnit),
                 new XElement(XName.Get("Valor", ContractNamespace), request.Value.ToString(System.Globalization.CultureInfo.InvariantCulture))));
 
+        var header = new XElement(XName.Get("Token", ContractNamespace), request.Token);
+
         try
         {
-            var document = await SendAsync("Convertir", body, cancellationToken);
+            var document = await SendAsync("Convertir", body, header, cancellationToken);
             var result = Find(document, "ConvertirResult");
             var value = double.TryParse(ReadValue(result, "ValorConvertido"), System.Globalization.NumberStyles.Float,
                 System.Globalization.CultureInfo.InvariantCulture, out var converted) ? converted : 0;
@@ -73,7 +74,7 @@ public sealed class SoapConversionService : ISoapConversionService
         }
     }
 
-    private async Task<XDocument> SendAsync(string operation, XElement operationBody, CancellationToken cancellationToken)
+    private async Task<XDocument> SendAsync(string operation, XElement operationBody, XElement? soapHeader, CancellationToken cancellationToken)
     {
         var endpoint = NormalizeEndpoint(Endpoint);
         if (!Uri.TryCreate(endpoint, UriKind.Absolute, out var serviceUri))
@@ -82,10 +83,17 @@ public sealed class SoapConversionService : ISoapConversionService
         }
 
         XNamespace soap = "http://schemas.xmlsoap.org/soap/envelope/";
-        var envelope = new XDocument(
-            new XElement(soap + "Envelope",
-                new XAttribute(XNamespace.Xmlns + "soap", soap),
-                new XElement(soap + "Body", operationBody)));
+        var envelope = new XElement(soap + "Envelope",
+            new XAttribute(XNamespace.Xmlns + "soap", soap));
+
+        if (soapHeader != null)
+        {
+            envelope.Add(new XElement(soap + "Header", soapHeader));
+        }
+
+        envelope.Add(new XElement(soap + "Body", operationBody));
+
+        var document = new XDocument(envelope);
 
         using var content = new StringContent(envelope.ToString(SaveOptions.DisableFormatting), Encoding.UTF8, "text/xml");
         content.Headers.Add("SOAPAction", $"\"{ContractNamespace}/IServicioConversionUnidades/{operation}\"");
@@ -140,8 +148,8 @@ public sealed class SoapConversionService : ISoapConversionService
 
     private static string Explain(Exception exception) => exception switch
     {
-        TaskCanceledException => "El servicio tardó demasiado en responder. Verifica que esté iniciado y que la dirección sea correcta.",
-        HttpRequestException => $"No fue posible conectar con el servicio. {exception.InnerException?.Message ?? exception.Message}",
+        TaskCanceledException => "El servicio tardó demasiado en responder. Verifica que esté iniciado e inténtalo nuevamente.",
+        HttpRequestException => "No fue posible conectar con el servicio de conversión. Verifica tu conexión e inténtalo de nuevo.",
         _ => exception.Message
     };
 }

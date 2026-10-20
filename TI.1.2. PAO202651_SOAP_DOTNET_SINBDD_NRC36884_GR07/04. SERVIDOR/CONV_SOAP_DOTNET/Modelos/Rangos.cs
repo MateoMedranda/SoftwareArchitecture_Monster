@@ -25,7 +25,7 @@ namespace CONV_SOAP_DOTNET.Modelos
 
         public bool Contiene(double valor)
         {
-            return valor >= limiteInferior && valor <= limiteSuperior;
+            return valor > limiteInferior && valor < limiteSuperior;
         }
     }
 
@@ -41,7 +41,23 @@ namespace CONV_SOAP_DOTNET.Modelos
                 { UnidadTemperatura.Rankine, new RangoUnidad(491.67, 671.67) }
             };
 
-        // TODO: implementación luego (Longitud)
-        // TODO: implementación luego (Masa)
+        public static readonly Dictionary<UnidadMasa, RangoUnidad> Masa =
+            new Dictionary<UnidadMasa, RangoUnidad>
+            {
+                { UnidadMasa.Gramo, new RangoUnidad(0.0,1.7976931348623157E+308) },
+                { UnidadMasa.Onza, new RangoUnidad(0.0, 1.7976931348623157E+308) },
+                { UnidadMasa.Tonelada, new RangoUnidad(0.0, 1.7976931348623157E+308) },
+                { UnidadMasa.Kilogramo, new RangoUnidad(0.0, 1.7976931348623157E+308) }
+            };
+
+        public static readonly Dictionary<UnidadLongitud, RangoUnidad> Longitud =
+            new Dictionary<UnidadLongitud, RangoUnidad>
+            {
+                { UnidadLongitud.Milla, new RangoUnidad(0.0, 1.7976931348623157E+308) },
+                { UnidadLongitud.Yarda, new RangoUnidad(0.0, 1.7976931348623157E+308) },
+                { UnidadLongitud.Metro, new RangoUnidad(0.0, 1.7976931348623157E+308) },
+                { UnidadLongitud.Kilometro, new RangoUnidad(0.0, 1.7976931348623157E+308) },
+                { UnidadLongitud.Centimetro, new RangoUnidad(0.0, 1.7976931348623157E+308) }
+            };
     }
 }

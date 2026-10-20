@@ -9,6 +9,6 @@ namespace CONV_SOAP_DOTNET.Contratos
         RespuestaInicioSesion IniciarSesion(SolicitudInicioSesion solicitud);
 
         [OperationContract]
-        RespuestaConversion Convertir(SolicitudConversion solicitud);
+        RespuestaConversionMensaje Convertir(SolicitudConversionMensaje solicitud);
     }
 }
