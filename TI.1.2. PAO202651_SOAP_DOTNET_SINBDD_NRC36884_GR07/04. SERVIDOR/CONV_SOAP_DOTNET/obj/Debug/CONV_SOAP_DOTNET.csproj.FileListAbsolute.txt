@@ -1,0 +1,7 @@
+C:\Users\gmlop\Desktop\ESPE\Octavo\Arquitectura\SoftwareArchitecture_Monster\TI.1.2. PAO202651_SOAP_DOTNET_SINBDD_NRC36884_GR07\04. SERVIDOR\CONV_SOAP_DOTNET\bin\CONV_SOAP_DOTNET.dll.config
+C:\Users\gmlop\Desktop\ESPE\Octavo\Arquitectura\SoftwareArchitecture_Monster\TI.1.2. PAO202651_SOAP_DOTNET_SINBDD_NRC36884_GR07\04. SERVIDOR\CONV_SOAP_DOTNET\bin\CONV_SOAP_DOTNET.dll
+C:\Users\gmlop\Desktop\ESPE\Octavo\Arquitectura\SoftwareArchitecture_Monster\TI.1.2. PAO202651_SOAP_DOTNET_SINBDD_NRC36884_GR07\04. SERVIDOR\CONV_SOAP_DOTNET\bin\CONV_SOAP_DOTNET.pdb
+C:\Users\gmlop\Desktop\ESPE\Octavo\Arquitectura\SoftwareArchitecture_Monster\TI.1.2. PAO202651_SOAP_DOTNET_SINBDD_NRC36884_GR07\04. SERVIDOR\CONV_SOAP_DOTNET\obj\Debug\CONV_SOAP_DOTNET.csproj.AssemblyReference.cache
+C:\Users\gmlop\Desktop\ESPE\Octavo\Arquitectura\SoftwareArchitecture_Monster\TI.1.2. PAO202651_SOAP_DOTNET_SINBDD_NRC36884_GR07\04. SERVIDOR\CONV_SOAP_DOTNET\obj\Debug\CONV_SOAP_DOTNET.csproj.CoreCompileInputs.cache
+C:\Users\gmlop\Desktop\ESPE\Octavo\Arquitectura\SoftwareArchitecture_Monster\TI.1.2. PAO202651_SOAP_DOTNET_SINBDD_NRC36884_GR07\04. SERVIDOR\CONV_SOAP_DOTNET\obj\Debug\CONV_SOAP_DOTNET.dll
+C:\Users\gmlop\Desktop\ESPE\Octavo\Arquitectura\SoftwareArchitecture_Monster\TI.1.2. PAO202651_SOAP_DOTNET_SINBDD_NRC36884_GR07\04. SERVIDOR\CONV_SOAP_DOTNET\obj\Debug\CONV_SOAP_DOTNET.pdb
