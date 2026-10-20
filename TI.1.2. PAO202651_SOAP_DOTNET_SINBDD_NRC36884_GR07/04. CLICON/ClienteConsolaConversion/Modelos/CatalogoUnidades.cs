@@ -1,6 +1,4 @@
-using ClienteConsolaConversion.Cliente;
-
-namespace ClienteConsolaConversion.Interfaz
+namespace ClienteConsolaConversion.Modelos
 {
     /// <summary>
     /// Catálogo de unidades publicadas por el servidor SOAP, por categoría.

@@ -1,4 +1,4 @@
-namespace ClienteConsolaConversion.Interfaz
+namespace ClienteConsolaConversion.Vistas
 {
     /// <summary>
     /// Selector de opciones con flecha movible.

@@ -1,4 +1,4 @@
-namespace ClienteConsolaConversion.Interfaz
+namespace ClienteConsolaConversion.Vistas
 {
     /// <summary>
     /// Presentación general de la consola: rótulo de arranque, cabecera de pantalla,
