@@ -1,0 +1,34 @@
+# Visual Studio
+.vs/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# Build outputs (.NET Framework and .NET MAUI)
+[Bb]in/
+[Oo]bj/
+[Ll]og/
+[Ll]ogs/
+TestResults/
+
+# NuGet
+packages/
+*.nupkg
+*.snupkg
+
+# Android / .NET MAUI
+*.apk
+*.aab
+*.apks
+*.keystore
+*.jks
+*.pfx
+local.properties
+
+# IDEs and operating system files
+.vscode/
+_ReSharper*/
+*.DotSettings.user
+.DS_Store
+Thumbs.db
