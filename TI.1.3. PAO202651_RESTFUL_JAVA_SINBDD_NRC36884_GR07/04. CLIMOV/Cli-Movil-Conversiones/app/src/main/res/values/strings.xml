@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Cli-Movil-Conversiones</string>
+
+    <!-- Aplicacion -->
+    <string name="titulo_aplicacion">Convertidor de unidades monster</string>
+    <string name="titulo_conversor">Convertidor de Unidades</string>
+    <string name="descripcion_logo">Logo de la aplicación</string>
+
+    <!-- Carga -->
+    <string name="cargando">Cargando…</string>
+
+    <!-- Inicio de sesion -->
+    <string name="titulo_inicio_sesion">Inicio de Sesión</string>
+    <string name="hint_usuario">Usuario</string>
+    <string name="hint_contrasena">Contraseña</string>
+    <string name="accion_iniciar_sesion">Iniciar Sesión</string>
+
+    <!-- Conversor -->
+    <string name="etiqueta_origen">De</string>
+    <string name="etiqueta_destino">A</string>
+    <string name="hint_unidad_origen">Unidad de origen</string>
+    <string name="hint_unidad_destino">Unidad de destino</string>
+    <string name="hint_valor">Valor a convertir</string>
+    <string name="hint_resultado">Resultado</string>
+    <string name="accion_convertir">Convertir</string>
+
+    <!-- Sesion -->
+    <string name="sesion_expirada_titulo">Sesión expirada</string>
+    <string name="sesion_expirada_mensaje">Tu sesión ha expirado. Vuelve a iniciar sesión para continuar.</string>
+    <string name="accion_iniciar_sesion_nuevamente">Iniciar sesión</string>
+    <string name="accion_salir">Salir</string>
+
+    <!-- Masa en desarrollo -->
+    <string name="masa_no_disponible">Servicio de conversión de masa en mantenimiento</string>
+</resources>
