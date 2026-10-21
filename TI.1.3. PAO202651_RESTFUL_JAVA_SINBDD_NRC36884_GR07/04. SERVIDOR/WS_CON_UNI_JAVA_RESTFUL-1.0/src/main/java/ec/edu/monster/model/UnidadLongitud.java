@@ -32,7 +32,7 @@ public enum UnidadLongitud {
         }
         catch (IllegalArgumentException e) {
             throw new ExcepcionLongitudInvalida(
-                String.format("Unidad de temperatura inválida: %s. Válidas: METRO, PIE, CENTIMETRO, YARDA, MILLA", stringUnidad)
+                String.format("Unidad de longitud inválida: %s. Válidas: METRO, PIE, CENTIMETRO, YARDA, MILLA", stringUnidad)
             );
         }
     }
