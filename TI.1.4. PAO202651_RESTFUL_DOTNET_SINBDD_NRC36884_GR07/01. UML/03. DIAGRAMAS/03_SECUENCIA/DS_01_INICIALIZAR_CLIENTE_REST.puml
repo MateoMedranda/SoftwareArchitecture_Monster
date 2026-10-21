@@ -1,0 +1,39 @@
+@startuml
+title "DS_01_INICIALIZAR_CLIENTE_REST"
+
+participant "APLICACION\n(Main)" as Main
+participant "LOGIN_VISTA" as LoginVista
+participant "LOGIN_CONTROLADOR" as LoginControlador
+participant "CLIENTE_REST_CONVERSOR" as ClienteRest
+participant "API_REST_CONVERSOR" as ApiRest
+
+Main -> LoginVista: 1. new LoginVista() / setVisible(true)
+activate LoginVista
+
+LoginVista -> LoginControlador: 2. new LoginControlador()
+activate LoginControlador
+
+LoginControlador -> ClienteRest: 3. new ClienteRestConversor()
+activate ClienteRest
+
+ClienteRest -> ClienteRest: 4. inicializarClienteHttp()
+activate ClienteRest
+
+ClienteRest -> ClienteRest: 5. construirBaseUrl()
+note right: Revisa System.getProperty("ws.base.url"),\nSystem.getenv("WS_BASE_URL"),\ny URL por defecto.
+deactivate ClienteRest
+
+ClienteRest -> ApiRest: 6. Verifica disponibilidad /api/conversor-unidades/login
+ApiRest --> ClienteRest: 7. Endpoint disponible
+
+ClienteRest -> ClienteRest: 8. configura cliente con Authorization Bearer
+ClienteRest --> LoginControlador: 9. cliente REST inicializado
+deactivate ClienteRest
+
+LoginControlador --> LoginVista: 10. controlador listo para autenticacion
+deactivate LoginControlador
+
+LoginVista --> Main: 11. pantalla preparada
+deactivate LoginVista
+
+@enduml
