@@ -1,0 +1,35 @@
+@startuml
+title "DS_07_CAMBIAR_CONTRASENIA"
+autonumber
+
+actor "APLICACION" as Aplicacion
+participant "CONVERSION_VISTA" as ConversionVista
+participant "LOGIN_CONTROLADOR" as LoginControlador
+participant "CLIENTE_REST_CONVERSOR" as ClienteRest
+participant "FILTRO_AUTENTICACION" as FiltroAutenticacion
+participant "API_REST_CONVERSOR" as ApiRest
+participant "ADMINISTRADOR_CREDENCIALES" as AdminCredenciales
+
+Aplicacion -> ConversionVista: Solicita cambiar contrasenia
+ConversionVista -> LoginControlador: cambiarContrasenia(actual, nueva)
+LoginControlador -> LoginControlador: valida campos no vacios
+
+LoginControlador -> ClienteRest: cambiarContrasenia(tokenSesion, actual, nueva)
+ClienteRest -> FiltroAutenticacion: PUT /api/conversor-unidades/cambiarContrasenia\nAuthorization: Bearer token
+FiltroAutenticacion -> FiltroAutenticacion: valida token activo
+FiltroAutenticacion --> ApiRest: solicitud autorizada
+
+ApiRest -> AdminCredenciales: cambiarContrasenia(actual, nueva)
+alt cambio exitoso
+    AdminCredenciales --> ApiRest: OK
+    ApiRest --> ClienteRest: 200 {"mensaje":"Contrasenia actualizada correctamente"}
+    ClienteRest --> LoginControlador: confirmacion
+    LoginControlador --> ConversionVista: mostrar exito
+else error de validacion
+    AdminCredenciales --> ApiRest: RuntimeException
+    ApiRest --> ClienteRest: 400 {"mensaje":"..."}
+    ClienteRest --> LoginControlador: error
+    LoginControlador --> ConversionVista: mostrar mensaje
+end
+
+@enduml
