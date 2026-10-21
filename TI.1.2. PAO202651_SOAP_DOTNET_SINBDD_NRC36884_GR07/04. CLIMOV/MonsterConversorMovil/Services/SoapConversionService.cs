@@ -45,17 +45,21 @@ public sealed class SoapConversionService : ISoapConversionService
 
     public async Task<ConversionResponse> ConvertAsync(ConversionRequest request, CancellationToken cancellationToken = default)
     {
-        var body = new XElement(XName.Get("Convertir", ContractNamespace),
-            new XElement(XName.Get("solicitud", ContractNamespace),
-                new XElement(XName.Get("Token", ContractNamespace), request.Token),
+        // Convertir usa MessageContract: el cuerpo comienza directamente en <solicitud>,
+        // sin el envoltorio <Convertir> de las operaciones convencionales.
+        var body = new XElement(XName.Get("solicitud", ContractNamespace),
+            new XElement(XName.Get("Conversion", ContractNamespace),
                 new XElement(XName.Get("Categoria", ContractNamespace), request.Category),
                 new XElement(XName.Get("UnidadOrigen", ContractNamespace), request.SourceUnit),
                 new XElement(XName.Get("UnidadDestino", ContractNamespace), request.TargetUnit),
                 new XElement(XName.Get("Valor", ContractNamespace), request.Value.ToString(System.Globalization.CultureInfo.InvariantCulture))));
 
+        // El contrato WCF define Token como MessageHeader, no como parte del cuerpo.
+        var tokenHeader = new XElement(XName.Get("Token", ContractNamespace), request.Token);
+
         try
         {
-            var document = await SendAsync("Convertir", body, cancellationToken);
+            var document = await SendAsync("Convertir", body, cancellationToken, tokenHeader);
             var result = Find(document, "ConvertirResult");
             var value = double.TryParse(ReadValue(result, "ValorConvertido"), System.Globalization.NumberStyles.Float,
                 System.Globalization.CultureInfo.InvariantCulture, out var converted) ? converted : 0;
@@ -73,7 +77,11 @@ public sealed class SoapConversionService : ISoapConversionService
         }
     }
 
-    private async Task<XDocument> SendAsync(string operation, XElement operationBody, CancellationToken cancellationToken)
+    private async Task<XDocument> SendAsync(
+        string operation,
+        XElement operationBody,
+        CancellationToken cancellationToken,
+        XElement? soapHeader = null)
     {
         var endpoint = NormalizeEndpoint(Endpoint);
         if (!Uri.TryCreate(endpoint, UriKind.Absolute, out var serviceUri))
@@ -85,7 +93,7 @@ public sealed class SoapConversionService : ISoapConversionService
         var envelope = new XElement(soap + "Envelope",
             new XAttribute(XNamespace.Xmlns + "soap", soap));
 
-        if (soapHeader != null)
+        if (soapHeader is not null)
         {
             envelope.Add(new XElement(soap + "Header", soapHeader));
         }

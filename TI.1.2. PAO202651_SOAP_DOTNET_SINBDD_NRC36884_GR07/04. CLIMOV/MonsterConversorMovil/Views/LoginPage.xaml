@@ -14,7 +14,7 @@
                 </LinearGradientBrush>
             </Grid.Background>
             <VerticalStackLayout Padding="30,42,30,20" Spacing="10" VerticalOptions="Center">
-                <Image Source="logo_monster.svg" HeightRequest="72" Aspect="AspectFit" HorizontalOptions="Start" />
+                <Image Source="logo_monster.jpeg" HeightRequest="72" Aspect="AspectFit" HorizontalOptions="Start" />
                 <Label Text="Conversor de unidades" TextColor="White" FontSize="28" FontFamily="OpenSansSemibold" />
                 <Label Text="Precisión para cada medida." TextColor="#DCEAF7" FontSize="15" />
             </VerticalStackLayout>
