@@ -30,3 +30,5 @@ public sealed class ConversionResponse
 }
 
 public sealed record UnitOption(string Name, string Symbol);
+
+public sealed record CategoryOption(string Name, string Icon, string Description);

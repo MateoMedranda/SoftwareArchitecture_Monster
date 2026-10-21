@@ -1,5 +1,7 @@
 # Visual Studio
 .vs/
+**/.vs/
+**/FileContentIndex/
 *.suo
 *.user
 *.userosscache
@@ -8,6 +10,7 @@
 # Build outputs (.NET Framework and .NET MAUI)
 [Bb]in/
 [Oo]bj/
+**/DesignTimeResolveAssemblyReferencesInput.cache
 [Ll]og/
 [Ll]ogs/
 TestResults/

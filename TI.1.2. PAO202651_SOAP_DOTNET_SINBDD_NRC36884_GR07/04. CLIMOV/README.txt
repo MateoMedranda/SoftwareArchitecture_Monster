@@ -34,3 +34,6 @@ por eso no se muestran en este cliente.
 
 COMPILACIÓN VERIFICADA
 dotnet build MonsterConversorMovil.csproj -f net10.0-android
+
+LOGOS
+Consulta MonsterConversorMovil/BRANDING.md para reemplazar el logo de inicio de sesión y el icono de la aplicación.

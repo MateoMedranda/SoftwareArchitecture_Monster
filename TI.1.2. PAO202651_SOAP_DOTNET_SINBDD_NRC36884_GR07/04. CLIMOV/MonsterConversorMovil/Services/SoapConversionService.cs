@@ -28,7 +28,7 @@ public sealed class SoapConversionService : ISoapConversionService
 
         try
         {
-            var document = await SendAsync("IniciarSesion", body, null, cancellationToken);
+            var document = await SendAsync("IniciarSesion", body, cancellationToken);
             var result = Find(document, "IniciarSesionResult");
             return new LoginResponse
             {
@@ -45,6 +45,8 @@ public sealed class SoapConversionService : ISoapConversionService
 
     public async Task<ConversionResponse> ConvertAsync(ConversionRequest request, CancellationToken cancellationToken = default)
     {
+        // Convertir usa MessageContract: el cuerpo comienza directamente en <solicitud>,
+        // sin el envoltorio <Convertir> de las operaciones convencionales.
         var body = new XElement(XName.Get("solicitud", ContractNamespace),
             new XElement(XName.Get("Conversion", ContractNamespace),
                 new XElement(XName.Get("Categoria", ContractNamespace), request.Category),
@@ -52,11 +54,12 @@ public sealed class SoapConversionService : ISoapConversionService
                 new XElement(XName.Get("UnidadDestino", ContractNamespace), request.TargetUnit),
                 new XElement(XName.Get("Valor", ContractNamespace), request.Value.ToString(System.Globalization.CultureInfo.InvariantCulture))));
 
-        var header = new XElement(XName.Get("Token", ContractNamespace), request.Token);
+        // El contrato WCF define Token como MessageHeader, no como parte del cuerpo.
+        var tokenHeader = new XElement(XName.Get("Token", ContractNamespace), request.Token);
 
         try
         {
-            var document = await SendAsync("Convertir", body, header, cancellationToken);
+            var document = await SendAsync("Convertir", body, cancellationToken, tokenHeader);
             var result = Find(document, "ConvertirResult");
             var value = double.TryParse(ReadValue(result, "ValorConvertido"), System.Globalization.NumberStyles.Float,
                 System.Globalization.CultureInfo.InvariantCulture, out var converted) ? converted : 0;
@@ -74,7 +77,11 @@ public sealed class SoapConversionService : ISoapConversionService
         }
     }
 
-    private async Task<XDocument> SendAsync(string operation, XElement operationBody, XElement? soapHeader, CancellationToken cancellationToken)
+    private async Task<XDocument> SendAsync(
+        string operation,
+        XElement operationBody,
+        CancellationToken cancellationToken,
+        XElement? soapHeader = null)
     {
         var endpoint = NormalizeEndpoint(Endpoint);
         if (!Uri.TryCreate(endpoint, UriKind.Absolute, out var serviceUri))
@@ -86,14 +93,12 @@ public sealed class SoapConversionService : ISoapConversionService
         var envelope = new XElement(soap + "Envelope",
             new XAttribute(XNamespace.Xmlns + "soap", soap));
 
-        if (soapHeader != null)
+        if (soapHeader is not null)
         {
             envelope.Add(new XElement(soap + "Header", soapHeader));
         }
 
         envelope.Add(new XElement(soap + "Body", operationBody));
-
-        var document = new XDocument(envelope);
 
         using var content = new StringContent(envelope.ToString(SaveOptions.DisableFormatting), Encoding.UTF8, "text/xml");
         content.Headers.Add("SOAPAction", $"\"{ContractNamespace}/IServicioConversionUnidades/{operation}\"");
@@ -148,8 +153,8 @@ public sealed class SoapConversionService : ISoapConversionService
 
     private static string Explain(Exception exception) => exception switch
     {
-        TaskCanceledException => "El servicio tardó demasiado en responder. Verifica que esté iniciado e inténtalo nuevamente.",
-        HttpRequestException => "No fue posible conectar con el servicio de conversión. Verifica tu conexión e inténtalo de nuevo.",
+        TaskCanceledException => "El servicio tardó demasiado en responder. Verifica que esté iniciado y que la dirección sea correcta.",
+        HttpRequestException => $"No fue posible conectar con el servicio. {exception.InnerException?.Message ?? exception.Message}",
         _ => exception.Message
     };
 }
