@@ -68,6 +68,7 @@
     <Compile Include="Contratos\ContratosDatos.cs" />
     <Compile Include="Contratos\IServicioConversionUnidades.cs" />
     <Compile Include="Modelos\CategoriaUnidad.cs" />
+    <Compile Include="Modelos\MensajesError.cs" />
     <Compile Include="Modelos\Rangos.cs" />
     <Compile Include="Modelos\UnidadLongitud.cs" />
     <Compile Include="Modelos\UnidadMasa.cs" />

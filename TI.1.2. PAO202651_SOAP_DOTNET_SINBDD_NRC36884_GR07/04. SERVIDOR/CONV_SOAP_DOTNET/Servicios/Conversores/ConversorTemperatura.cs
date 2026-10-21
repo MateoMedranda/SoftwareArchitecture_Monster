@@ -7,12 +7,12 @@ namespace CONV_SOAP_DOTNET.Servicios.Conversores
     public class ConversorTemperatura : IConversorUnidad
     {
         private readonly Dictionary<string, UnidadTemperatura> unidades =
-            new Dictionary<string, UnidadTemperatura>(StringComparer.OrdinalIgnoreCase)
+            new Dictionary<string, UnidadTemperatura>(StringComparer.Ordinal)
             {
-                { "Celsius", UnidadTemperatura.Celsius },
-                { "Fahrenheit", UnidadTemperatura.Fahrenheit },
-                { "Kelvin", UnidadTemperatura.Kelvin },
-                { "Rankine", UnidadTemperatura.Rankine }
+                { "CELSIUS", UnidadTemperatura.Celsius },
+                { "FAHRENHEIT", UnidadTemperatura.Fahrenheit },
+                { "KELVIN", UnidadTemperatura.Kelvin },
+                { "RANKINE", UnidadTemperatura.Rankine }
             };
 
         public CategoriaUnidad Categoria
@@ -22,7 +22,8 @@ namespace CONV_SOAP_DOTNET.Servicios.Conversores
 
         public bool EsUnidadValida(string unidad)
         {
-            return !string.IsNullOrWhiteSpace(unidad) && unidades.ContainsKey(unidad.Trim());
+            string clave = Normalizar(unidad);
+            return clave != null && unidades.ContainsKey(clave);
         }
 
         public void ValidarRango(string unidad, double valor)
@@ -32,14 +33,12 @@ namespace CONV_SOAP_DOTNET.Servicios.Conversores
 
             if (!rango.Contiene(valor))
             {
-                throw new ArgumentOutOfRangeException(
-                    "valor",
-                    string.Format(
-                        "El valor {0} está fuera del rango físico del agua a 1 atm para {1} ({2} a {3}).",
-                        valor,
-                        temperatura,
-                        rango.LimiteInferior,
-                        rango.LimiteSuperior));
+                throw new ArgumentException(MensajesError.Formatear(
+                    MensajesError.ValorFueraDeRango,
+                    valor,
+                    temperatura,
+                    rango.LimiteInferior,
+                    rango.LimiteSuperior));
             }
         }
 
@@ -51,15 +50,20 @@ namespace CONV_SOAP_DOTNET.Servicios.Conversores
 
         private UnidadTemperatura Resolver(string unidad)
         {
+            string clave = Normalizar(unidad);
             UnidadTemperatura temperatura;
-            if (string.IsNullOrWhiteSpace(unidad) || !unidades.TryGetValue(unidad.Trim(), out temperatura))
+            if (clave == null || !unidades.TryGetValue(clave, out temperatura))
             {
-                throw new ArgumentException(
-                    string.Format("La unidad '{0}' no es válida para la categoría Temperatura.", unidad),
-                    "unidad");
+                throw new ArgumentException(MensajesError.Formatear(
+                    MensajesError.UnidadInvalidaCategoria, unidad, Categoria));
             }
 
             return temperatura;
+        }
+
+        private static string Normalizar(string unidad)
+        {
+            return string.IsNullOrWhiteSpace(unidad) ? null : unidad.Trim().ToUpperInvariant();
         }
 
         private static double ConvertirACelsius(UnidadTemperatura unidad, double valor)
