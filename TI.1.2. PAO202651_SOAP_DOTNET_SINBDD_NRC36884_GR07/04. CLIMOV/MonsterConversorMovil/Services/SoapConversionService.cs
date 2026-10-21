@@ -82,10 +82,15 @@ public sealed class SoapConversionService : ISoapConversionService
         }
 
         XNamespace soap = "http://schemas.xmlsoap.org/soap/envelope/";
-        var envelope = new XDocument(
-            new XElement(soap + "Envelope",
-                new XAttribute(XNamespace.Xmlns + "soap", soap),
-                new XElement(soap + "Body", operationBody)));
+        var envelope = new XElement(soap + "Envelope",
+            new XAttribute(XNamespace.Xmlns + "soap", soap));
+
+        if (soapHeader != null)
+        {
+            envelope.Add(new XElement(soap + "Header", soapHeader));
+        }
+
+        envelope.Add(new XElement(soap + "Body", operationBody));
 
         using var content = new StringContent(envelope.ToString(SaveOptions.DisableFormatting), Encoding.UTF8, "text/xml");
         content.Headers.Add("SOAPAction", $"\"{ContractNamespace}/IServicioConversionUnidades/{operation}\"");

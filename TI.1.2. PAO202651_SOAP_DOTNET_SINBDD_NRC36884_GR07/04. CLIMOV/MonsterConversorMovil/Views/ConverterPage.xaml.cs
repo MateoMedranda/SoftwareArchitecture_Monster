@@ -12,11 +12,10 @@ public partial class ConverterPage : ContentPage
     {
         InitializeComponent();
         this.controller = controller;
-		OriginPicker.ItemsSource = controller.TemperatureUnits.ToList();
-		DestinationPicker.ItemsSource = controller.TemperatureUnits.ToList();
-        OriginPicker.SelectedIndex = 0;
-        DestinationPicker.SelectedIndex = 1;
+        CategoryPicker.ItemsSource = controller.Categories.ToList();
+        CategoryPicker.SelectedIndex = 0;
         GreetingLabel.Text = $"Hola, {controller.UserName}. Convierte con precisión.";
+        UpdateCategory();
     }
 
     protected override void OnAppearing()
@@ -25,12 +24,37 @@ public partial class ConverterPage : ContentPage
         GreetingLabel.Text = $"Hola, {controller.UserName}. Convierte con precisión.";
     }
 
+    private void OnCategoryChanged(object? sender, EventArgs eventArgs) => UpdateCategory();
+
+    private void UpdateCategory()
+    {
+        var category = CategoryPicker.SelectedItem as CategoryOption;
+        var units = controller.GetUnits(category).ToList();
+        OriginPicker.ItemsSource = units;
+        DestinationPicker.ItemsSource = units.ToList();
+        OriginPicker.SelectedIndex = units.Count > 0 ? 0 : -1;
+        DestinationPicker.SelectedIndex = units.Count > 1 ? 1 : OriginPicker.SelectedIndex;
+
+        CategoryTitleLabel.Text = category?.Name ?? "Conversión";
+        CategoryDescriptionLabel.Text = category?.Description ?? "Conectado al servicio SOAP";
+        CategoryIconLabel.Text = category?.Icon ?? "↔";
+        RangeLabel.Text = category?.Name == "Temperatura"
+            ? "Rango físico del agua a 1 atm: el servicio valida cada entrada antes de convertirla."
+            : "El servicio acepta valores positivos para esta categoría.";
+        ResultCard.IsVisible = false;
+        StatusLabel.IsVisible = false;
+    }
+
     private async void OnConvertClicked(object? sender, EventArgs eventArgs)
     {
         SetBusy(true);
         ResultCard.IsVisible = false;
         StatusLabel.IsVisible = false;
-        var result = await controller.ConvertTemperatureAsync(ValueEntry.Text, OriginPicker.SelectedItem as UnitOption, DestinationPicker.SelectedItem as UnitOption);
+        var result = await controller.ConvertAsync(
+            ValueEntry.Text,
+            CategoryPicker.SelectedItem as CategoryOption,
+            OriginPicker.SelectedItem as UnitOption,
+            DestinationPicker.SelectedItem as UnitOption);
         SetBusy(false);
 
         if (!result.IsSuccessful)
