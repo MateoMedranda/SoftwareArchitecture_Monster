@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="jakarta.faces.html"
+      xmlns:p="http://primefaces.org/ui">
+<h:head>
+    <title>Login - Conversor de Unidades</title>
+    <h:outputStylesheet name="css/estilos.css"/>
+</h:head>
+<h:body>
+    <main class="login-wrapper">
+        <section class="login-card">
+            <div class="marca-monster" aria-label="Monster">M</div>
+            <h1 class="login-titulo">Conversor de unidades</h1>
+            <p class="subtitulo">Cliente web RESTful</p>
+
+            <h:form id="formLogin">
+                <div class="campo">
+                    <p:outputLabel for="usuario" value="Usuario"/>
+                    <p:inputText id="usuario" value="#{loginBean.credenciales.usuario}"
+                                 placeholder="Ingrese su usuario" autocomplete="username"/>
+                </div>
+                <div class="campo">
+                    <p:outputLabel for="contrasenia" value="Contraseña"/>
+                    <p:password id="contrasenia" value="#{loginBean.credenciales.contrasenia}"
+                                placeholder="Ingrese su contraseña" feedback="false"
+                                autocomplete="current-password"/>
+                </div>
+                <p:commandButton value="Ingresar" action="#{loginBean.iniciarSesion}"
+                                 ajax="false" styleClass="boton-login"/>
+                <p:messages id="mensajes" showDetail="true" closable="true"/>
+            </h:form>
+        </section>
+    </main>
+</h:body>
+</html>
