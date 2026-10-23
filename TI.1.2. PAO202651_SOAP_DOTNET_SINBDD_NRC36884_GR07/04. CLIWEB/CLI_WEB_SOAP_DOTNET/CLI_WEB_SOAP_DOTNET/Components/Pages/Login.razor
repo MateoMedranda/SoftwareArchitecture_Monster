@@ -1,0 +1,55 @@
+@page "/login"
+@rendermode InteractiveServer
+@inject LoginController Controlador
+
+<PageTitle>Iniciar sesión</PageTitle>
+
+@* VISTA de MVC: solo presenta datos y delega toda la lógica en LoginController *@
+<div class="login-tarjeta">
+    <h1>Conversión de unidades</h1>
+    <p class="subtitulo">Inicia sesión para continuar</p>
+
+    <EditForm Model="credenciales" OnValidSubmit="EnviarAsync" FormName="login">
+        <DataAnnotationsValidator />
+
+        <div class="campo">
+            <label for="usuario">Usuario</label>
+            <InputText id="usuario" @bind-Value="credenciales.NombreUsuario" autocomplete="username" />
+            <ValidationMessage For="() => credenciales.NombreUsuario" />
+        </div>
+
+        <div class="campo">
+            <label for="clave">Contraseña</label>
+            <InputText id="clave" type="password" @bind-Value="credenciales.Contrasena" autocomplete="current-password" />
+            <ValidationMessage For="() => credenciales.Contrasena" />
+        </div>
+
+        @if (!string.IsNullOrEmpty(mensajeError))
+        {
+            <div class="error" role="alert">@mensajeError</div>
+        }
+
+        <button type="submit" disabled="@cargando">
+            @(cargando ? "Ingresando..." : "Ingresar")
+        </button>
+    </EditForm>
+</div>
+
+@code {
+    private readonly CredencialesLogin credenciales = new();
+    private string? mensajeError;
+    private bool cargando;
+
+    private async Task EnviarAsync()
+    {
+        cargando = true;
+        mensajeError = null;
+
+        var resultado = await Controlador.IniciarSesionAsync(credenciales);
+
+        if (!resultado.Exito)
+            mensajeError = resultado.Mensaje;
+
+        cargando = false;
+    }
+}

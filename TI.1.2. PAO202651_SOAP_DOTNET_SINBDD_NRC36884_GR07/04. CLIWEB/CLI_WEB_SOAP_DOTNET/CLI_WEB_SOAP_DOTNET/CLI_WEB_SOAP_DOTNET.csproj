@@ -1,0 +1,18 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <BlazorDisableThrowNavigationException>true</BlazorDisableThrowNavigationException>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Folder Include="Modelos\" />
+    <Folder Include="Controladores\" />
+    <Folder Include="Servicios\" />
+	<PackageReference Include="System.ServiceModel.Http" Version="8.1.0" />
+	<PackageReference Include="System.ServiceModel.Primitives" Version="8.1.0" />
+  </ItemGroup>
+
+</Project>

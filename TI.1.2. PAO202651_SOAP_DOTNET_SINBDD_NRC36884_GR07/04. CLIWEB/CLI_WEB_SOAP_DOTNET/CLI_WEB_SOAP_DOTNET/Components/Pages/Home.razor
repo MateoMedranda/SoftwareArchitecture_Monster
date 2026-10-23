@@ -1,0 +1,22 @@
+﻿@page "/"
+@rendermode InteractiveServer
+@inject SesionUsuario Sesion
+@inject LoginController Login
+@inject NavigationManager Navegacion
+
+<PageTitle>Inicio</PageTitle>
+
+@if (Sesion.EstaAutenticado)
+{
+    <h1>Hola, @Sesion.NombreUsuario</h1>
+    <p>Sesión iniciada correctamente. Aquí irá la pantalla de conversión.</p>
+    <button @onclick="Login.CerrarSesion">Cerrar sesión</button>
+}
+
+@code {
+    protected override void OnInitialized()
+    {
+        if (!Sesion.EstaAutenticado)
+            Navegacion.NavigateTo("/login");
+    }
+}

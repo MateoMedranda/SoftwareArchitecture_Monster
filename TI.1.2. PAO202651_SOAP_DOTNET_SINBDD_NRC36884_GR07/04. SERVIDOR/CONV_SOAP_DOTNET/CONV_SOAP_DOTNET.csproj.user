@@ -9,6 +9,7 @@
     <IISExpressUseClassicPipelineMode />
     <UseGlobalApplicationHostFile />
     <LastActiveSolutionConfig>Debug|Any CPU</LastActiveSolutionConfig>
+    <NameOfLastUsedPublishProfile>C:\Users\marpa\Documents\SoftwareArchitecture_Monster\TI.1.2. PAO202651_SOAP_DOTNET_SINBDD_NRC36884_GR07\04. SERVIDOR\CONV_SOAP_DOTNET\Properties\PublishProfiles\FolderProfile.pubxml</NameOfLastUsedPublishProfile>
   </PropertyGroup>
   <ProjectExtensions>
     <VisualStudio>
