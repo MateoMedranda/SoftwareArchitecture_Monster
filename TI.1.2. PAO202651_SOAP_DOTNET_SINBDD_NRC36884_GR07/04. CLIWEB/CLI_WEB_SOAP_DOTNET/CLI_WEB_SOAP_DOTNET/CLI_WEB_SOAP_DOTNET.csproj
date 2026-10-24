@@ -8,9 +8,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Modelos\" />
     <Folder Include="Controladores\" />
-    <Folder Include="Servicios\" />
+    <Folder Include="Modelos\Conversiones\" />
 	<PackageReference Include="System.ServiceModel.Http" Version="8.1.0" />
 	<PackageReference Include="System.ServiceModel.Primitives" Version="8.1.0" />
   </ItemGroup>

@@ -1,22 +1,130 @@
 ﻿@page "/"
 @rendermode InteractiveServer
-@inject SesionUsuario Sesion
-@inject LoginController Login
-@inject NavigationManager Navegacion
+@inject ConversionController Controlador
 
-<PageTitle>Inicio</PageTitle>
-
-@if (Sesion.EstaAutenticado)
+@if(@Controlador.EstaAutenticado)
 {
-    <h1>Hola, @Sesion.NombreUsuario</h1>
-    <p>Sesión iniciada correctamente. Aquí irá la pantalla de conversión.</p>
-    <button @onclick="Login.CerrarSesion">Cerrar sesión</button>
+    <PageTitle>Conversor de unidades</PageTitle>
+
+<div class="tarjeta tarjeta-conversor">
+    <div class="cabecera">
+        <span>Bienvenido, @Controlador.NombreUsuario</span>
+        <button type="button" class="boton boton-compacto" @onclick="Controlador.CerrarSesionAsync">Cerrar sesión</button>
+    </div>
+
+    <h1>Conversor de Unidades</h1>
+
+    <EditForm Model="modelo" OnValidSubmit="ConvertirAsync" FormName="FormularioConversion">
+        <DataAnnotationsValidator />
+
+        <div class="campo">
+            <label>Tipo de conversión</label>
+            <div class="radios">
+                @foreach (var categoria in Controlador.Categorias)
+                {
+                    <label class="radio">
+                        <input type="radio" name="categoria"
+                                checked="@(modelo.Categoria == categoria)"
+                                @onchange="() => CambiarCategoria(categoria)" />
+                        <span>@categoria</span>
+                    </label>
+                }
+            </div>
+        </div>
+
+        <div class="campo">
+            <label for="valor">Valor</label>
+            <InputNumber id="valor" @bind-Value="modelo.Valor"
+                            placeholder="0.0000" step="any"
+                            ParsingErrorMessage="Ingrese un valor numérico." />
+            <ValidationMessage For="() => modelo.Valor" />
+        </div>
+
+        <div class="campo">
+            <label for="origen">Unidad inicial</label>
+            <InputSelect id="origen" @bind-Value="modelo.UnidadOrigen">
+                <option value="">Seleccione...</option>
+                @foreach (var unidad in Controlador.UnidadesDe(modelo.Categoria))
+                {
+                    <option value="@unidad.SoapTag">@unidad.FormLabel</option>
+                }
+            </InputSelect>
+            <ValidationMessage For="() => modelo.UnidadOrigen" />
+        </div>
+
+        <div class="campo">
+            <label for="destino">Unidad final</label>
+            <InputSelect id="destino" @bind-Value="modelo.UnidadDestino">
+                <option value="">Seleccione...</option>
+                @foreach (var unidad in Controlador.UnidadesDe(modelo.Categoria))
+                {
+                    <option value="@unidad.SoapTag">@unidad.FormLabel</option>
+                }
+            </InputSelect>
+            <ValidationMessage For="() => modelo.UnidadDestino" />
+        </div>
+
+        <button type="submit" class="boton" disabled="@cargando">
+            @(cargando ? "Convirtiendo..." : "Convertir")
+        </button>
+    </EditForm>
+
+    @if (!string.IsNullOrEmpty(mensajeError))
+    {
+        <div class="error" role="alert">@mensajeError</div>
+    }
+
+    <div class="resultado" aria-live="polite">
+        Resultado: @(resultado is null ? "0.0" : resultado.Value.ToString("G10", System.Globalization.CultureInfo.InvariantCulture))
+        @if (resultado is not null && !string.IsNullOrEmpty(modelo.UnidadDestino))
+        {
+            <span class="unidad-resultado"> @(Controlador.UnidadesDe(modelo.Categoria).FirstOrDefault(u => u.SoapTag == modelo.UnidadDestino)?.Abbr)</span>
+        }
+    </div>
+</div>
 }
 
 @code {
-    protected override void OnInitialized()
+    private readonly SolicitudConversionModelo modelo = new();
+    private double? resultado;
+    private string? mensajeError;
+    private bool cargando;
+
+protected override void OnInitialized()
     {
-        if (!Sesion.EstaAutenticado)
-            Navegacion.NavigateTo("/login");
+        if (!Controlador.EstaAutenticado)
+            Controlador.CerrarSesionAsync();
+    }
+    
+
+    private void CambiarCategoria(string categoria)
+    {
+        modelo.Categoria = categoria;
+        modelo.UnidadOrigen = string.Empty;
+        modelo.UnidadDestino = string.Empty;
+        resultado = null;
+        //unidadResultado = null;
+        mensajeError = null;
+    }
+
+    private async Task ConvertirAsync()
+    {
+        cargando = true;
+        mensajeError = null;
+
+        var respuesta = await Controlador.ConvertirAsync(modelo);
+
+        if (respuesta.Exito && respuesta.Valor is not null)
+        {
+            resultado = respuesta.Valor;
+        }
+        else
+        {
+            resultado = null;
+            mensajeError = respuesta.Mensaje;
+        }
+
+        cargando = false;
     }
 }
+    

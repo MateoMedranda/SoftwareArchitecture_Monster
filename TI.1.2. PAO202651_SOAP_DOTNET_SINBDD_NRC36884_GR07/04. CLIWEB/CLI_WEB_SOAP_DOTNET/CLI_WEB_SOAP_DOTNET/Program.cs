@@ -20,7 +20,9 @@ builder.Services.AddScoped<SesionUsuario>();
 
 // Servicio de negocio + controladores (la "C" de MVC)
 builder.Services.AddScoped<IAutenticacionServicio, AutenticacionServicio>();
+builder.Services.AddScoped<IConversionServicio, ConversionServicio>();
 builder.Services.AddScoped<LoginController>();
+builder.Services.AddScoped<ConversionController>();
 
 var app = builder.Build();
 

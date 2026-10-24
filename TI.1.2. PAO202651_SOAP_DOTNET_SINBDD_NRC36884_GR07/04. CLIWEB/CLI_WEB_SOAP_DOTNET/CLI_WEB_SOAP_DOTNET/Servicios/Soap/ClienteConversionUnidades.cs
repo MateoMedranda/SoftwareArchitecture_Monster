@@ -1,12 +1,12 @@
-using System.ServiceModel;
+using CLI_WEB_SOAP_DOTNET.Servicios.Soap;
 using Microsoft.Extensions.Options;
+using System.ServiceModel;
 
-namespace CLI_WEB_SOAP_DOTNET.Servicios.Soap;
-
-/// <summary>Pasarela hacia el servicio SOAP. Es la única clase que conoce WCF.</summary>
+/// <summary>Pasarela hacia el servicio SOAP. Es la única capa que conoce WCF.</summary>
 public interface IClienteConversionUnidades
 {
     Task<RespuestaInicioSesion> IniciarSesionAsync(SolicitudInicioSesion solicitud);
+    Task<RespuestaConversion> ConvertirAsync(string token, SolicitudConversion solicitud);
 }
 
 public class ClienteConversionUnidades : IClienteConversionUnidades
@@ -32,15 +32,34 @@ public class ClienteConversionUnidades : IClienteConversionUnidades
             binding, new EndpointAddress(config.Url));
     }
 
-    public async Task<RespuestaInicioSesion> IniciarSesionAsync(SolicitudInicioSesion solicitud)
+    public Task<RespuestaInicioSesion> IniciarSesionAsync(SolicitudInicioSesion solicitud) =>
+        Ejecutar(canal => canal.IniciarSesionAsync(solicitud));
+
+    public async Task<RespuestaConversion> ConvertirAsync(string token, SolicitudConversion solicitud)
+    {
+        SolicitudConversionMensaje solicitudConv = new SolicitudConversionMensaje
+        {
+            Token = token,
+            Conversion = solicitud
+        };
+
+        var respuesta = await Ejecutar(canal => canal.ConvertirAsync(solicitudConv));
+
+        return respuesta.ConvertirResult
+               ?? new RespuestaConversion { Exito = false, Mensaje = "El servidor devolvió una respuesta vacía." };
+    }
+
+
+    /// <summary>Abre un canal, ejecuta la operación y lo cierra (o lo aborta si falla).</summary>
+    private async Task<T> Ejecutar<T>(Func<IServicioConversionUnidadesSoap, Task<T>> operacion)
     {
         var canal = _fabrica.CreateChannel();
         var canalCliente = (IClientChannel)canal;
         try
         {
-            var respuesta = await canal.IniciarSesionAsync(solicitud);
+            var resultado = await operacion(canal);
             canalCliente.Close();
-            return respuesta;
+            return resultado;
         }
         catch
         {
