@@ -1,6 +1,7 @@
 ﻿@page "/"
 @rendermode InteractiveServer
 @inject ConversionController Controlador
+@inject NavigationManager Navigation
 
 @if(@Controlador.EstaAutenticado)
 {
@@ -75,7 +76,7 @@
     }
 
     <div class="resultado" aria-live="polite">
-        Resultado: @(resultado is null ? "0.0" : resultado.Value.ToString("G10", System.Globalization.CultureInfo.InvariantCulture))
+        Resultado: @(resultado is null ? "0.0" : resultado.Value.ToString("0.#####", System.Globalization.CultureInfo.InvariantCulture))
         @if (resultado is not null && !string.IsNullOrEmpty(modelo.UnidadDestino))
         {
             <span class="unidad-resultado"> @(Controlador.UnidadesDe(modelo.Categoria).FirstOrDefault(u => u.SoapTag == modelo.UnidadDestino)?.Abbr)</span>
@@ -84,11 +85,23 @@
 </div>
 }
 
+@if (mostrarModalSesionExpirada)
+{
+    <div class="modal-backdrop">
+        <div class="modal-dialog">
+            <h3>Sesión expirada</h3>
+            <p>Tu sesión ha caducado. Por favor, inicia sesión nuevamente para continuar.</p>
+        <button type="button" class="boton" @onclick="IrALogin">Ir a Login</button>
+        </div>
+    </div>
+}
+
 @code {
     private readonly SolicitudConversionModelo modelo = new();
     private double? resultado;
     private string? mensajeError;
     private bool cargando;
+    private bool mostrarModalSesionExpirada;
 
 protected override void OnInitialized()
     {
@@ -96,6 +109,10 @@ protected override void OnInitialized()
             Controlador.CerrarSesionAsync();
     }
     
+    private void IrALogin()
+    {
+        Controlador.CerrarSesionAsync();
+    }
 
     private void CambiarCategoria(string categoria)
     {
@@ -120,8 +137,16 @@ protected override void OnInitialized()
         }
         else
         {
-            resultado = null;
-            mensajeError = respuesta.Mensaje;
+            if (respuesta.Mensaje?.Contains("token", StringComparison.OrdinalIgnoreCase) == true || 
+                respuesta.Mensaje?.Contains("sesión", StringComparison.OrdinalIgnoreCase) == true)
+            {
+                mostrarModalSesionExpirada = true;
+            }
+            else
+            {
+                resultado = null;
+                mensajeError = respuesta.Mensaje;
+            }
         }
 
         cargando = false;

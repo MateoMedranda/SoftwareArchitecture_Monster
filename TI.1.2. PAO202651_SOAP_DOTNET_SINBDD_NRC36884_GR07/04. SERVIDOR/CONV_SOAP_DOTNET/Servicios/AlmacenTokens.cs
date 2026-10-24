@@ -23,6 +23,8 @@ namespace CONV_SOAP_DOTNET.Servicios
 
     public class AlmacenTokens : IAlmacenTokens
     {
+
+        private int duracionTokenMinutos = 15; // Default expiration time in minutes
         private static readonly AlmacenTokens InstanciaCompartida = new AlmacenTokens();
 
         private readonly ConcurrentDictionary<string, EntradaToken> tokens =
@@ -36,11 +38,12 @@ namespace CONV_SOAP_DOTNET.Servicios
         public string GenerarToken(string nombreUsuario)
         {
             string token = Guid.NewGuid().ToString("N");
+            DateTime ahora = DateTime.UtcNow;
             tokens[token] = new EntradaToken
             {
                 NombreUsuario = nombreUsuario,
-                FechaEmision = DateTime.UtcNow,
-                FechaExpiracion = null
+                FechaEmision = ahora,
+                FechaExpiracion = ahora.AddMinutes(duracionTokenMinutos)
             };
 
             return token;
@@ -51,6 +54,18 @@ namespace CONV_SOAP_DOTNET.Servicios
             if (string.IsNullOrWhiteSpace(token))
             {
                 return false;
+            }
+            if(!tokens.TryGetValue(token.Trim(), out EntradaToken entrada))
+            {
+                return false;
+            }
+            else
+            {
+                if (entrada.FechaExpiracion.HasValue && entrada.FechaExpiracion.Value < DateTime.UtcNow)
+                {
+                    RevocarToken(token);
+                    return false;
+                }
             }
 
             return tokens.ContainsKey(token.Trim());
