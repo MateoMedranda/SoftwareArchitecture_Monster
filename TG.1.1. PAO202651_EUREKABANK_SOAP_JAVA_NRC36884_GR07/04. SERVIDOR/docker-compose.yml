@@ -19,19 +19,20 @@ services:
     restart: unless-stopped
 
   # La imagen dhi.io/mysql solo configura el usuario root y no procesa
-  # /docker-entrypoint-initdb.d. Este contenedor de un solo uso aplica
-  # init.sql (base, usuarios y datos) y se salta el script si ya existe
-  # la tabla USUARIO (por ejemplo, en reinicios posteriores).
-  mysql-init:
+  # /docker-entrypoint-initdb.d. Por eso el modelo y los datos se aplican
+  # con contenedores de un solo uso, en ese orden.
+  #
+  # Paso 1: modelo (base de datos, usuarios y DDL del MER).
+  mysql-modelo:
     image: dhi.io/mysql:9-debian-dev
-    container_name: eurekabank_mysql_init
+    container_name: eurekabank_mysql_modelo
     depends_on:
       mysql:
         condition: service_healthy
     environment:
       MYSQL_ROOT_PASSWORD: admin
     volumes:
-      - ./init.sql:/init.sql:ro
+      - ./01-modelo.sql:/scripts/01-modelo.sql:ro
     entrypoint: ["/bin/bash", "-c"]
     command:
       - |
@@ -39,13 +40,41 @@ services:
         export MYSQL_PWD="$$MYSQL_ROOT_PASSWORD"
         echo "Esperando a que MySQL acepte conexiones..."
         until mysqladmin ping -h mysql -uroot --silent; do sleep 2; done
-        COUNT=$$(mysql -h mysql -uroot -N -e "SELECT COUNT(*) FROM information_schema.tables WHERE table_schema='arquitectura_db' AND table_name='USUARIO';")
-        if [ "$$COUNT" -gt 0 ]; then
-          echo "La base de datos ya esta inicializada; se omite init.sql."
+        TABLAS=$$(mysql -h mysql -uroot -N -e "SELECT COUNT(*) FROM information_schema.tables WHERE table_schema='arquitectura_db' AND table_name='USUARIO';")
+        if [ "$$TABLAS" -gt 0 ]; then
+          echo "El modelo ya existe; se omite 01-modelo.sql."
         else
-          echo "Ejecutando init.sql..."
-          mysql -h mysql -uroot < /init.sql
-          echo "init.sql ejecutado correctamente."
+          echo "Ejecutando 01-modelo.sql (modelo)..."
+          mysql -h mysql -uroot < /scripts/01-modelo.sql
+          echo "01-modelo.sql ejecutado correctamente."
+        fi
+    networks:
+      - red_arquitectura
+    restart: "no"
+
+  # Paso 2: datos iniciales. Solo arranca si el modelo terminó con éxito.
+  mysql-datos:
+    image: dhi.io/mysql:9-debian-dev
+    container_name: eurekabank_mysql_datos
+    depends_on:
+      mysql-modelo:
+        condition: service_completed_successfully
+    environment:
+      MYSQL_ROOT_PASSWORD: admin
+    volumes:
+      - ./02-datos.sql:/scripts/02-datos.sql:ro
+    entrypoint: ["/bin/bash", "-c"]
+    command:
+      - |
+        set -e
+        export MYSQL_PWD="$$MYSQL_ROOT_PASSWORD"
+        FILAS=$$(mysql -h mysql -uroot -N -e "SELECT COUNT(*) FROM arquitectura_db.USUARIO;")
+        if [ "$$FILAS" -gt 0 ]; then
+          echo "Los datos ya estan cargados; se omite 02-datos.sql."
+        else
+          echo "Ejecutando 02-datos.sql (datos)..."
+          mysql -h mysql -uroot < /scripts/02-datos.sql
+          echo "02-datos.sql ejecutado correctamente."
         fi
     networks:
       - red_arquitectura
