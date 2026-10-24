@@ -1,0 +1,61 @@
+services:
+  mysql:
+    image: dhi.io/mysql:9-debian-dev
+    container_name: eurekabank_mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: admin
+    ports:
+      - "3307:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -uroot -p$$MYSQL_ROOT_PASSWORD --silent"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+    networks:
+      - red_arquitectura
+    restart: unless-stopped
+
+  # La imagen dhi.io/mysql solo configura el usuario root y no procesa
+  # /docker-entrypoint-initdb.d. Este contenedor de un solo uso aplica
+  # init.sql (base, usuarios y datos) y se salta el script si ya existe
+  # la tabla USUARIO (por ejemplo, en reinicios posteriores).
+  mysql-init:
+    image: dhi.io/mysql:9-debian-dev
+    container_name: eurekabank_mysql_init
+    depends_on:
+      mysql:
+        condition: service_healthy
+    environment:
+      MYSQL_ROOT_PASSWORD: admin
+    volumes:
+      - ./init.sql:/init.sql:ro
+    entrypoint: ["/bin/bash", "-c"]
+    command:
+      - |
+        set -e
+        export MYSQL_PWD="$$MYSQL_ROOT_PASSWORD"
+        echo "Esperando a que MySQL acepte conexiones..."
+        until mysqladmin ping -h mysql -uroot --silent; do sleep 2; done
+        COUNT=$$(mysql -h mysql -uroot -N -e "SELECT COUNT(*) FROM information_schema.tables WHERE table_schema='arquitectura_db' AND table_name='USUARIO';")
+        if [ "$$COUNT" -gt 0 ]; then
+          echo "La base de datos ya esta inicializada; se omite init.sql."
+        else
+          echo "Ejecutando init.sql..."
+          mysql -h mysql -uroot < /init.sql
+          echo "init.sql ejecutado correctamente."
+        fi
+    networks:
+      - red_arquitectura
+    restart: "no"
+
+volumes:
+  mysql_data:
+    name: eurekabank_mysql_data
+
+networks:
+  red_arquitectura:
+    name: arquitectura_network
+    driver: bridge
