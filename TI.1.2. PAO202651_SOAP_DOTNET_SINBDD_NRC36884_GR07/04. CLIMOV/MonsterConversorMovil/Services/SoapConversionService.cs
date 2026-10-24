@@ -13,11 +13,7 @@ public sealed class SoapConversionService : ISoapConversionService
     private const string ContractNamespace = "http://monster/servicioconversionunidades";
     private readonly HttpClient httpClient = new() { Timeout = TimeSpan.FromSeconds(15) };
 
-#if ANDROID
-    public string Endpoint { get; set; } = "http://10.0.2.2:49159/Servicios/ServicioConversionUnidades.svc";
-#else
-    public string Endpoint { get; set; } = "http://localhost:49159/Servicios/ServicioConversionUnidades.svc";
-#endif
+    public string Endpoint { get; set; } = ConfiguracionServicio.ObtenerEndpointSoap();
 
     public async Task<LoginResponse> SignInAsync(LoginRequest request, CancellationToken cancellationToken = default)
     {

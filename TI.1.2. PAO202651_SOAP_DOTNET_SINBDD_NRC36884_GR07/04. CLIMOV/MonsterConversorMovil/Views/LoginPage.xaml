@@ -41,9 +41,9 @@
 
                     <Grid ColumnDefinitions="*,Auto" Margin="0,6,0,-8">
                         <Label Text="Servicio SOAP" FontSize="13" TextColor="#17365D" FontFamily="OpenSansSemibold" />
-                        <Label Grid.Column="1" Text="Editar dirección" FontSize="12" TextColor="#16835D" />
+                        <Button x:Name="ToggleEndpointButton" Grid.Column="1" Text="Cambiar URL" Clicked="OnToggleEndpointClicked" FontSize="12" TextColor="#16835D" BackgroundColor="Transparent" Padding="8,0" HeightRequest="30" />
                     </Grid>
-                    <Border BackgroundColor="#F4F7FB" Stroke="#E0E8F1" StrokeShape="RoundRectangle 12" Padding="12,2">
+                    <Border x:Name="EndpointContainer" IsVisible="False" BackgroundColor="#F4F7FB" Stroke="#E0E8F1" StrokeShape="RoundRectangle 12" Padding="12,2">
                         <Entry x:Name="EndpointEntry" Keyboard="Url" FontSize="12" TextColor="#14213D" PlaceholderColor="#93A4B8" />
                     </Border>
 

@@ -30,6 +30,12 @@ public partial class LoginPage : ContentPage
         ShowStatus(result.Message, false);
     }
 
+    private void OnToggleEndpointClicked(object? sender, EventArgs eventArgs)
+    {
+        EndpointContainer.IsVisible = !EndpointContainer.IsVisible;
+        ToggleEndpointButton.Text = EndpointContainer.IsVisible ? "Ocultar URL" : "Cambiar URL";
+    }
+
     private void SetBusy(bool isBusy)
     {
         SignInButton.IsEnabled = !isBusy;
