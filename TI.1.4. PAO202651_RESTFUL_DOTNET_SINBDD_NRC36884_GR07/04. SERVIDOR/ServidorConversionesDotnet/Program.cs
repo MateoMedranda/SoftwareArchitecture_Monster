@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.OpenApi.Models;
 using ServidorConversionesDotnet.Controladores;
 using ServidorConversionesDotnet.Filtros;
 using ServidorConversionesDotnet.Modelos;
@@ -45,6 +46,43 @@ configurador.Services.AddControllers(options =>
     options.Filters.Add<FiltroAutorizacionToken>();
 });
 
+// Documentación interactiva de las rutas REST y configuración del token JWT.
+configurador.Services.AddEndpointsApiExplorer();
+configurador.Services.AddSwaggerGen(opciones =>
+{
+    opciones.SwaggerDoc("v1", new OpenApiInfo
+    {
+        Title = "API de Conversión de Unidades",
+        Version = "v1",
+        Description = "API REST para autenticar usuarios y convertir unidades de longitud, masa y temperatura."
+    });
+
+    opciones.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+    {
+        Name = "Authorization",
+        Type = SecuritySchemeType.Http,
+        Scheme = "bearer",
+        BearerFormat = "JWT",
+        In = ParameterLocation.Header,
+        Description = "Pegue el token JWT obtenido en /api/autenticacion/login."
+    });
+
+    opciones.AddSecurityRequirement(new OpenApiSecurityRequirement
+    {
+        {
+            new OpenApiSecurityScheme
+            {
+                Reference = new OpenApiReference
+                {
+                    Type = ReferenceType.SecurityScheme,
+                    Id = "Bearer"
+                }
+            },
+            Array.Empty<string>()
+        }
+    });
+});
+
 // 5. Todas las respuestas de validación usan el formato RespuestaError.
 configurador.Services.Configure<ApiBehaviorOptions>(opciones =>
 {
@@ -62,6 +100,13 @@ configurador.Services.Configure<ApiBehaviorOptions>(opciones =>
 });
 
 var aplicacion = configurador.Build();
+
+aplicacion.UseSwagger();
+aplicacion.UseSwaggerUI(opciones =>
+{
+    opciones.SwaggerEndpoint("/swagger/v1/swagger.json", "API de Conversión de Unidades v1");
+    opciones.DocumentTitle = "Documentación API de Conversión";
+});
 
 aplicacion.MapControllers();
 

@@ -6,10 +6,12 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <RootNamespace>ServidorConversionesDotnet</RootNamespace>
     <AssemblyName>ServidorConversionesDotnet</AssemblyName>
+    <UserSecretsId>servidor-conversiones-dotnet-grupo07</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="9.0.0" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.9.0" />
   </ItemGroup>
 
   <ItemGroup>
