@@ -30,6 +30,11 @@ body {
     padding: 40px 24px;
 }
 
+.contenido-login {
+    align-items: center;
+    padding: 24px;
+}
+
 /* ---------- Tarjetas ---------- */
 .tarjeta {
     width: 100%;
@@ -44,8 +49,18 @@ body {
 }
 
 .tarjeta-login {
-    max-width: 400px;
-    margin-top: 10vh;
+    max-width: 380px;
+    margin-top: 0;
+    padding: 40px 32px;
+    border-radius: 16px;
+}
+
+.logo {
+    display: block;
+    width: 108px;
+    height: 108px;
+    margin: 0 auto 24px;
+    object-fit: contain;
 }
 
 .tarjeta h1 {
@@ -70,6 +85,13 @@ body {
 
 .tarjeta-conversor h1 {
     margin-bottom: 20px;
+}
+
+.tarjeta-login h1 {
+    margin: 0 0 28px;
+    text-align: center;
+    font-size: 1.5rem;
+    font-weight: 600;
 }
 
 /* ---------- Formulario ---------- */
@@ -112,6 +134,28 @@ body {
             outline-offset: 0;
             border-color: transparent;
         }
+
+.campo-login {
+    margin-bottom: 16px;
+}
+
+    .campo-login > label {
+        margin-bottom: 6px;
+        font-size: .8rem;
+    }
+
+    .campo-login input[type="text"],
+    .campo-login input[type="password"] {
+        height: 40px;
+        padding: 8px 12px;
+        border-radius: 4px;
+        font-size: 1rem;
+    }
+
+    .campo-login input::placeholder {
+        color: var(--suave);
+        opacity: .85;
+    }
 
 .radios {
     display: flex;
@@ -166,6 +210,13 @@ body {
 .boton-compacto {
     width: auto;
     padding: 10px 18px;
+}
+
+.boton-login {
+    height: 40px;
+    margin-top: 4px;
+    padding: 0 12px;
+    border-radius: 4px;
 }
 
 /* ---------- Mensajes y resultado ---------- */
