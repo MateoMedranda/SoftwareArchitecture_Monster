@@ -20,7 +20,18 @@ public class ConsolaVista {
     }
 
     public void mostrarBienvenida() {
-        salida.println("\n=== CLICON | Conversor de Unidades ===");
+        salida.println();
+        salida.println("============================================================");
+        salida.println("M     M   OOOOO   NN    N   SSSSS  TTTTTTT  EEEEEEE  RRRRRR");
+        salida.println("MM   MM  OO   OO  NNN   N  SS          T    EE       RR   RR");
+        salida.println("M M M M  OO   OO  NN N  N   SSSSS      T    EEEEE    RRRRRR");
+        salida.println("M  M  M  OO   OO  NN  NNN       SS     T    EE       RR  RR");
+        salida.println("M     M   OOOOO   NN    N  SSSSS       T    EEEEEEE  RR   RRR");
+        salida.println("============================================================");
+        salida.println("========================== MONSTER =========================");
+        salida.println("============================================================");
+        salida.println("=== SISTEMA DE CONVERSION DE UNIDADES - CLIENTE SOAP ===");
+        salida.println("============================================================");
     }
 
     public String solicitarTexto(String etiqueta) {
