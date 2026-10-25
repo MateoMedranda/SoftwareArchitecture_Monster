@@ -78,7 +78,7 @@ create table USUARIO
    USUARIO_APELLIDO     varchar(36) not null,
    USUARIO_TELEFONO     varchar(36) not null,
    USUARIO_USUARIO      varchar(36) not null,
-   USUARIO_CONTRASEANIA varchar(36) not null,
+   USUARIO_CONTRASEANIA varchar(64) not null,
    primary key (USUARIO_ID),
    unique key UK_USUARIO_USUARIO (USUARIO_USUARIO)
 ) engine=InnoDB default charset=utf8mb4 collate=utf8mb4_unicode_ci;

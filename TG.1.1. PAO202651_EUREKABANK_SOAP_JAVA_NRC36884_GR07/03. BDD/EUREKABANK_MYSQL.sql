@@ -99,7 +99,7 @@ create table USUARIO
    USUARIO_APELLIDO     varchar(36) not null,
    USUARIO_TELEFONO     varchar(36) not null,
    USUARIO_USUARIO      varchar(36) not null,
-   USUARIO_CONTRASEANIA varchar(36) not null,
+   USUARIO_CONTRASEANIA varchar(64) not null,
    primary key (USUARIO_ID)
 );
 
