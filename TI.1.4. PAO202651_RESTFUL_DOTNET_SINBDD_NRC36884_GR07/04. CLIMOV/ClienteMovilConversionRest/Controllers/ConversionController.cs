@@ -26,7 +26,7 @@ public sealed class ConversionController
         unitsByCategory = new Dictionary<string, IReadOnlyList<UnitOption>>(StringComparer.Ordinal)
         {
             ["Temperatura"] = [new("Celsius", "°C"), new("Fahrenheit", "°F"), new("Kelvin", "K"), new("Rankine", "°R")],
-            ["Longitud"] = [new("Centimetro", "cm"), new("Metro", "m"), new("Kilometro", "km"), new("Yarda", "yd"), new("Pie", "ft"), new("Milla", "mi")],
+            ["Longitud"] = [new("Centimetro", "cm"), new("Metro", "m"), new("Yarda", "yd"), new("Pie", "ft"), new("Milla", "mi")],
             ["Masa"] = [new("Miligramo", "mg"), new("Gramo", "g"), new("Kilogramo", "kg"), new("Onza", "oz"), new("Tonelada", "t")]
         };
     }
