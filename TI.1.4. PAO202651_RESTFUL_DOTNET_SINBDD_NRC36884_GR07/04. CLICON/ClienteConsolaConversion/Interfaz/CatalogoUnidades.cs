@@ -13,10 +13,10 @@ namespace ClienteConsolaConversion.Interfaz
             { "Celsius", "Fahrenheit", "Kelvin", "Rankine" };
 
         private static readonly string[] Longitud =
-            { "Centimetro", "Metro", "Kilometro", "Yarda", "Milla" };
+            { "Centimetro", "Metro", "Pie", "Yarda", "Milla" };
 
         private static readonly string[] Masa =
-            { "Kilogramo", "Gramo", "Onza", "Tonelada" };
+            { "Kilogramo", "Gramo", "Onza", "Tonelada", "Miligramo" };
 
         public static IReadOnlyList<string> Obtener(CategoriaUnidad categoria)
         {
