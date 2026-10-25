@@ -13,10 +13,10 @@ namespace ClienteEscritorioConversion.Modelos
             { "Celsius", "Fahrenheit", "Kelvin", "Rankine" };
 
         private static readonly string[] Longitud =
-            { "Centimetro", "Metro", "Kilometro", "Yarda", "Milla" };
+            { "Centimetro", "Metro", "Pie", "Yarda", "Milla" };
 
         private static readonly string[] Masa =
-            { "Kilogramo", "Gramo", "Onza", "Tonelada" };
+            { "Kilogramo", "Gramo", "Onza", "Tonelada", "Miligramo" };
 
         public static IReadOnlyList<CategoriaUnidad> Categorias { get; } =
             new[] { CategoriaUnidad.Temperatura, CategoriaUnidad.Longitud, CategoriaUnidad.Masa };
