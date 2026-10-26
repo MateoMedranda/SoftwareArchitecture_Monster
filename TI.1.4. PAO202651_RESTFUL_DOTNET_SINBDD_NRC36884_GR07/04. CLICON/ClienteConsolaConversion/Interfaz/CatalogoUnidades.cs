@@ -3,7 +3,7 @@ using ClienteConsolaConversion.Modelos;
 namespace ClienteConsolaConversion.Interfaz
 {
     /// <summary>
-    /// Catálogo de unidades publicadas por el servidor SOAP, por categoría.
+    /// Catálogo de unidades publicadas por el servidor RESTful, por categoría.
     /// Los nombres coinciden exactamente con los enums del servidor
     /// (UnidadTemperatura, UnidadLongitud y UnidadMasa).
     /// </summary>

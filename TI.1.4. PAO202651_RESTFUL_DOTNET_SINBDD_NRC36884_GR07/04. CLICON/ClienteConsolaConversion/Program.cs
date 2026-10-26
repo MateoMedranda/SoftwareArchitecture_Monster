@@ -40,7 +40,7 @@ namespace ClienteConsolaConversion
             }
 
             ConfiguracionCliente configuracion = ConfiguracionCliente.Cargar();
-            var servicio = new ClienteSoapConversion(configuracion.UrlBase);
+            var servicio = new ClienteRestfulConversion(configuracion.UrlBase);
             var sesion = new SesionActual();
 
             Presentacion.MostrarLogo();
@@ -75,7 +75,7 @@ namespace ClienteConsolaConversion
             Presentacion.MostrarInfo("Hasta luego.");
         }
 
-        private static async Task PantallaInicioSesion(ClienteSoapConversion servicio, SesionActual sesion)
+        private static async Task PantallaInicioSesion(ClienteRestfulConversion servicio, SesionActual sesion)
         {
             // Borra el intento anterior (formulario + mensaje de error) y redibuja en su lugar.
             Zona.Borrar();
@@ -140,7 +140,7 @@ namespace ClienteConsolaConversion
             }
         }
 
-        private static async Task FlujoConversion(ClienteSoapConversion servicio, SesionActual sesion)
+        private static async Task FlujoConversion(ClienteRestfulConversion servicio, SesionActual sesion)
         {
             // Etapas: 0 = categoría, 1 = unidad de origen, 2 = unidad de destino, 3 = valor.
             int etapa = 0;

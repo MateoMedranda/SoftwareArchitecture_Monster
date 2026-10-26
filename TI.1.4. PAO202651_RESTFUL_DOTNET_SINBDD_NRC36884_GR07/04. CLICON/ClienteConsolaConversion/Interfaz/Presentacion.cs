@@ -48,7 +48,7 @@ namespace ClienteConsolaConversion.Interfaz
             }
 
             Console.ForegroundColor = ConsoleColor.DarkMagenta;
-            Console.WriteLine("  Conversión de Unidades · Cliente SOAP");
+            Console.WriteLine("  Conversión de Unidades · Cliente RESTful");
             Console.ForegroundColor = colorAnterior;
             Console.WriteLine();
         }

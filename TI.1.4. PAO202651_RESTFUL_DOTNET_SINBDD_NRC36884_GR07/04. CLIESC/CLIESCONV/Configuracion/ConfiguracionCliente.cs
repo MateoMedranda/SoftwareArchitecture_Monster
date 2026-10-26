@@ -41,7 +41,7 @@ namespace ClienteEscritorioConversion.Configuracion
 
             if (string.IsNullOrWhiteSpace(urlBase))
             {
-                urlBase = "http://localhost:5000";
+                urlBase = "http://localhost:60980";
             }
 
             return new ConfiguracionCliente(urlBase);

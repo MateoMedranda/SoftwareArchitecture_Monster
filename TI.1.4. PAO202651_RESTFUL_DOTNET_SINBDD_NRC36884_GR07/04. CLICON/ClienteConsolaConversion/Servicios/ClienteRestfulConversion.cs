@@ -4,7 +4,8 @@ using ClienteConsolaConversion.Modelos;
 
 namespace ClienteConsolaConversion.Servicios
 {
-    public class ClienteSoapConversion
+    /// <summary>Cliente HTTP para la API RESTful de conversión de unidades.</summary>
+    public class ClienteRestfulConversion
     {
         public const string MensajeConexion = "No se pudo conectar con el servidor";
         public const string MensajeTiempoAgotado = "El servicio tardó demasiado en responder. Verifica que esté iniciado e inténtalo de nuevo.";
@@ -17,7 +18,7 @@ namespace ClienteConsolaConversion.Servicios
             PropertyNameCaseInsensitive = true
         };
 
-        public ClienteSoapConversion(string urlBase)
+        public ClienteRestfulConversion(string urlBase)
         {
             if (string.IsNullOrWhiteSpace(urlBase))
             {

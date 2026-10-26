@@ -13,8 +13,8 @@ public class OpcionesApiRest
     public const string ClaveRutaLogin = "LOGIN_ENDPOINT";
     public const string ClaveRutaConversion = "CONVERSION_ENDPOINT";
 
-    /// <summary>URL base de la API, por ejemplo https://localhost:5001.</summary>
-    public string UrlBase { get; set; } = "https://localhost:44329";
+    /// <summary>URL base de la API, por ejemplo http://localhost:60980.</summary>
+    public string UrlBase { get; set; } = "http://localhost:60980";
 
     public int TimeoutSegundos { get; set; } = 30;
 
