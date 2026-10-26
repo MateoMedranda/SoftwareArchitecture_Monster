@@ -96,6 +96,15 @@ public final class DotEnvLoader {
         File archivo = encontrarArchivo();
 
         if (archivo == null || !archivo.exists()) {
+            // Intentar classpath
+            try (java.io.InputStream is = DotEnvLoader.class.getResourceAsStream("/" + NOMBRE_ARCHIVO)) {
+                if (is != null) {
+                    LOG.info("[DotEnvLoader] Cargando configuracion desde classpath: /" + NOMBRE_ARCHIVO);
+                    return leerDesdeInputStream(is);
+                }
+            } catch (IOException e) {
+                LOG.severe("[DotEnvLoader] Error al leer classpath: " + e.getMessage());
+            }
             LOG.warning("[DotEnvLoader] Archivo " + NOMBRE_ARCHIVO
                     + " no encontrado. Usando variables del sistema.");
             return mapa;
@@ -158,8 +167,23 @@ public final class DotEnvLoader {
         return null;
     }
 
-    /** Invalida la caché (útil para pruebas unitarias). */
-    static synchronized void reiniciar() {
-        valores = null;
+    private static Map<String, String> leerDesdeInputStream(java.io.InputStream is) throws IOException {
+        Map<String, String> mapa = new HashMap<>();
+        try (java.io.BufferedReader lector = new java.io.BufferedReader(
+                new java.io.InputStreamReader(is, StandardCharsets.UTF_8))) {
+            String linea;
+            while ((linea = lector.readLine()) != null) {
+                linea = linea.trim();
+                if (linea.isEmpty() || linea.startsWith("#")) continue;
+                int idx = linea.indexOf('=');
+                if (idx > 0) {
+                    String clave = linea.substring(0, idx).trim();
+                    String valor = linea.substring(idx + 1).trim();
+                    mapa.put(clave, valor);
+                }
+            }
+        }
+        LOG.info("[DotEnvLoader] " + mapa.size() + " variables cargadas desde classpath.");
+        return mapa;
     }
 }

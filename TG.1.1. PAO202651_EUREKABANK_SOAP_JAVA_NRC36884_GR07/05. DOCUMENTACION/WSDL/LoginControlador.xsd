@@ -1,0 +1,98 @@
+<?xml version='1.0' encoding='UTF-8'?><!-- Published by XML-WS Runtime (https://github.com/eclipse-ee4j/metro-jax-ws). Runtime's version is Eclipse Metro/4.0.4.payara-p1 (FISH-10142-Metro-4.0.4-fa01c0b; 2025-07-11T17:44:37+0100) XMLWS-Impl/4.0.3 XMLWS-API/4.0.2 XMLB-Impl/4.0.5 XMLB-API/4.0.2 git-revision#fa01c0b. --><xs:schema xmlns:tns="http://servicios.monster.edu.ec/" xmlns:xs="http://www.w3.org/2001/XMLSchema" version="1.0" targetNamespace="http://servicios.monster.edu.ec/">
+
+<xs:element name="LoginFault" nillable="true" type="tns:respuestaError"/>
+
+<xs:element name="login" type="tns:login"/>
+
+<xs:element name="loginResponse" type="tns:loginResponse"/>
+
+<xs:element name="logout" type="tns:logout"/>
+
+<xs:element name="logoutResponse" type="tns:logoutResponse"/>
+
+<xs:element name="respuestaError" type="tns:respuestaError"/>
+
+<xs:element name="respuestaLogin" type="tns:respuestaLogin"/>
+
+<xs:element name="verificarToken" type="tns:verificarToken"/>
+
+<xs:element name="verificarTokenResponse" type="tns:verificarTokenResponse"/>
+
+<xs:complexType name="login">
+<xs:sequence>
+<xs:element name="usuario" type="xs:string" minOccurs="0"/>
+<xs:element name="contrasenia" type="xs:string" minOccurs="0"/>
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="loginResponse">
+<xs:sequence>
+<xs:element name="respuestaLogin" type="tns:respuestaLogin" minOccurs="0"/>
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="respuestaLogin">
+<xs:sequence>
+<xs:element name="exitoso" type="xs:boolean"/>
+<xs:element name="token" type="xs:string" minOccurs="0"/>
+<xs:element name="usuarioId" type="xs:string" minOccurs="0"/>
+<xs:element name="rolId" type="xs:string" minOccurs="0"/>
+<xs:element name="usuarioNombre" type="xs:string" minOccurs="0"/>
+<xs:element name="mensaje" type="xs:string" minOccurs="0"/>
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="respuestaError">
+<xs:complexContent>
+<xs:extension base="tns:exception">
+<xs:sequence>
+<xs:element name="codigo" type="xs:string" minOccurs="0"/>
+<xs:element name="mensaje" type="xs:string" minOccurs="0"/>
+<xs:element name="detalle" type="xs:string" minOccurs="0"/>
+</xs:sequence>
+</xs:extension>
+</xs:complexContent>
+</xs:complexType>
+
+<xs:complexType name="exception">
+<xs:complexContent>
+<xs:extension base="tns:throwable">
+<xs:sequence/>
+</xs:extension>
+</xs:complexContent>
+</xs:complexType>
+
+<xs:complexType name="throwable">
+<xs:sequence>
+<xs:element name="stackTrace" type="tns:stackTraceElement" nillable="true" minOccurs="0" maxOccurs="unbounded"/>
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="stackTraceElement" final="extension restriction">
+<xs:sequence/>
+</xs:complexType>
+
+<xs:complexType name="verificarToken">
+<xs:sequence>
+<xs:element name="token" type="xs:string" minOccurs="0"/>
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="verificarTokenResponse">
+<xs:sequence>
+<xs:element name="respuestaToken" type="tns:respuestaLogin" minOccurs="0"/>
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="logout">
+<xs:sequence>
+<xs:element name="token" type="xs:string" minOccurs="0"/>
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="logoutResponse">
+<xs:sequence>
+<xs:element name="exitoso" type="xs:boolean"/>
+</xs:sequence>
+</xs:complexType>
+</xs:schema>

@@ -8,6 +8,7 @@ package ec.edu.monster.modelos;
  *   TOKEN_TOKEN  varchar(124) — almacena el JTI (UUID) del JWT correspondiente
  *   TOKEN_ESTADO varchar(24)  — ACTIVO | INACTIVO
  *   USUARIO_ID   varchar(36)  FK → USUARIO
+ *   TOKEN_CREADO_EN datetime — fecha/hora de emisión (controla vigencia de 30 min)
  *
  * Nota: TOKEN_TOKEN guarda el JTI del JWT (UUID de 36 chars),
  * no el token JWT completo, para encajar en varchar(124).
@@ -20,6 +21,7 @@ public class Token {
     private String tokenToken;   // JTI del JWT
     private String tokenEstado;  // "ACTIVO" | "INACTIVO"
     private String usuarioId;
+    private java.time.LocalDateTime tokenCreadoEn;
 
     // ─────────────────────────────────────────────────────────────────────────
     //  Constructores
@@ -32,6 +34,12 @@ public class Token {
         this.tokenToken  = tokenToken;
         this.tokenEstado = tokenEstado;
         this.usuarioId   = usuarioId;
+    }
+
+    public Token(String tokenId, String tokenToken, String tokenEstado,
+                 String usuarioId, java.time.LocalDateTime tokenCreadoEn) {
+        this(tokenId, tokenToken, tokenEstado, usuarioId);
+        this.tokenCreadoEn = tokenCreadoEn;
     }
 
     // ─────────────────────────────────────────────────────────────────────────
@@ -50,6 +58,9 @@ public class Token {
     public String getUsuarioId() { return usuarioId; }
     public void setUsuarioId(String usuarioId) { this.usuarioId = usuarioId; }
 
+    public java.time.LocalDateTime getTokenCreadoEn() { return tokenCreadoEn; }
+    public void setTokenCreadoEn(java.time.LocalDateTime tokenCreadoEn) { this.tokenCreadoEn = tokenCreadoEn; }
+
     // ─────────────────────────────────────────────────────────────────────────
     //  Object
     // ─────────────────────────────────────────────────────────────────────────
@@ -57,6 +68,6 @@ public class Token {
     @Override
     public String toString() {
         return "Token{tokenId='" + tokenId + "', tokenEstado='" + tokenEstado
-                + "', usuarioId='" + usuarioId + "'}";
+                + "', usuarioId='" + usuarioId + "', tokenCreadoEn='" + tokenCreadoEn + "'}";
     }
 }

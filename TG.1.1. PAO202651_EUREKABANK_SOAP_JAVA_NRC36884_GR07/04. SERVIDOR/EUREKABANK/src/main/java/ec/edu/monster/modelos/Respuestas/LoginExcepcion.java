@@ -1,6 +1,6 @@
-package ec.edu.monster.servicios;
+package ec.edu.monster.modelos.Respuestas;
 
-import ec.edu.monster.modelos.RespuestaError;
+import ec.edu.monster.modelos.Respuestas.RespuestaError;
 import jakarta.xml.ws.WebFault;
 
 /**
@@ -72,9 +72,6 @@ public class LoginExcepcion extends Exception {
         this.faultInfo = faultInfo;
     }
 
-    // ─────────────────────────────────────────────────────────────────────────
-    //  Getter requerido por JAX-WS para serializar el faultBean
-    // ─────────────────────────────────────────────────────────────────────────
 
     /**
      * Retorna el detalle del error. JAX-WS utiliza este método

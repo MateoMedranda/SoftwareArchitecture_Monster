@@ -8,13 +8,4 @@
             30
         </session-timeout>
     </session-config>
-    <servlet>
-        <servlet-name>LoginServicio</servlet-name>
-        <servlet-class>com.sun.xml.ws.transport.http.servlet.WSServlet</servlet-class>
-        <load-on-startup>1</load-on-startup>
-    </servlet>
-    <servlet-mapping>
-        <servlet-name>LoginServicio</servlet-name>
-        <url-pattern>/LoginServicio</url-pattern>
-    </servlet-mapping>
 </web-app>

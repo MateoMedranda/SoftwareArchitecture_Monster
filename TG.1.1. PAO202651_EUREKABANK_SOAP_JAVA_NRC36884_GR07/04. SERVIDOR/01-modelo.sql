@@ -114,6 +114,7 @@ create table TOKEN
    TOKEN_ESTADO         varchar(24) not null,
    TOKEN_ID             varchar(36) not null,
    USUARIO_ID           varchar(36) not null,
+   TOKEN_CREADO_EN      datetime not null default current_timestamp,
    primary key (TOKEN_ID)
 ) engine=InnoDB default charset=utf8mb4 collate=utf8mb4_unicode_ci;
 
@@ -128,7 +129,7 @@ create table TRANSACCION
    TRANSACCION_TIPO     varchar(36) not null,
    TRANSACCION_SALDO_ANTERIOR decimal(12,2) not null,
    TRANSACCION_SALDO_POSTERIOR decimal(12,2) not null,
-   TRANSACCION_CREADO_EN_ datetime not null,
+   TRANSACCION_CREADO_EN datetime not null,
    TRANSACCION_CREADO_POR varchar(36) not null,
    primary key (TRANSACCION_ID)
 ) engine=InnoDB default charset=utf8mb4 collate=utf8mb4_unicode_ci;

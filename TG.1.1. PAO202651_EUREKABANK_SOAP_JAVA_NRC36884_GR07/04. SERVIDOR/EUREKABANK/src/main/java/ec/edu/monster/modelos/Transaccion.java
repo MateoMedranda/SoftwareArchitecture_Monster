@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
  *   TRANSACCION_TIPO             varchar(36)    — p.ej. "DEPOSITO", "RETIRO", "TRANSFERENCIA"
  *   TRANSACCION_SALDO_ANTERIOR   decimal(12,2)  — saldo antes de la transacción
  *   TRANSACCION_SALDO_POSTERIOR  decimal(12,2)  — saldo después de la transacción
- *   TRANSACCION_CREADO_EN_       datetime       — fecha y hora de la transacción
+ *   TRANSACCION_CREADO_EN      datetime       — fecha y hora de la transacción
  *   TRANSACCION_CREADO_POR       varchar(36)    — USUARIO_ID que realizó la transacción
  *
  * @author MONSTER GR07

@@ -1,8 +1,8 @@
 package ec.edu.monster.controladores;
 
 import ec.edu.monster.configuracion.TokenGenerador;
-import ec.edu.monster.servicios.LoginExcepcion;
-import ec.edu.monster.modelos.RespuestaError;
+import ec.edu.monster.modelos.Respuestas.LoginExcepcion;
+import ec.edu.monster.modelos.Respuestas.RespuestaError;
 import io.jsonwebtoken.Claims;
 import java.util.Optional;
 

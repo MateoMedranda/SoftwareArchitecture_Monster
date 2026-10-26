@@ -27,7 +27,9 @@ import javax.crypto.SecretKey;
  *   - Se genera un JWT firmado con HMAC-SHA256.
  *   - El JWT incluye un claim "jti" (JWT ID) que es un UUID único.
  *   - El JTI se almacena en la tabla TOKEN de la BDD (TOKEN_TOKEN = jti).
- *   - La validación verifica: firma válida + no expirado + JTI en estado ACTIVO.
+ *   - TOKEN_CREADO_EN registra la fecha/hora de emisión del token.
+ *   - La validación verifica: firma válida + no expirado + JTI en estado ACTIVO
+ *     + antigüedad menor o igual a 30 minutos según TOKEN_CREADO_EN.
  *   - La revocación cambia el estado del JTI a INACTIVO (logout / blacklist).
  *
  * Configuración (via .development.env):
@@ -42,8 +44,8 @@ public class TokenGenerador {
 
     private static final Logger LOG = Logger.getLogger(TokenGenerador.class.getName());
 
-    /** Expiración del token: 8 horas */
-    private static final long EXPIRACION_MS = 8L * 60 * 60 * 1000;
+    /** Expiracion del token: 30 minutos */
+    private static final long EXPIRACION_MS = 30L * 60 * 1000;
 
     /**
      * Secreto por defecto (CAMBIAR en producción via JWT_SECRETO en .development.env).
@@ -65,22 +67,23 @@ public class TokenGenerador {
      * @param usuarioId ID del usuario (subject del JWT)
      * @param rolId     ID del rol del usuario (claim personalizado)
      * @return JWT compacto: header.payload.signature
+     * @throws SQLException si no se puede registrar el JTI en la tabla TOKEN
      */
-    public String generarToken(String usuarioId, String rolId) {
+    public String generarToken(String usuarioId, String rolId) throws SQLException {
         String jti = UUID.randomUUID().toString();
         Date ahora = new Date();
         Date expiracion = new Date(ahora.getTime() + EXPIRACION_MS);
 
         String jwt = Jwts.builder()
-                .id(jti)                         // jti claim — identificador único del token
-                .subject(usuarioId)              // sub claim — ID del usuario
-                .claim("rol", rolId)             // claim personalizado — ID del rol
-                .issuedAt(ahora)                 // iat claim — fecha de emisión
-                .expiration(expiracion)          // exp claim — fecha de expiración (8 h)
-                .signWith(obtenerClave())         // firma HMAC-SHA256
+                .id(jti)
+                .subject(usuarioId)
+                .claim("rol", rolId)
+                .issuedAt(ahora)
+                .expiration(expiracion)
+                .signWith(obtenerClave())
                 .compact();
 
-        registrarJtiEnBDD(jti, usuarioId);
+        registrarOActualizarJtiEnBDD(jti, usuarioId);
         LOG.info("[TokenGenerador] Token generado para usuario: " + usuarioId + " | JTI: " + jti);
         return jwt;
     }
@@ -107,6 +110,11 @@ public class TokenGenerador {
             String jti = claims.getId();
             if (!esJtiActivo(jti)) {
                 LOG.warning("[TokenGenerador] Token revocado o no registrado — JTI: " + jti);
+                return Optional.empty();
+            }
+            // Verificar antiguedad (30 min) contra BDD
+            if (!esTokenVigente(jti)) {
+                LOG.warning("[TokenGenerador] Token expirado por antiguedad (>30 min) — JTI: " + jti);
                 return Optional.empty();
             }
             return Optional.of(claims);
@@ -168,17 +176,33 @@ public class TokenGenerador {
         return Keys.hmacShaKeyFor(bytes);
     }
 
-    private void registrarJtiEnBDD(String jti, String usuarioId) {
-        String sql = "INSERT INTO TOKEN (TOKEN_ID, TOKEN_TOKEN, TOKEN_ESTADO, USUARIO_ID) "
-                   + "VALUES (?, ?, 'ACTIVO', ?)";
-        try (Connection conn = conexionBDD.getConexion();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setString(1, UUID.randomUUID().toString());
-            ps.setString(2, jti);   // JTI = UUID (36 chars) — cabe en varchar(124)
-            ps.setString(3, usuarioId);
-            ps.executeUpdate();
+    private void registrarOActualizarJtiEnBDD(String jti, String usuarioId) throws SQLException {
+        String select = "SELECT TOKEN_ID FROM TOKEN WHERE USUARIO_ID = ? LIMIT 1";
+        String update = "UPDATE TOKEN SET TOKEN_TOKEN = ?, TOKEN_ESTADO = 'ACTIVO', TOKEN_CREADO_EN = NOW() WHERE USUARIO_ID = ?";
+        String insert = "INSERT INTO TOKEN (TOKEN_ID, TOKEN_TOKEN, TOKEN_ESTADO, USUARIO_ID, TOKEN_CREADO_EN) VALUES (?, ?, 'ACTIVO', ?, NOW())";
+        try (Connection conn = conexionBDD.getConexion()) {
+            try (PreparedStatement ps = conn.prepareStatement(select)) {
+                ps.setString(1, usuarioId);
+                try (ResultSet rs = ps.executeQuery()) {
+                    if (rs.next()) {
+                        try (PreparedStatement ups = conn.prepareStatement(update)) {
+                            ups.setString(1, jti);
+                            ups.setString(2, usuarioId);
+                            ups.executeUpdate();
+                        }
+                        return;
+                    }
+                }
+            }
+            try (PreparedStatement ips = conn.prepareStatement(insert)) {
+                ips.setString(1, UUID.randomUUID().toString());
+                ips.setString(2, jti);
+                ips.setString(3, usuarioId);
+                ips.executeUpdate();
+            }
         } catch (SQLException e) {
-            LOG.severe("[TokenGenerador] Error al registrar JTI en BDD: " + e.getMessage());
+            LOG.severe("[TokenGenerador] Error al registrar/actualizar JTI en BDD: " + e.getMessage());
+            throw e;
         }
     }
 
@@ -197,6 +221,24 @@ public class TokenGenerador {
         return false;
     }
 
+    private boolean esTokenVigente(String jti) {
+        // La antigüedad se calcula con la hora del servidor de BDD para evitar
+        // desfases entre la zona horaria de MySQL y la de Payara.
+        String sql = "SELECT TIMESTAMPDIFF(SECOND, TOKEN_CREADO_EN, NOW()) AS EDAD "
+                   + "FROM TOKEN WHERE TOKEN_TOKEN = ?";
+        try (Connection conn = conexionBDD.getConexion();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, jti);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                long edadSegundos = rs.getLong("EDAD");
+                return edadSegundos <= (EXPIRACION_MS / 1000);
+            }
+        } catch (SQLException e) {
+            LOG.severe("[TokenGenerador] Error al verificar antiguedad: " + e.getMessage());
+        }
+        return false;
+    }
     private boolean marcarJtiInactivo(String jti) {
         String sql = "UPDATE TOKEN SET TOKEN_ESTADO = 'INACTIVO' WHERE TOKEN_TOKEN = ?";
         try (Connection conn = conexionBDD.getConexion();

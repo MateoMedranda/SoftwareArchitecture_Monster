@@ -1,17 +1,13 @@
 package ec.edu.monster.servicios;
 
-import ec.edu.monster.modelos.RespuestaError;
-import ec.edu.monster.modelos.RespuestaLogin;
+import ec.edu.monster.modelos.Respuestas.LoginExcepcion;
+import ec.edu.monster.modelos.Respuestas.RespuestaError;
+import ec.edu.monster.modelos.Respuestas.RespuestaLogin;
 import ec.edu.monster.configuracion.TokenGenerador;
 import ec.edu.monster.conexion.ConexionBDD;
 import io.jsonwebtoken.Claims;
 import jakarta.ejb.EJB;
 import jakarta.ejb.Stateless;
-import jakarta.jws.WebMethod;
-import jakarta.jws.WebParam;
-import jakarta.jws.WebResult;
-import jakarta.jws.WebService;
-import jakarta.jws.soap.SOAPBinding;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -23,9 +19,9 @@ import java.util.Optional;
 import java.util.logging.Logger;
 
 /**
- * Servicio SOAP de autenticación de EUREKABANK.
+ * Servicio de lógica de negocio para la autenticación de EUREKABANK.
  *
- * Expone tres operaciones:
+ * Provee tres operaciones:
  *
  *   1. login(usuario, contrasenia)
  *      → Autentica al usuario contra la BDD (SHA-256).
@@ -40,8 +36,7 @@ import java.util.logging.Logger;
  *      → Valida que el token sea correcto y esté activo.
  *        Retorna los datos del usuario si es válido.
  *
- * URL del WSDL (Payara):
- *   https://localhost:8181/EUREKABANK/LoginServicio?wsdl
+ * La exposición SOAP de estas operaciones está en LoginControlador.
  *
  * Encriptación de contraseña:
  *   Algoritmo: SHA-256 (hexadecimal, minúsculas).
@@ -57,12 +52,6 @@ import java.util.logging.Logger;
  * @author MONSTER GR07
  */
 @Stateless
-@WebService(
-    serviceName     = "LoginServicio",
-    portName        = "LoginServicioPort",
-    targetNamespace = "http://servicios.monster.edu.ec/"
-)
-@SOAPBinding(style = SOAPBinding.Style.DOCUMENT)
 public class LoginServicio {
 
     private static final Logger LOG = Logger.getLogger(LoginServicio.class.getName());
@@ -85,11 +74,9 @@ public class LoginServicio {
      * @return RespuestaLogin con token JWT y datos del usuario
      * @throws LoginExcepcion con RespuestaError en caso de credenciales inválidas u otros errores
      */
-    @WebMethod(operationName = "login")
-    @WebResult(name = "respuestaLogin")
     public RespuestaLogin login(
-            @WebParam(name = "usuario")     String usuario,
-            @WebParam(name = "contrasenia") String contrasenia
+            String usuario,
+            String contrasenia
     ) throws LoginExcepcion {
 
         // ── Validar parámetros de entrada ──
@@ -173,7 +160,7 @@ public class LoginServicio {
                 usuarioId,
                 rolId,
                 nombre + " " + apellido,
-                "Autenticación exitosa. Bienvenido, " + nombre + ". El token expira en 8 horas."
+                "Autenticación exitosa. Bienvenido, " + nombre + ". El token expira en 30 minutos."
             );
 
         } catch (LoginExcepcion e) {
@@ -204,10 +191,8 @@ public class LoginServicio {
      * @return true si el logout fue exitoso
      * @throws LoginExcepcion si el token es inválido, expirado o ya fue revocado
      */
-    @WebMethod(operationName = "logout")
-    @WebResult(name = "exitoso")
     public boolean logout(
-            @WebParam(name = "token") String token
+            String token
     ) throws LoginExcepcion {
 
         // Verificar que el token sea válido antes de revocar
@@ -241,10 +226,8 @@ public class LoginServicio {
      * @return RespuestaLogin con los datos del usuario si el token es válido
      * @throws LoginExcepcion si el token es inválido o expirado
      */
-    @WebMethod(operationName = "verificarToken")
-    @WebResult(name = "respuestaToken")
     public RespuestaLogin verificarToken(
-            @WebParam(name = "token") String token
+            String token
     ) throws LoginExcepcion {
 
         Claims claims = verificarTokenOLanzar(token, "verificarToken");

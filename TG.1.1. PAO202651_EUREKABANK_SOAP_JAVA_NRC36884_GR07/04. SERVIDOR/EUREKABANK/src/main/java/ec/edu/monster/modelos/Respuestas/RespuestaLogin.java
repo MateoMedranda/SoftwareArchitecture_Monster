@@ -1,13 +1,16 @@
-package ec.edu.monster.modelos;
+package ec.edu.monster.modelos.Respuestas;
+
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlRootElement;
 
 /**
  * DTO de respuesta exitosa del servicio SOAP de login.
  *
- * Retornado por LoginServicio.login() cuando las credenciales son válidas.
- * JAXB serializa este objeto automáticamente en el mensaje SOAP de respuesta.
- *
  * @author MONSTER GR07
  */
+@XmlRootElement(name = "respuestaLogin")
+@XmlAccessorType(XmlAccessType.FIELD)
 public class RespuestaLogin {
 
     /** Indica si la operación fue exitosa */

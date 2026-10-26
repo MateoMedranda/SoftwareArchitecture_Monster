@@ -1,26 +1,18 @@
-package ec.edu.monster.modelos;
+package ec.edu.monster.modelos.Respuestas;
+
+
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlRootElement;
 
 /**
- * DTO de error para el servicio SOAP.
- *
- * Se usa como faultBean en {@link LoginExcepcion} (@WebFault).
- * JAXB lo serializa como elemento &lt;detail&gt; dentro del SOAPFault,
- * permitiendo mensajes de error estructurados y amigables.
- *
- * Códigos de error definidos:
- *   CAMPO_REQUERIDO       — falta un campo obligatorio en la petición
- *   USUARIO_NO_ENCONTRADO — el nombre de usuario no existe en la BDD
- *   CREDENCIALES_INVALIDAS — contraseña incorrecta
- *   TOKEN_REQUERIDO       — se invocó una operación protegida sin token
- *   TOKEN_INVALIDO        — el token es inválido, expirado o fue revocado
- *   ACCESO_DENEGADO       — el token no tiene el rol requerido
- *   LOGOUT_FALLIDO        — no se pudo revocar el token
- *   ERROR_BASE_DATOS      — fallo en la conexión o consulta a la BDD
- *   ERROR_CIFRADO         — error interno al procesar la contraseña
+ * DTO de respuesta por error
  *
  * @author MONSTER GR07
  */
-public class RespuestaError {
+@XmlRootElement(name = "respuestaError")
+@XmlAccessorType(XmlAccessType.FIELD)
+public class RespuestaError extends Exception{
 
     /** Código de error técnico (constante identificadora) */
     private String codigo;
@@ -28,10 +20,6 @@ public class RespuestaError {
     /** Mensaje amigable para el usuario final */
     private String mensaje;
 
-    /**
-     * Detalle técnico adicional (puede ser null).
-     * Útil para diagnóstico en desarrollo; omitir en producción si es sensible.
-     */
     private String detalle;
 
     // ─────────────────────────────────────────────────────────────────────────
