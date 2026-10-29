@@ -1,5 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<network-security-config>
-  <!-- El servicio WCF de desarrollo se expone por HTTP mediante IIS Express. -->
-  <base-config cleartextTrafficPermitted="true" />
-</network-security-config>
