@@ -1,0 +1,6 @@
+Copie su logo PNG con el nombre exacto logo_eurekabank.png.
+
+Ruta final:
+app/src/main/res/drawable/logo_eurekabank.png
+
+La app detecta el PNG al iniciar; mientras no exista, usa el monograma de respaldo.
