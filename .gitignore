@@ -6,3 +6,5 @@ obj/
 *.user
 .vs/
 .development.env
+# Variables de entorno con credenciales
+.env
