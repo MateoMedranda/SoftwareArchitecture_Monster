@@ -58,6 +58,7 @@ Los dos proyectos leen las cadenas `ConnectionStrings__Facturacion` y `Connectio
 ### CRUD
 
 Base URL: http://localhost:5173
+
 También tienes todos estos ejemplos listos en SISTEMA_BANQUITO.http.
 **Diagnóstico**
 | Método |	Ruta |
@@ -70,81 +71,92 @@ También tienes todos estos ejemplos listos en SISTEMA_BANQUITO.http.
 POST /api/sujeto-credito/verificar
 { "cedula": "0102030405" }
 Con el seed: Ana true, Luis EDAD_INSUFICIENTE, María SIN_DEPOSITO, Carlos CREDITO_ACTIVO y Sofía CREDITO_ACTIVO (tiene el crédito 1002).
-Monto máximo
+
+### Monto máximo
 POST /api/monto-maximo/calcular
 { "codCliente": 106 }
 Otorgar crédito (P=450, n=6 → primera cuota 78.65)
+
 POST /api/credito/otorgar
 {
   "codCliente": 106,
   "precioTelefono": 450.00,
   "numCuotas": 6
 }
-Consultar tabla de amortización
+
+### Consultar tabla de amortización
 POST /api/amortizacion/consultar
 { "numCredito": 1002 }
 También acepta { "codCliente": 110 }.
-Clientes — /api/clientes
-Método	Ruta	Body
-GET	/api/clientes	—
-POST	/api/clientes/buscar-codigo	{ "valor": 106 }
-POST	/api/clientes/buscar-cedula	{ "valor": "0102030405" }
-POST	/api/clientes	ver abajo
-PUT	/api/clientes/{codigo}	mismo body
-DELETE	/api/clientes/{codigo}	—
+### Clientes — /api/clientes
+ Método |	Ruta | Body |
+ | --- | --- | --- |
+| GET	| /api/clientes |	— |
+| POST |	/api/clientes/buscar-codigo	| { "valor": 106 } |
+| POST |	/api/clientes/buscar-cedula	| { "valor": "0102030405" } |
+| POST |	/api/clientes	| ver abajo |
+| PUT	| /api/clientes/{codigo}	| mismo body |
+| DELETE |	/api/clientes/{codigo}	| — |
+
 {
   "cedula": "0607080910",
   "nombre": "Pedro Salazar",
   "genero": "M",
   "fechaNacimiento": "1990-03-15"
 }
-Cuentas — /api/cuentas
-Método	Ruta	Body
-GET	/api/cuentas	—
-POST	/api/cuentas/buscar	{ "valor": "10000001" }
-POST	/api/cuentas/por-cliente	{ "valor": 106 }
-POST	/api/cuentas	ver abajo
-PUT	/api/cuentas/{numCuenta}	mismo body
-DELETE	/api/cuentas/{numCuenta}	—
+
+### Cuentas — /api/cuentas
+ Método |	Ruta | Body |
+ | --- | --- | --- |
+| GET	| /api/cuentas |	—
+| POST | /api/cuentas/buscar	| { "valor": "10000001" }
+| POST	| /api/cuentas/por-cliente |	{ "valor": 106 }
+| POST	| /api/cuentas	| ver abajo
+| PUT	| /api/cuentas/{numCuenta}	| mismo body
+| DELETE |	/api/cuentas/{numCuenta}	| — |
+
 { "codCliente": 106, "saldoCuenta": 250.00 }
-Movimientos — /api/movimientos
-Método	Ruta	Body
-GET	/api/movimientos	—
-POST	/api/movimientos/buscar	{ "valor": 1 }
-POST	/api/movimientos/por-cuenta	{ "valor": "10000001" }
-POST	/api/movimientos/por-cliente	{ "valor": 106 }
-POST	/api/movimientos	ver abajo
-PUT	/api/movimientos/{codigo}	mismo body
-DELETE	/api/movimientos/{codigo}	—
+### Movimientos — /api/movimientos
+ Método |	Ruta | Body |
+ | --- | --- | --- |
+| GET	| /api/movimientos	| —
+| POST	| /api/movimientos/buscar	| { "valor": 1 }
+| POST	| /api/movimientos/por-cuenta	| { "valor": "10000001" }
+| POST	| /api/movimientos/por-cliente	| { "valor": 106 }
+| POST	| /api/movimientos	| ver abajo
+| PUT	| /api/movimientos/{codigo}	| mismo body
+| DELETE	| /api/movimientos/{codigo} | 	—
 {
   "numCuenta": "10000001",
   "tipo": "DEP",
   "valor": 100.00
 }
+
 Tipo permitido: "DEP" o "RET". El saldo de la cuenta se actualiza en la misma transacción.
-Créditos — /api/creditos
-Método	Ruta	Body
-GET	/api/creditos	—
-POST	/api/creditos/buscar	{ "valor": 1002 }
-POST	/api/creditos/por-cuenta	{ "valor": "10000005" }
-POST	/api/creditos/por-cliente	{ "valor": 110 }
-PUT	/api/creditos/{numCredito}	{ "creditoTotal": 900.00 }
-DELETE	/api/creditos/{numCredito}	—
-Amortizaciones — /api/amortizaciones
-Método	Ruta	Body
-POST	/api/amortizaciones/tabla	{ "valor": 1002 }
-POST	/api/amortizaciones/tabla-por-cliente	{ "valor": 110 }
-GET	/api/amortizaciones/1002/1	—
-POST	/api/amortizaciones/pagar	ver abajo
+
+### Créditos — /api/creditos
+ Método |	Ruta | Body |
+ | --- | --- | --- |
+| GET	| /api/creditos	| —| 
+| POST	| /api/creditos/buscar	| { "valor": 1002 }| 
+| POST	| /api/creditos/por-cuenta	| { "valor": "10000005" }| 
+| POST	| /api/creditos/por-cliente	| { "valor": 110 }| 
+| PUT	| /api/creditos/{numCredito}	| { "creditoTotal": 900.00 }| 
+| DELETE	| /api/creditos/{numCredito}	| — | 
+
+### Amortizaciones — /api/amortizaciones
+ Método |	Ruta | Body |
+ | --- | --- | --- |
+| POST	| /api/amortizaciones/tabla	| { "valor": 1002 }
+| POST	| /api/amortizaciones/tabla-por-cliente	| { "valor": 110 }
+| GET	| /api/amortizaciones/1002/1	| —
+| POST	| /api/amortizaciones/pagar	| ver abajo
+
 {
   "numCredito": 1002,
   "numCuota": 1,
   "numCuenta": "10000005"
 }
-Con el seed, la cuenta 10000005 tiene 3200.10; al pagar la cuota 81.95 queda 3118.15. Si repites el pago devuelve 409 con “La cuota … ya fue pagada”.
-Respuestas
-- Crear, actualizar, eliminar y pagar devuelven:
-{ "exitoso": true, "mensaje": "...", "procesoHttp": "CREAR" }
 
 ## Actualización del esquema
 
