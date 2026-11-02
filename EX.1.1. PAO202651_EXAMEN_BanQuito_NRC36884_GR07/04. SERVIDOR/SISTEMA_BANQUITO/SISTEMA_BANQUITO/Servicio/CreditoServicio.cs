@@ -140,7 +140,7 @@ public sealed class CreditoServicio
     }
 
     /// <summary>
-    /// montoMaximo = max(0, (promedioDepositos3m - promedioRetiros3m) * 0.30 * 6).
+    /// montoMaximo = max(0, (promedioDepositos3m - promedioRetiros3m) * 0.35 * 6).
     /// </summary>
     public async Task<RespuestaMontoMaximoDTO> ObtenerMontoMaximoAsync(
         SolicitudMontoMaximoDTO solicitud,
@@ -162,7 +162,7 @@ public sealed class CreditoServicio
 
         var promedioDepositos = depositos / 3m;
         var promedioRetiros = retiros / 3m;
-        var monto = (promedioDepositos - promedioRetiros) * 0.30m * 6m;
+        var monto = (promedioDepositos - promedioRetiros) * 0.35m * 6m;
 
         if (monto < 0)
         {
