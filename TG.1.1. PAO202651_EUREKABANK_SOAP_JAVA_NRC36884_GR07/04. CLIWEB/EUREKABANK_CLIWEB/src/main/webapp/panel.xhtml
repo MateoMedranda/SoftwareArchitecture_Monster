@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="jakarta.faces.html" xmlns:f="jakarta.faces.core"
+      xmlns:ui="jakarta.faces.facelets" xmlns:a="http://xmlns.jcp.org/jsf/passthrough">
+<f:metadata><f:viewAction action="#{bancaBean.cargarCuentas}" if="#{sesionBean.activa}"/></f:metadata>
+<h:head>
+  <title>EUREKABANK · Panel</title>
+  <h:outputStylesheet library="css" name="eureka.css"/><style type="text/css">.icon-button svg{width:17px;height:17px;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}.icon-button svg circle{fill:currentColor;stroke:none}</style>
+</h:head>
+<h:body>
+  <header class="topbar">
+    <a class="brand"><h:graphicImage library="img" name="logo.png" styleClass="brand-logo small"/><span>◆ EUREKABANK</span></a>
+    <nav><a href="#cuentas">Resumen</a><a href="#historial">Movimientos</a><a href="#transferir">Transferir</a><a href="#operar">Operar</a>
+      <h:form styleClass="inline"><span>Hola, #{sesionBean.nombre}</span><h:commandButton value="Salir" action="#{sesionBean.salir}" styleClass="ghost"/></h:form>
+    </nav>
+  </header>
+  <main class="shell">
+    <section class="hero"><div><p class="eyebrow">PANEL PRINCIPAL</p><h1>Gestión financiera<br/>con claridad.</h1><p>Consulta saldos, realiza operaciones y administra movimientos de forma segura.</p></div><div class="secure">✓<br/><b>Operaciones auditables</b><small>Todo cambio se valida y registra en el servidor.</small></div></section>
+    <h:panelGroup id="globalMessage" layout="block"><h:panelGroup rendered="#{not empty bancaBean.mensaje}" layout="block" styleClass="alert">#{bancaBean.mensaje}</h:panelGroup></h:panelGroup>
+    <h:panelGroup id="accountsPanel" layout="block"><section id="cuentas">
+      <div class="section-title"><div><p class="eyebrow">PRODUCTOS</p><h2>Mis cuentas</h2></div><h:form><h:commandButton value="↻ Actualizar" action="#{bancaBean.cargarCuentas}" styleClass="ghost"/></h:form></div>
+      <div class="cards">
+        <ui:repeat value="#{bancaBean.cuentas}" var="c">
+          <article class="account-card">
+            <span>CUENTA #{c.estado}</span>
+            <div class="number-row"><h3 class="account-number masked" data-number="#{c.numero}">••••••#{c.numero.substring(c.numero.length()-4)}</h3><button type="button" class="icon-button" title="Mostrar número" onclick="toggleAccount(this)"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2.5 12s3.4-6 9.5-6 9.5 6 9.5 6-3.4 6-9.5 6-9.5-6-9.5-6Z"/><circle cx="12" cy="12" r="2.7"/></svg></button><button type="button" class="icon-button" title="Copiar número" onclick="copyAccount(this)"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="8" y="8" width="11" height="12" rx="2"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h2"/></svg></button></div>
+            <strong>$ <h:outputText value="#{c.saldo}"><f:convertNumber minFractionDigits="2" maxFractionDigits="2"/></h:outputText></strong><small>Sucursal #{c.sucursal}</small>
+          </article>
+        </ui:repeat>
+      </div>
+    </section></h:panelGroup>
+    <section class="grid">
+      <article id="transferir" class="surface"><p class="eyebrow">TRANSFERENCIA</p><h2>Transferir dinero</h2><p>Utiliza los números de cuenta de 10 dígitos.</p><h:form styleClass="form-grid"><h:inputText value="#{bancaBean.origen}" required="true" styleClass="field" a:placeholder="Número de cuenta origen"/><h:inputText value="#{bancaBean.destino}" required="true" styleClass="field" a:placeholder="Número de cuenta destino"/><h:inputText value="#{bancaBean.monto}" required="true" styleClass="field" a:placeholder="Monto"/><h:commandButton value="Transferir" action="#{bancaBean.transferir}" styleClass="primary"><f:ajax execute="@form" render=":accountsPanel :globalMessage"/></h:commandButton></h:form></article>
+      <article id="historial" class="surface"><p class="eyebrow">CONSULTA</p><h2>Movimientos</h2><h:form id="historyForm" styleClass="form-grid"><h:inputText value="#{bancaBean.cuentaId}" styleClass="field" a:placeholder="Número de cuenta"/><h:commandButton value="Consultar historial" action="#{bancaBean.consultarMovimientos}" styleClass="ghost"><f:ajax execute="@form" render="historyPanel"/></h:commandButton><h:panelGroup id="historyPanel" layout="block"><div class="table-wrap"><table><thead><tr><th>Tipo</th><th>Monto</th><th>Fecha</th></tr></thead><tbody><ui:repeat value="#{bancaBean.movimientos}" var="m"><tr><td>#{m.tipo}</td><td>$ #{m.monto}</td><td>#{m.fecha}</td></tr></ui:repeat></tbody></table></div></h:panelGroup></h:form></article>
+    </section>
+    <section id="operar" class="grid">
+      <article class="surface"><p class="eyebrow">OPERACIÓN DE CAJA</p><h2>Depósito o retiro</h2><p>Selecciona la operación que deseas registrar.</p><h:form styleClass="form-grid"><h:selectOneMenu value="#{bancaBean.tipo}" styleClass="field" required="true"><f:selectItem itemLabel="Selecciona una operación" itemValue=""/><f:selectItem itemLabel="Depósito" itemValue="INGRESO"/><f:selectItem itemLabel="Retiro" itemValue="RETIRO"/></h:selectOneMenu><h:inputText value="#{bancaBean.cuentaId}" required="true" styleClass="field" a:placeholder="Número de cuenta"/><h:inputText value="#{bancaBean.monto}" required="true" styleClass="field" a:placeholder="Monto"/><h:commandButton value="Registrar operación" action="#{bancaBean.registrar}" styleClass="primary"><f:ajax execute="@form" render=":accountsPanel :globalMessage"/></h:commandButton></h:form></article>
+      <article class="surface"><p class="eyebrow">CORRECCIÓN AUDITABLE</p><h2>Reversar movimiento</h2><p>La reversa registra un movimiento compensatorio; no elimina el original.</p><h:form styleClass="form-grid"><h:inputText value="#{bancaBean.transaccionId}" required="true" styleClass="field" a:placeholder="ID de transacción"/><h:commandButton value="Reversar movimiento" action="#{bancaBean.reversar}" styleClass="danger"><f:ajax execute="@form" render=":accountsPanel :globalMessage"/></h:commandButton></h:form></article>
+    </section>
+  </main>
+  <script type="text/javascript">
+    function toggleAccount(button){var number=button.parentElement.querySelector('.account-number');var value=number.dataset.number;var visible=number.classList.toggle('visible');number.textContent=visible?value:'••••••'+value.slice(-4);button.title=visible?'Ocultar número':'Mostrar número';}
+    function copyAccount(button){var value=button.parentElement.querySelector('.account-number').dataset.number;var old=button.innerHTML;navigator.clipboard.writeText(value).then(function(){button.textContent='✓';setTimeout(function(){button.innerHTML=old;},1200);});}
+  </script>
+</h:body>
+</html>
