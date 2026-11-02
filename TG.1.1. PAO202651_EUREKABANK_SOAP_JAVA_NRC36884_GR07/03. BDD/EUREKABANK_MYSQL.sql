@@ -91,8 +91,10 @@ create table CUENTA
    CUENTA_SALDO         decimal(15,2) not null,
    CUENTA_ESTADO        varchar(24) not null,
    CUENTA_ID            varchar(36) not null,
+   CUENTA_NUMERO        varchar(10) not null,
    SUCURSAL_ID          varchar(36),
-   primary key (CUENTA_ID)
+   primary key (CUENTA_ID),
+   unique key UK_CUENTA_NUMERO (CUENTA_NUMERO)
 ) engine=InnoDB default charset=utf8mb4 collate=utf8mb4_unicode_ci;
 
 /*==============================================================*/
