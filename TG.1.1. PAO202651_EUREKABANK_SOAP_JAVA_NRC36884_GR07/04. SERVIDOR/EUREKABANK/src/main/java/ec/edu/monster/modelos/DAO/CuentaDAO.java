@@ -14,16 +14,16 @@ public class CuentaDAO {
     @EJB private ConexionBDD conexionBDD;
 
     public void insertar(CuentaDTO c) throws SQLException {
-        String sql = "INSERT INTO CUENTA (CUENTA_ID,SUCURSAL_ID,CUENTA_SALDO,CUENTA_ESTADO) VALUES (?,?,?,?)";
+        String sql = "INSERT INTO CUENTA (CUENTA_ID,CUENTA_NUMERO,SUCURSAL_ID,CUENTA_SALDO,CUENTA_ESTADO) VALUES (?,?,?,?,?)";
         try (Connection con = conexionBDD.getConexion(); PreparedStatement ps = con.prepareStatement(sql)) {
-            ps.setString(1, c.getCuentaId()); ps.setString(2, c.getSucursalId());
-            ps.setBigDecimal(3, c.getCuentaSaldo()); ps.setString(4, c.getCuentaEstado());
+            ps.setString(1, c.getCuentaId()); ps.setString(2, c.getCuentaNumero()); ps.setString(3, c.getSucursalId());
+            ps.setBigDecimal(4, c.getCuentaSaldo()); ps.setString(5, c.getCuentaEstado());
             ps.executeUpdate();
         }
     }
 
     public CuentaDTO obtenerPorId(String id) throws SQLException {
-        String sql = "SELECT CUENTA_ID,SUCURSAL_ID,CUENTA_SALDO,CUENTA_ESTADO FROM CUENTA WHERE CUENTA_ID=?";
+        String sql = "SELECT CUENTA_ID,CUENTA_NUMERO,SUCURSAL_ID,CUENTA_SALDO,CUENTA_ESTADO FROM CUENTA WHERE CUENTA_ID=?";
         try (Connection con = conexionBDD.getConexion(); PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setString(1, id);
             try (ResultSet rs = ps.executeQuery()) {
@@ -33,12 +33,32 @@ public class CuentaDAO {
         return null;
     }
 
+    public CuentaDTO obtenerPorNumero(String numero) throws SQLException {
+        String sql = "SELECT CUENTA_ID,CUENTA_NUMERO,SUCURSAL_ID,CUENTA_SALDO,CUENTA_ESTADO FROM CUENTA WHERE CUENTA_NUMERO=?";
+        try (Connection con = conexionBDD.getConexion(); PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setString(1, numero);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) return mapear(rs);
+            }
+        }
+        return null;
+    }
+
+    /** Acepta temporalmente UUID interno o número público para compatibilidad SOAP. */
+    public String resolverId(String referencia) throws SQLException {
+        if (referencia == null || referencia.trim().isEmpty()) return null;
+        String valor = referencia.trim();
+        CuentaDTO cuenta = obtenerPorId(valor);
+        if (cuenta == null) cuenta = obtenerPorNumero(valor);
+        return cuenta == null ? null : cuenta.getCuentaId();
+    }
+
     /**
      * Obtiene una cuenta dentro de una transacción ya iniciada y bloquea su fila
      * hasta que se confirme o revierta dicha transacción.
      */
     public CuentaDTO obtenerPorIdParaActualizar(Connection con, String id) throws SQLException {
-        String sql = "SELECT CUENTA_ID,SUCURSAL_ID,CUENTA_SALDO,CUENTA_ESTADO "
+        String sql = "SELECT CUENTA_ID,CUENTA_NUMERO,SUCURSAL_ID,CUENTA_SALDO,CUENTA_ESTADO "
                    + "FROM CUENTA WHERE CUENTA_ID=? FOR UPDATE";
         try (PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setString(1, id);
@@ -51,7 +71,7 @@ public class CuentaDAO {
 
     public List<CuentaDTO> listar() throws SQLException {
         List<CuentaDTO> lista = new ArrayList<>();
-        String sql = "SELECT CUENTA_ID,SUCURSAL_ID,CUENTA_SALDO,CUENTA_ESTADO FROM CUENTA";
+        String sql = "SELECT CUENTA_ID,CUENTA_NUMERO,SUCURSAL_ID,CUENTA_SALDO,CUENTA_ESTADO FROM CUENTA";
         try (Connection con = conexionBDD.getConexion(); Statement st = con.createStatement(); ResultSet rs = st.executeQuery(sql)) {
             while (rs.next()) lista.add(mapear(rs));
         }
@@ -103,6 +123,7 @@ public class CuentaDAO {
     private CuentaDTO mapear(ResultSet rs) throws SQLException {
         CuentaDTO c = new CuentaDTO();
         c.setCuentaId(rs.getString("CUENTA_ID"));
+        c.setCuentaNumero(rs.getString("CUENTA_NUMERO"));
         c.setSucursalId(rs.getString("SUCURSAL_ID"));
         c.setCuentaSaldo(rs.getBigDecimal("CUENTA_SALDO"));
         c.setCuentaEstado(rs.getString("CUENTA_ESTADO"));

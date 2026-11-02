@@ -7,6 +7,7 @@ import java.math.BigDecimal;
  *
  * Columnas BDD:
  *   CUENTA_ID     varchar(36)    PK
+ *   CUENTA_NUMERO varchar(10)    identificador visible único
  *   SUCURSAL_ID   varchar(36)    FK → SUCURSAL
  *   CUENTA_SALDO  decimal(15,2)
  *   CUENTA_ESTADO varchar(24)    — p.ej. "ACTIVA", "INACTIVA", "BLOQUEADA"
@@ -16,6 +17,7 @@ import java.math.BigDecimal;
 public class Cuenta {
 
     private String     cuentaId;
+    private String     cuentaNumero;
     private String     sucursalId;
     private BigDecimal cuentaSaldo;
     private String     cuentaEstado;
@@ -39,6 +41,9 @@ public class Cuenta {
 
     public String getCuentaId() { return cuentaId; }
     public void setCuentaId(String cuentaId) { this.cuentaId = cuentaId; }
+
+    public String getCuentaNumero() { return cuentaNumero; }
+    public void setCuentaNumero(String cuentaNumero) { this.cuentaNumero = cuentaNumero; }
 
     public String getSucursalId() { return sucursalId; }
     public void setSucursalId(String sucursalId) { this.sucursalId = sucursalId; }

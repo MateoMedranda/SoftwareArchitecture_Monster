@@ -2,6 +2,8 @@ package ec.edu.monster.modelos.DTO;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import ec.edu.monster.configuracion.FechaHoraXmlAdapter;
+import jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 /** Resultado auditable de una transferencia entre dos cuentas. */
 public class TransferenciaDTO {
@@ -26,6 +28,7 @@ public class TransferenciaDTO {
     public void setDebito(TransaccionDTO v) { debito = v; }
     public TransaccionDTO getCredito() { return credito; }
     public void setCredito(TransaccionDTO v) { credito = v; }
+    @XmlJavaTypeAdapter(FechaHoraXmlAdapter.class)
     public LocalDateTime getCreadoEn() { return creadoEn; }
     public void setCreadoEn(LocalDateTime v) { creadoEn = v; }
 }

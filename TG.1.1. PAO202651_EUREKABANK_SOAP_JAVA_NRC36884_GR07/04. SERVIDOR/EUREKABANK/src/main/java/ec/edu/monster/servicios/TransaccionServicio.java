@@ -80,6 +80,17 @@ public class TransaccionServicio {
         }
     }
 
+    /** Mantiene el UUID como clave interna, permitiendo que el cliente envíe el número público. */
+    private String resolverCuentaId(String referencia) throws TransaccionExcepcion {
+        try {
+            String id = cuentaDAO.resolverId(referencia);
+            if (id == null) throw error("CUENTA_NO_ENCONTRADA", "El número de cuenta indicado no existe.", "cuentaNumero");
+            return id;
+        } catch (SQLException e) {
+            throw errorBaseDatos("No se pudo resolver el número de cuenta.", e);
+        }
+    }
+
     private void validarTipoYMonto(String tipo, String cuentaId, BigDecimal monto) throws TransaccionExcepcion {
         if (tipo == null || tipo.trim().isEmpty()) {
             throw error("CAMPO_REQUERIDO", "El campo 'tipo' es obligatorio.", "tipo");
@@ -105,7 +116,7 @@ public class TransaccionServicio {
             throws TransaccionExcepcion {
         Claims claims = validarToken(token);
         validarTipoYMonto(tipo, cuentaId, monto);
-        String cuentaNormalizada = cuentaId.trim();
+        String cuentaNormalizada = resolverCuentaId(cuentaId);
         String tipoNormalizado = tipo.trim().toUpperCase();
         validarPermisoCuenta(cuentaNormalizada, claims);
 
@@ -130,8 +141,8 @@ public class TransaccionServicio {
         Claims claims = validarToken(token);
         validarCuentaYMonto(cuentaOrigenId, monto);
         validarCuentaYMonto(cuentaDestinoId, monto);
-        String origenId = cuentaOrigenId.trim();
-        String destinoId = cuentaDestinoId.trim();
+        String origenId = resolverCuentaId(cuentaOrigenId);
+        String destinoId = resolverCuentaId(cuentaDestinoId);
         if (origenId.equals(destinoId)) {
             throw error("CUENTAS_IGUALES", "La cuenta de origen y destino deben ser diferentes.", "cuentaDestinoId");
         }
@@ -219,7 +230,7 @@ public class TransaccionServicio {
         if (cuentaId == null || cuentaId.trim().isEmpty()) {
             throw error("CAMPO_REQUERIDO", "El campo 'cuentaId' es obligatorio.", "cuentaId");
         }
-        String cuentaNormalizada = cuentaId.trim();
+        String cuentaNormalizada = resolverCuentaId(cuentaId);
         validarPermisoCuenta(cuentaNormalizada, claims);
         try {
             return transaccionDAO.listarPorCuenta(cuentaNormalizada);

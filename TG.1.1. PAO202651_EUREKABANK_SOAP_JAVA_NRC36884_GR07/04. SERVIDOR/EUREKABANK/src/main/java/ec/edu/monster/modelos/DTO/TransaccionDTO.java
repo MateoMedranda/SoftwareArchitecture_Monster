@@ -2,6 +2,8 @@ package ec.edu.monster.modelos.DTO;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import ec.edu.monster.configuracion.FechaHoraXmlAdapter;
+import jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 public class TransaccionDTO {
     private String transaccionId;
@@ -26,6 +28,7 @@ public class TransaccionDTO {
     public void setTransaccionSaldoAnterior(BigDecimal v) { this.transaccionSaldoAnterior = v; }
     public BigDecimal getTransaccionSaldoPosterior() { return transaccionSaldoPosterior; }
     public void setTransaccionSaldoPosterior(BigDecimal v) { this.transaccionSaldoPosterior = v; }
+    @XmlJavaTypeAdapter(FechaHoraXmlAdapter.class)
     public LocalDateTime getTransaccionCreadoEn() { return transaccionCreadoEn; }
     public void setTransaccionCreadoEn(LocalDateTime v) { this.transaccionCreadoEn = v; }
     public String getTransaccionCreadoPor() { return transaccionCreadoPor; }

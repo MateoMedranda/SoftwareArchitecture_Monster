@@ -53,11 +53,26 @@ public class CuentaServicio {
         return false;
     }
 
+    /** Convierte el número público de diez dígitos en el UUID interno. */
+    private String resolverCuentaId(String referencia) throws TransaccionExcepcion {
+        try {
+            String id = cuentaDAO.resolverId(referencia);
+            if (id == null) throw new TransaccionExcepcion("No encontrada",
+                    new RespuestaError("CUENTA_NO_ENCONTRADA", "El número de cuenta indicado no existe.", "cuentaNumero"));
+            return id;
+        } catch (SQLException e) {
+            throw new TransaccionExcepcion("Error de base de datos",
+                    new RespuestaError("ERROR_BASE_DATOS", "No se pudo resolver el número de cuenta.", e.getMessage()), e);
+        }
+    }
+
     public boolean insertarCuenta(String token, CuentaDTO cuenta) throws TransaccionExcepcion {
         Claims claims = validarToken(token);
         if (!esAdminOCajero(claims)) throw new TransaccionExcepcion("Acceso denegado", new RespuestaError("ACCESO_DENEGADO","Solo ADMIN o CAJERO pueden insertar cuentas.","token"));
         if (cuenta == null || cuenta.getCuentaId() == null || cuenta.getCuentaId().trim().isEmpty())
             throw new TransaccionExcepcion("Cuenta requerida", new RespuestaError("CAMPO_REQUERIDO","El campo 'cuentaId' es obligatorio.","cuentaId"));
+        if (cuenta.getCuentaNumero() == null || !cuenta.getCuentaNumero().matches("\\d{10}"))
+            throw new TransaccionExcepcion("Número inválido", new RespuestaError("NUMERO_CUENTA_INVALIDO","El número de cuenta debe tener exactamente 10 dígitos.","cuentaNumero"));
         if (cuenta.getCuentaSaldo() == null || cuenta.getCuentaSaldo().compareTo(java.math.BigDecimal.ZERO) != 0)
             throw new TransaccionExcepcion("Saldo inicial inválido", new RespuestaError("SALDO_INICIAL_INVALIDO","Las cuentas nuevas deben crearse con saldo cero. Acredite fondos mediante una transacción.","cuentaSaldo"));
         try { cuentaDAO.insertar(cuenta); return true; }
@@ -88,10 +103,11 @@ public class CuentaServicio {
 
     public CuentaDTO obtenerCuenta(String token, String cuentaId) throws TransaccionExcepcion {
         Claims claims = validarToken(token);
-        if (!esAdminOCajero(claims) && !cuentaAsignada(cuentaId, claims.getSubject()))
+        String id = resolverCuentaId(cuentaId);
+        if (!esAdminOCajero(claims) && !cuentaAsignada(id, claims.getSubject()))
             throw new TransaccionExcepcion("Acceso denegado", new RespuestaError("ACCESO_DENEGADO","No tiene acceso a esta cuenta.","cuentaId"));
         try {
-            CuentaDTO c = cuentaDAO.obtenerPorId(cuentaId);
+            CuentaDTO c = cuentaDAO.obtenerPorId(id);
             if (c == null) throw new TransaccionExcepcion("No encontrada", new RespuestaError("CUENTA_NO_ENCONTRADA","La cuenta indicada no existe.","cuentaId"));
             return c;
         } catch (TransaccionExcepcion e) { throw e; }
@@ -133,7 +149,7 @@ public class CuentaServicio {
         Claims claims = validarToken(token);
         if (cuentaId == null || cuentaId.trim().isEmpty())
             throw new TransaccionExcepcion("Cuenta requerida", new RespuestaError("CAMPO_REQUERIDO","El campo 'cuentaId' es obligatorio.","cuentaId"));
-        String id = cuentaId.trim();
+        String id = resolverCuentaId(cuentaId);
         if (!esAdminOCajero(claims) && !cuentaAsignada(id, claims.getSubject()))
             throw new TransaccionExcepcion("Acceso denegado", new RespuestaError("ACCESO_DENEGADO","No tiene acceso a esta cuenta.","cuentaId"));
         try {
