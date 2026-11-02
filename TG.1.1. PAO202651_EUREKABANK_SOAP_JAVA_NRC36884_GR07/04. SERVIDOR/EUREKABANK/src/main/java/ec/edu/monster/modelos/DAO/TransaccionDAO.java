@@ -24,6 +24,21 @@ public class TransaccionDAO {
         }
     }
 
+    /** Inserta un movimiento usando la conexión transaccional del llamador. */
+    public void insertar(Connection con, TransaccionDTO t) throws SQLException {
+        String sql = "INSERT INTO TRANSACCION (TRANSACCION_ID,CUENTA_ID,TRANSACCION_SALDO,TRANSACCION_TIPO,TRANSACCION_SALDO_ANTERIOR,TRANSACCION_SALDO_POSTERIOR,TRANSACCION_CREADO_EN,TRANSACCION_CREADO_POR) VALUES (?,?,?,?,?,?,?,?)";
+        try (PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setString(1,t.getTransaccionId()); ps.setString(2,t.getCuentaId());
+            ps.setBigDecimal(3,t.getTransaccionSaldo()); ps.setString(4,t.getTransaccionTipo());
+            ps.setBigDecimal(5,t.getTransaccionSaldoAnterior()); ps.setBigDecimal(6,t.getTransaccionSaldoPosterior());
+            ps.setTimestamp(7, Timestamp.valueOf(t.getTransaccionCreadoEn()));
+            ps.setString(8,t.getTransaccionCreadoPor());
+            if (ps.executeUpdate() != 1) {
+                throw new SQLException("No se pudo registrar la transacción " + t.getTransaccionId());
+            }
+        }
+    }
+
     public TransaccionDTO obtenerPorId(String id) throws SQLException {
         String sql = "SELECT TRANSACCION_ID,CUENTA_ID,TRANSACCION_SALDO,TRANSACCION_TIPO,TRANSACCION_SALDO_ANTERIOR,TRANSACCION_SALDO_POSTERIOR,TRANSACCION_CREADO_EN,TRANSACCION_CREADO_POR FROM TRANSACCION WHERE TRANSACCION_ID=?";
         try (Connection con = conexionBDD.getConexion(); PreparedStatement ps = con.prepareStatement(sql)) {
@@ -50,6 +65,28 @@ public class TransaccionDAO {
             while (rs.next()) lista.add(mapear(rs));
         }
         return lista;
+    }
+
+    /** Comprueba si ya existe un movimiento con un tipo/referencia determinado. */
+    public boolean existePorTipo(String tipo) throws SQLException {
+        String sql = "SELECT 1 FROM TRANSACCION WHERE TRANSACCION_TIPO=? LIMIT 1";
+        try (Connection con = conexionBDD.getConexion(); PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setString(1, tipo);
+            try (ResultSet rs = ps.executeQuery()) {
+                return rs.next();
+            }
+        }
+    }
+
+    /** Misma comprobación dentro de la transacción activa del llamador. */
+    public boolean existePorTipo(Connection con, String tipo) throws SQLException {
+        String sql = "SELECT 1 FROM TRANSACCION WHERE TRANSACCION_TIPO=? LIMIT 1";
+        try (PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setString(1, tipo);
+            try (ResultSet rs = ps.executeQuery()) {
+                return rs.next();
+            }
+        }
     }
 
     private TransaccionDTO mapear(ResultSet rs) throws SQLException {

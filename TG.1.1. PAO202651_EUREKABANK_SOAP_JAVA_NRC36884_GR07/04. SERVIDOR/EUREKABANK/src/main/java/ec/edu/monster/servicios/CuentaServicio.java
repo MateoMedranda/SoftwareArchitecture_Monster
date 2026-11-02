@@ -7,6 +7,7 @@ import ec.edu.monster.modelos.DAO.PerteneceDAO;
 import ec.edu.monster.modelos.DAO.RolDAO;
 import ec.edu.monster.modelos.DAO.UsuarioDAO;
 import ec.edu.monster.modelos.DTO.CuentaDTO;
+import ec.edu.monster.modelos.DTO.EstadoCuentaDTO;
 import ec.edu.monster.modelos.DTO.PerteneceDTO;
 import ec.edu.monster.modelos.DTO.RolDTO;
 import ec.edu.monster.modelos.DTO.UsuarioDTO;
@@ -27,6 +28,7 @@ public class CuentaServicio {
     @EJB private UsuarioDAO usuarioDAO;
     @EJB private RolDAO rolDAO;
     @EJB private TokenGenerador tokenGenerador;
+    @EJB private DisponibilidadCuentaServicio disponibilidadCuentaServicio;
 
     private Claims validarToken(String token) throws TransaccionExcepcion {
         try { return TokenFiltro.verificar(token, tokenGenerador); }
@@ -54,6 +56,10 @@ public class CuentaServicio {
     public boolean insertarCuenta(String token, CuentaDTO cuenta) throws TransaccionExcepcion {
         Claims claims = validarToken(token);
         if (!esAdminOCajero(claims)) throw new TransaccionExcepcion("Acceso denegado", new RespuestaError("ACCESO_DENEGADO","Solo ADMIN o CAJERO pueden insertar cuentas.","token"));
+        if (cuenta == null || cuenta.getCuentaId() == null || cuenta.getCuentaId().trim().isEmpty())
+            throw new TransaccionExcepcion("Cuenta requerida", new RespuestaError("CAMPO_REQUERIDO","El campo 'cuentaId' es obligatorio.","cuentaId"));
+        if (cuenta.getCuentaSaldo() == null || cuenta.getCuentaSaldo().compareTo(java.math.BigDecimal.ZERO) != 0)
+            throw new TransaccionExcepcion("Saldo inicial inválido", new RespuestaError("SALDO_INICIAL_INVALIDO","Las cuentas nuevas deben crearse con saldo cero. Acredite fondos mediante una transacción.","cuentaSaldo"));
         try { cuentaDAO.insertar(cuenta); return true; }
         catch (SQLException e) { throw new TransaccionExcepcion("Error de base de datos", new RespuestaError("ERROR_BASE_DATOS","No se pudo insertar la cuenta.", e.getMessage()), e); }
     }
@@ -61,7 +67,14 @@ public class CuentaServicio {
     public boolean actualizarCuenta(String token, CuentaDTO cuenta) throws TransaccionExcepcion {
         Claims claims = validarToken(token);
         if (!esAdminOCajero(claims)) throw new TransaccionExcepcion("Acceso denegado", new RespuestaError("ACCESO_DENEGADO","Solo ADMIN o CAJERO pueden actualizar cuentas.","token"));
-        try { cuentaDAO.actualizar(cuenta); return true; }
+        if (cuenta == null || cuenta.getCuentaId() == null || cuenta.getCuentaId().trim().isEmpty())
+            throw new TransaccionExcepcion("Cuenta requerida", new RespuestaError("CAMPO_REQUERIDO","El campo 'cuentaId' es obligatorio.","cuentaId"));
+        try {
+            // El saldo no se modifica desde mantenimiento: toda variación debe dejar
+            // un movimiento contable generado por TransaccionServicio.
+            cuentaDAO.actualizarDatosAdministrativos(cuenta);
+            return true;
+        }
         catch (SQLException e) { throw new TransaccionExcepcion("Error de base de datos", new RespuestaError("ERROR_BASE_DATOS","No se pudo actualizar la cuenta.", e.getMessage()), e); }
     }
 
@@ -113,5 +126,35 @@ public class CuentaServicio {
             }
             return res;
         } catch (SQLException e) { throw new TransaccionExcepcion("Error de base de datos", new RespuestaError("ERROR_BASE_DATOS","No se pudo listar las cuentas.", e.getMessage()), e); }
+    }
+
+    /** Consulta el bloqueo temporal de una cuenta sin modificar la base de datos. */
+    public EstadoCuentaDTO obtenerDisponibilidad(String token, String cuentaId) throws TransaccionExcepcion {
+        Claims claims = validarToken(token);
+        if (cuentaId == null || cuentaId.trim().isEmpty())
+            throw new TransaccionExcepcion("Cuenta requerida", new RespuestaError("CAMPO_REQUERIDO","El campo 'cuentaId' es obligatorio.","cuentaId"));
+        String id = cuentaId.trim();
+        if (!esAdminOCajero(claims) && !cuentaAsignada(id, claims.getSubject()))
+            throw new TransaccionExcepcion("Acceso denegado", new RespuestaError("ACCESO_DENEGADO","No tiene acceso a esta cuenta.","cuentaId"));
+        try {
+            if (cuentaDAO.obtenerPorId(id) == null)
+                throw new TransaccionExcepcion("No encontrada", new RespuestaError("CUENTA_NO_ENCONTRADA","La cuenta indicada no existe.","cuentaId"));
+            return disponibilidadCuentaServicio.obtenerEstado(id);
+        } catch (TransaccionExcepcion e) { throw e; }
+        catch (SQLException e) { throw new TransaccionExcepcion("Error de base de datos", new RespuestaError("ERROR_BASE_DATOS","No se pudo consultar la cuenta.", e.getMessage()), e); }
+    }
+
+    /** Long polling SOAP para notificar a clientes cuando cambia la disponibilidad. */
+    public EstadoCuentaDTO esperarCambioDisponibilidad(String token, String cuentaId,
+            long versionConocida, long esperaMaximaMs) throws TransaccionExcepcion {
+        // obtenerDisponibilidad también valida token, formato y autorización.
+        EstadoCuentaDTO estado = obtenerDisponibilidad(token, cuentaId);
+        try {
+            return disponibilidadCuentaServicio.esperarCambio(estado.getCuentaId(), versionConocida, esperaMaximaMs);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new TransaccionExcepcion("Espera interrumpida", new RespuestaError(
+                    "ESPERA_INTERRUMPIDA", "La espera del cambio de disponibilidad fue interrumpida.", "cuentaId"), e);
+        }
     }
 }

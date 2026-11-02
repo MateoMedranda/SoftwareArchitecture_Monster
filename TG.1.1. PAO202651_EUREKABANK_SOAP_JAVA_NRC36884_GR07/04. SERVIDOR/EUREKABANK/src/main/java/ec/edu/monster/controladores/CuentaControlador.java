@@ -1,6 +1,7 @@
 package ec.edu.monster.controladores;
 
 import ec.edu.monster.modelos.DTO.CuentaDTO;
+import ec.edu.monster.modelos.DTO.EstadoCuentaDTO;
 import ec.edu.monster.modelos.DTO.PerteneceDTO;
 import ec.edu.monster.modelos.Respuestas.TransaccionExcepcion;
 import ec.edu.monster.servicios.CuentaServicio;
@@ -54,5 +55,23 @@ public class CuentaControlador {
     @WebResult(name = "return")
     public List<CuentaDTO> listarCuentasPorUsuario(@WebParam(name = "token", header = true) String token, @WebParam(name = "usuarioId") String usuarioId) throws TransaccionExcepcion {
         return cuentaServicio.listarCuentasPorUsuario(token, usuarioId);
+    }
+
+    @WebMethod(operationName = "obtenerDisponibilidadCuenta")
+    @WebResult(name = "disponibilidad")
+    public EstadoCuentaDTO obtenerDisponibilidadCuenta(
+            @WebParam(name = "token", header = true) String token,
+            @WebParam(name = "cuentaId") String cuentaId) throws TransaccionExcepcion {
+        return cuentaServicio.obtenerDisponibilidad(token, cuentaId);
+    }
+
+    @WebMethod(operationName = "esperarCambioDisponibilidad")
+    @WebResult(name = "disponibilidad")
+    public EstadoCuentaDTO esperarCambioDisponibilidad(
+            @WebParam(name = "token", header = true) String token,
+            @WebParam(name = "cuentaId") String cuentaId,
+            @WebParam(name = "versionConocida") long versionConocida,
+            @WebParam(name = "esperaMaximaMs") long esperaMaximaMs) throws TransaccionExcepcion {
+        return cuentaServicio.esperarCambioDisponibilidad(token, cuentaId, versionConocida, esperaMaximaMs);
     }
 }

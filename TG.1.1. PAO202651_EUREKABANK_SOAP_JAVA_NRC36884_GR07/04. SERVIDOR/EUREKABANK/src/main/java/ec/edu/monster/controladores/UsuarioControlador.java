@@ -1,6 +1,7 @@
 package ec.edu.monster.controladores;
 
 import ec.edu.monster.modelos.DTO.UsuarioDTO;
+import ec.edu.monster.modelos.DTO.PerfilBancarioDTO;
 import ec.edu.monster.modelos.Respuestas.TransaccionExcepcion;
 import ec.edu.monster.servicios.UsuarioServicio;
 import jakarta.ejb.EJB;
@@ -53,5 +54,13 @@ public class UsuarioControlador {
     @WebResult(name = "usuarios")
     public List<UsuarioDTO> buscarUsuarioPorNombre(@WebParam(name = "token", header = true) String token, @WebParam(name = "nombre") String nombre) throws TransaccionExcepcion {
         return usuarioServicio.buscarUsuarioPorNombre(token, nombre);
+    }
+
+    @WebMethod(operationName = "obtenerPerfilBancario")
+    @WebResult(name = "perfil")
+    public PerfilBancarioDTO obtenerPerfilBancario(
+            @WebParam(name = "token", header = true) String token,
+            @WebParam(name = "usuarioId") String usuarioId) throws TransaccionExcepcion {
+        return usuarioServicio.obtenerPerfilBancario(token, usuarioId);
     }
 }

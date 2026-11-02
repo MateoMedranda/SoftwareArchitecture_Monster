@@ -1,6 +1,7 @@
 package ec.edu.monster.controladores;
 
 import ec.edu.monster.modelos.DTO.TransaccionDTO;
+import ec.edu.monster.modelos.DTO.TransferenciaDTO;
 import ec.edu.monster.modelos.Respuestas.TransaccionExcepcion;
 import ec.edu.monster.servicios.TransaccionServicio;
 import jakarta.ejb.EJB;
@@ -24,6 +25,16 @@ public class TransaccionControlador {
     @WebResult(name = "transaccion")
     public TransaccionDTO generarTransaccion(@WebParam(name = "token", header = true) String token, @WebParam(name = "tipo") String tipo, @WebParam(name = "cuentaId") String cuentaId, @WebParam(name = "monto") BigDecimal monto) throws TransaccionExcepcion {
         return transaccionServicio.generarTransaccion(token, tipo, cuentaId, monto);
+    }
+
+    @WebMethod(operationName = "realizarTransferencia")
+    @WebResult(name = "transferencia")
+    public TransferenciaDTO realizarTransferencia(
+            @WebParam(name = "token", header = true) String token,
+            @WebParam(name = "cuentaOrigenId") String cuentaOrigenId,
+            @WebParam(name = "cuentaDestinoId") String cuentaDestinoId,
+            @WebParam(name = "monto") BigDecimal monto) throws TransaccionExcepcion {
+        return transaccionServicio.realizarTransferencia(token, cuentaOrigenId, cuentaDestinoId, monto);
     }
 
     @WebMethod(operationName = "obtenerTransaccion")
@@ -54,5 +65,13 @@ public class TransaccionControlador {
     @WebResult(name = "exitoso")
     public boolean eliminarTransaccion(@WebParam(name = "token", header = true) String token, @WebParam(name = "transaccionId") String transaccionId) throws TransaccionExcepcion {
         return transaccionServicio.eliminarTransaccion(token, transaccionId);
+    }
+
+    @WebMethod(operationName = "reversarTransaccion")
+    @WebResult(name = "reversa")
+    public TransaccionDTO reversarTransaccion(
+            @WebParam(name = "token", header = true) String token,
+            @WebParam(name = "transaccionId") String transaccionId) throws TransaccionExcepcion {
+        return transaccionServicio.reversarTransaccion(token, transaccionId);
     }
 }

@@ -32,6 +32,22 @@ public class CuentaDAO {
         return null;
     }
 
+    /**
+     * Obtiene una cuenta dentro de una transacción ya iniciada y bloquea su fila
+     * hasta que se confirme o revierta dicha transacción.
+     */
+    public CuentaDTO obtenerPorIdParaActualizar(Connection con, String id) throws SQLException {
+        String sql = "SELECT CUENTA_ID,SUCURSAL_ID,CUENTA_SALDO,CUENTA_ESTADO "
+                   + "FROM CUENTA WHERE CUENTA_ID=? FOR UPDATE";
+        try (PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setString(1, id);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) return mapear(rs);
+            }
+        }
+        return null;
+    }
+
     public List<CuentaDTO> listar() throws SQLException {
         List<CuentaDTO> lista = new ArrayList<>();
         String sql = "SELECT CUENTA_ID,SUCURSAL_ID,CUENTA_SALDO,CUENTA_ESTADO FROM CUENTA";
@@ -46,6 +62,32 @@ public class CuentaDAO {
         try (Connection con = conexionBDD.getConexion(); PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setString(1, c.getSucursalId()); ps.setBigDecimal(2, c.getCuentaSaldo());
             ps.setString(3, c.getCuentaEstado()); ps.setString(4, c.getCuentaId());
+            ps.executeUpdate();
+        }
+    }
+
+    /** Actualiza exclusivamente el saldo dentro de la transacción del llamador. */
+    public void actualizarSaldo(Connection con, String cuentaId, BigDecimal saldo) throws SQLException {
+        String sql = "UPDATE CUENTA SET CUENTA_SALDO=? WHERE CUENTA_ID=?";
+        try (PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setBigDecimal(1, saldo);
+            ps.setString(2, cuentaId);
+            if (ps.executeUpdate() != 1) {
+                throw new SQLException("No se pudo actualizar el saldo de la cuenta " + cuentaId);
+            }
+        }
+    }
+
+    /**
+     * Evita que operaciones administrativas alteren el saldo sin dejar un
+     * movimiento contable. El saldo solo cambia mediante una transacción.
+     */
+    public void actualizarDatosAdministrativos(CuentaDTO c) throws SQLException {
+        String sql = "UPDATE CUENTA SET SUCURSAL_ID=?,CUENTA_ESTADO=? WHERE CUENTA_ID=?";
+        try (Connection con = conexionBDD.getConexion(); PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setString(1, c.getSucursalId());
+            ps.setString(2, c.getCuentaEstado());
+            ps.setString(3, c.getCuentaId());
             ps.executeUpdate();
         }
     }

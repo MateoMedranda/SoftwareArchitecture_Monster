@@ -3,6 +3,11 @@ package ec.edu.monster.servicios;
 import ec.edu.monster.configuracion.TokenGenerador;
 import ec.edu.monster.controladores.TokenFiltro;
 import ec.edu.monster.modelos.DAO.RolDAO;
+import ec.edu.monster.modelos.DAO.CuentaDAO;
+import ec.edu.monster.modelos.DAO.PerteneceDAO;
+import ec.edu.monster.modelos.DTO.CuentaDTO;
+import ec.edu.monster.modelos.DTO.PerfilBancarioDTO;
+import ec.edu.monster.modelos.DTO.PerteneceDTO;
 import ec.edu.monster.modelos.DAO.UsuarioDAO;
 import ec.edu.monster.modelos.DTO.RolDTO;
 import ec.edu.monster.modelos.DTO.UsuarioDTO;
@@ -19,6 +24,8 @@ public class UsuarioServicio {
 
     @EJB private UsuarioDAO usuarioDAO;
     @EJB private RolDAO rolDAO;
+    @EJB private CuentaDAO cuentaDAO;
+    @EJB private PerteneceDAO perteneceDAO;
     @EJB private TokenGenerador tokenGenerador;
 
     private Claims validarToken(String token) throws TransaccionExcepcion {
@@ -96,5 +103,31 @@ public class UsuarioServicio {
             }
             return res;
         } catch (SQLException e) { throw new TransaccionExcepcion("Error de base de datos", new RespuestaError("ERROR_BASE_DATOS","No se pudo buscar usuarios.", e.getMessage()), e); }
+    }
+
+    /** Devuelve el perfil del usuario junto con todas sus cuentas asignadas. */
+    public PerfilBancarioDTO obtenerPerfilBancario(String token, String usuarioId) throws TransaccionExcepcion {
+        Claims claims = validarToken(token);
+        if (usuarioId == null || usuarioId.trim().isEmpty())
+            throw new TransaccionExcepcion("Usuario requerido", new RespuestaError("CAMPO_REQUERIDO","El campo 'usuarioId' es obligatorio.","usuarioId"));
+        String id = usuarioId.trim();
+        if (!esAdminOCajero(claims) && !claims.getSubject().equals(id))
+            throw new TransaccionExcepcion("Acceso denegado", new RespuestaError("ACCESO_DENEGADO","No tiene acceso a este perfil.","usuarioId"));
+        try {
+            UsuarioDTO usuario = usuarioDAO.obtenerPorId(id);
+            if (usuario == null)
+                throw new TransaccionExcepcion("No encontrado", new RespuestaError("USUARIO_NO_ENCONTRADO","El usuario indicado no existe.","usuarioId"));
+            usuario.setUsuarioContraseania(null);
+            java.util.List<CuentaDTO> cuentas = new java.util.ArrayList<>();
+            for (PerteneceDTO asignacion : perteneceDAO.listarPorUsuario(id)) {
+                CuentaDTO cuenta = cuentaDAO.obtenerPorId(asignacion.getCuentaId());
+                if (cuenta != null) cuentas.add(cuenta);
+            }
+            PerfilBancarioDTO perfil = new PerfilBancarioDTO();
+            perfil.setUsuario(usuario);
+            perfil.setCuentas(cuentas);
+            return perfil;
+        } catch (TransaccionExcepcion e) { throw e; }
+        catch (SQLException e) { throw new TransaccionExcepcion("Error de base de datos", new RespuestaError("ERROR_BASE_DATOS","No se pudo obtener el perfil bancario.", e.getMessage()), e); }
     }
 }
