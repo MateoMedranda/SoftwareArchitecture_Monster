@@ -49,12 +49,10 @@
       <article class="surface"><p class="eyebrow">CORRECCIÓN AUDITABLE</p><h2>Reversar movimiento</h2><p>La reversa registra un movimiento compensatorio; no elimina el original.</p><h:form styleClass="form-grid"><h:inputText value="#{bancaBean.transaccionId}" required="true" styleClass="field" a:placeholder="ID de transacción"/><h:commandButton value="Reversar movimiento" action="#{bancaBean.reversar}" styleClass="danger"><f:ajax execute="@form" render=":accountsPanel :globalMessage"/></h:commandButton></h:form></article>
     </section>
   </main>
-  <h:form id="availabilityForm" style="display:none"><h:commandButton id="availabilityButton" action="#{bancaBean.refrescarDisponibilidades}"><f:ajax execute="@this" render=":accountsPanel"/></h:commandButton></h:form>
   <script type="text/javascript">
     function toggleAccount(button){var number=button.parentElement.querySelector('.account-number');var value=number.dataset.number;var visible=number.classList.toggle('visible');number.textContent=visible?value:'••••••'+value.slice(-4);button.title=visible?'Ocultar número':'Mostrar número';}
     function copyAccount(button){var value=button.parentElement.querySelector('.account-number').dataset.number;var old=button.innerHTML;navigator.clipboard.writeText(value).then(function(){button.textContent='✓';setTimeout(function(){button.innerHTML=old;},1200);});}
     function filterAccounts(state){document.querySelectorAll('.account-card').forEach(function(card){card.style.display=state==='TODAS'||card.dataset.availability===state?'':'none';});}
-    setInterval(function(){var button=document.getElementById('availabilityForm:availabilityButton');if(button)button.click();},450);
   </script>
 </h:body>
 </html>

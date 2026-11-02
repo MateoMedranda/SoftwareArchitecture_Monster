@@ -23,7 +23,6 @@ public final class VentanaEureka extends JFrame {
     private final JPasswordField contrasenia = new JPasswordField(24);
     private JButton botonIngresar;
     private boolean actualizandoCuentas;
-    private final Timer monitorDisponibilidad = new Timer(500, e -> refrescarCuentas());
     private final DefaultTableModel modeloCuentas = new DefaultTableModel(
             new String[]{"Número de cuenta", "Saldo", "Estado", "Disponibilidad", "Sucursal"}, 0) {
         @Override public boolean isCellEditable(int fila, int columna) { return false; }
@@ -363,14 +362,12 @@ public final class VentanaEureka extends JFrame {
                 estadoLogin.setText(" ");
                 getRootPane().setDefaultButton(null);
                 paginas.show(raiz, "app");
-                monitorDisponibilidad.start();
                 refrescarCuentas();
             });
         }, estadoLogin);
     }
 
     private void cerrarSesion() {
-        monitorDisponibilidad.stop();
         ejecutarAsync(() -> {
             try { controlador.cerrarSesion(); } catch (Exception ignored) { controlador.invalidarSesion(); }
             SwingUtilities.invokeLater(() -> volverAlLogin("Sesión cerrada correctamente."));
@@ -425,7 +422,6 @@ public final class VentanaEureka extends JFrame {
     }
 
     private void volverAlLogin(String mensaje) {
-        monitorDisponibilidad.stop();
         actualizandoCuentas = false;
         contrasenia.setText("");
         estadoLogin.setForeground(TemaEureka.ERROR);
