@@ -2111,7 +2111,17 @@ LABL 0 Arial,8,N</a:FontList>
 <o:DataItem Ref="o70"/>
 </c:DataItem>
 </o:EntityAttribute>
-</c:Attributes>
+<o:EntityAttribute Id="o900002">
+<a:ObjectID>64375855-EFE0-4379-B742-13ECB4388B53</a:ObjectID>
+<a:CreationDate>1793588131</a:CreationDate>
+<a:Creator>marpa</a:Creator>
+<a:ModificationDate>1793588131</a:ModificationDate>
+<a:Modifier>marpa</a:Modifier>
+<a:BaseAttribute.Mandatory>1</a:BaseAttribute.Mandatory>
+<c:DataItem>
+<o:DataItem Ref="o900001"/>
+</c:DataItem>
+</o:EntityAttribute></c:Attributes>
 </o:Entity>
 </c:Entities>
 <c:Relationships>
@@ -2414,7 +2424,16 @@ LABL 0 Arial,8,N</a:FontList>
 <a:Length>10</a:Length>
 <a:Precision>2</a:Precision>
 </o:DataItem>
-</c:DataItems>
+<o:DataItem Id="o900001">
+<a:ObjectID>956FD72A-5464-49C0-9BB7-0119DF8B2929</a:ObjectID>
+<a:Name>PAGADA</a:Name>
+<a:Code>PAGADA</a:Code>
+<a:CreationDate>1793588131</a:CreationDate>
+<a:Creator>marpa</a:Creator>
+<a:ModificationDate>1793588131</a:ModificationDate>
+<a:Modifier>marpa</a:Modifier>
+<a:DataType>BL</a:DataType>
+</o:DataItem></c:DataItems>
 <c:TargetModels>
 <o:TargetModel Id="o71">
 <a:ObjectID>32375C5B-36FD-40AA-8F7A-419ED5771446</a:ObjectID>

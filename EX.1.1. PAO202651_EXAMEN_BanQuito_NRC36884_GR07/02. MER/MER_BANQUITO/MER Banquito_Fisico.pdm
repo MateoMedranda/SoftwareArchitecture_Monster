@@ -5433,7 +5433,18 @@ DAT 1793502036</a:History>
 <a:DataType>datetime</a:DataType>
 <a:Column.Mandatory>1</a:Column.Mandatory>
 </o:Column>
-</c:Columns>
+<o:Column Id="o900001">
+<a:ObjectID>7B4193BA-643B-4D5F-A729-572495DEE432</a:ObjectID>
+<a:Name>PAGADA</a:Name>
+<a:Code>PAGADA</a:Code>
+<a:CreationDate>1793588131</a:CreationDate>
+<a:Creator>marpa</a:Creator>
+<a:ModificationDate>1793588131</a:ModificationDate>
+<a:Modifier>marpa</a:Modifier>
+<a:DataType>bit</a:DataType>
+<a:Column.Mandatory>1</a:Column.Mandatory>
+<a:DefaultValue>0</a:DefaultValue>
+</o:Column></c:Columns>
 <c:Keys>
 <o:Key Id="o67">
 <a:ObjectID>A73D0458-F277-4D00-8E2C-AD2EC2200093</a:ObjectID>

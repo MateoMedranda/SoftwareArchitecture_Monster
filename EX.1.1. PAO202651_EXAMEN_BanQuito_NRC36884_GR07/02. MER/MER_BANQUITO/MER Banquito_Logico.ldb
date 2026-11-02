@@ -1631,7 +1631,17 @@ DAT 1793502036</a:History>
 <a:DataType>D</a:DataType>
 <a:LogicalAttribute.Mandatory>1</a:LogicalAttribute.Mandatory>
 </o:EntityAttribute>
-</c:Attributes>
+<o:EntityAttribute Id="o900001">
+<a:ObjectID>96C11F2B-AE02-4BE1-99A3-5EBFBB1F5554</a:ObjectID>
+<a:Name>PAGADA</a:Name>
+<a:Code>PAGADA</a:Code>
+<a:CreationDate>1793588131</a:CreationDate>
+<a:Creator>marpa</a:Creator>
+<a:ModificationDate>1793588131</a:ModificationDate>
+<a:Modifier>marpa</a:Modifier>
+<a:DataType>BL</a:DataType>
+<a:LogicalAttribute.Mandatory>1</a:LogicalAttribute.Mandatory>
+</o:EntityAttribute></c:Attributes>
 </o:Entity>
 </c:Entities>
 <c:Relationships>

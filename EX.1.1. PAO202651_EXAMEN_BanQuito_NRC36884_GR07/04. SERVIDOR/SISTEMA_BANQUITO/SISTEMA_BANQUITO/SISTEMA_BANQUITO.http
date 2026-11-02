@@ -1,0 +1,283 @@
+@SISTEMA_BANQUITO_HostAddress = http://localhost:5173
+
+### Estado del servicio
+GET {{SISTEMA_BANQUITO_HostAddress}}/api/salud
+Accept: application/json
+
+### Diagnostico de conexion a SQL Server
+GET {{SISTEMA_BANQUITO_HostAddress}}/api/salud/conexion
+Accept: application/json
+
+# ============================================================
+# CLIENTES
+# ============================================================
+
+### Listar clientes
+GET {{SISTEMA_BANQUITO_HostAddress}}/api/clientes
+Accept: application/json
+
+### Buscar cliente por codigo
+POST {{SISTEMA_BANQUITO_HostAddress}}/api/clientes/buscar-codigo
+Content-Type: application/json
+
+{
+  "valor": 106
+}
+
+### Buscar cliente por cedula
+POST {{SISTEMA_BANQUITO_HostAddress}}/api/clientes/buscar-cedula
+Content-Type: application/json
+
+{
+  "valor": "0102030405"
+}
+
+### Crear cliente
+POST {{SISTEMA_BANQUITO_HostAddress}}/api/clientes
+Content-Type: application/json
+
+{
+  "cedula": "0607080910",
+  "nombre": "Pedro Salazar",
+  "genero": "M",
+  "fechaNacimiento": "1990-03-15"
+}
+
+### Actualizar cliente
+PUT {{SISTEMA_BANQUITO_HostAddress}}/api/clientes/111
+Content-Type: application/json
+
+{
+  "cedula": "0607080910",
+  "nombre": "Pedro Salazar Mora",
+  "genero": "M",
+  "fechaNacimiento": "1990-03-15"
+}
+
+### Eliminar cliente
+DELETE {{SISTEMA_BANQUITO_HostAddress}}/api/clientes/111
+
+# ============================================================
+# CUENTAS
+# ============================================================
+
+### Listar cuentas
+GET {{SISTEMA_BANQUITO_HostAddress}}/api/cuentas
+Accept: application/json
+
+### Buscar cuenta por numero
+POST {{SISTEMA_BANQUITO_HostAddress}}/api/cuentas/buscar
+Content-Type: application/json
+
+{
+  "valor": "10000001"
+}
+
+### Listar cuentas de un cliente
+POST {{SISTEMA_BANQUITO_HostAddress}}/api/cuentas/por-cliente
+Content-Type: application/json
+
+{
+  "valor": 106
+}
+
+### Crear cuenta
+POST {{SISTEMA_BANQUITO_HostAddress}}/api/cuentas
+Content-Type: application/json
+
+{
+  "codCliente": 106,
+  "saldoCuenta": 250.00
+}
+
+### Actualizar cuenta
+PUT {{SISTEMA_BANQUITO_HostAddress}}/api/cuentas/10000006
+Content-Type: application/json
+
+{
+  "codCliente": 106,
+  "saldoCuenta": 300.00
+}
+
+### Eliminar cuenta
+DELETE {{SISTEMA_BANQUITO_HostAddress}}/api/cuentas/10000006
+
+# ============================================================
+# MOVIMIENTOS
+# ============================================================
+
+### Listar movimientos
+GET {{SISTEMA_BANQUITO_HostAddress}}/api/movimientos
+Accept: application/json
+
+### Buscar movimiento por codigo
+POST {{SISTEMA_BANQUITO_HostAddress}}/api/movimientos/buscar
+Content-Type: application/json
+
+{
+  "valor": 1
+}
+
+### Listar movimientos de una cuenta
+POST {{SISTEMA_BANQUITO_HostAddress}}/api/movimientos/por-cuenta
+Content-Type: application/json
+
+{
+  "valor": "10000001"
+}
+
+### Listar movimientos de un cliente
+POST {{SISTEMA_BANQUITO_HostAddress}}/api/movimientos/por-cliente
+Content-Type: application/json
+
+{
+  "valor": 106
+}
+
+### Crear deposito
+POST {{SISTEMA_BANQUITO_HostAddress}}/api/movimientos
+Content-Type: application/json
+
+{
+  "numCuenta": "10000001",
+  "tipo": "DEP",
+  "valor": 100.00
+}
+
+### Crear retiro
+POST {{SISTEMA_BANQUITO_HostAddress}}/api/movimientos
+Content-Type: application/json
+
+{
+  "numCuenta": "10000001",
+  "tipo": "RET",
+  "valor": 50.00
+}
+
+### Actualizar movimiento
+PUT {{SISTEMA_BANQUITO_HostAddress}}/api/movimientos/18
+Content-Type: application/json
+
+{
+  "numCuenta": "10000001",
+  "tipo": "DEP",
+  "valor": 120.00
+}
+
+### Eliminar movimiento
+DELETE {{SISTEMA_BANQUITO_HostAddress}}/api/movimientos/18
+
+# ============================================================
+# CREDITOS
+# ============================================================
+
+### Listar creditos
+GET {{SISTEMA_BANQUITO_HostAddress}}/api/creditos
+Accept: application/json
+
+### Buscar credito por numero
+POST {{SISTEMA_BANQUITO_HostAddress}}/api/creditos/buscar
+Content-Type: application/json
+
+{
+  "valor": 1002
+}
+
+### Listar creditos de una cuenta
+POST {{SISTEMA_BANQUITO_HostAddress}}/api/creditos/por-cuenta
+Content-Type: application/json
+
+{
+  "valor": "10000005"
+}
+
+### Listar creditos de un cliente
+POST {{SISTEMA_BANQUITO_HostAddress}}/api/creditos/por-cliente
+Content-Type: application/json
+
+{
+  "valor": 110
+}
+
+### Actualizar total del credito
+PUT {{SISTEMA_BANQUITO_HostAddress}}/api/creditos/1002
+Content-Type: application/json
+
+{
+  "creditoTotal": 900.00
+}
+
+### Eliminar credito (en cascada sus cuotas)
+DELETE {{SISTEMA_BANQUITO_HostAddress}}/api/creditos/1002
+
+# ============================================================
+# AMORTIZACIONES
+# ============================================================
+
+### Tabla de amortizacion por numero de credito
+POST {{SISTEMA_BANQUITO_HostAddress}}/api/amortizaciones/tabla
+Content-Type: application/json
+
+{
+  "valor": 1002
+}
+
+### Tabla de amortizacion por codigo de cliente
+POST {{SISTEMA_BANQUITO_HostAddress}}/api/amortizaciones/tabla-por-cliente
+Content-Type: application/json
+
+{
+  "valor": 110
+}
+
+### Obtener una cuota
+GET {{SISTEMA_BANQUITO_HostAddress}}/api/amortizaciones/1002/1
+Accept: application/json
+
+### Pagar una cuota
+POST {{SISTEMA_BANQUITO_HostAddress}}/api/amortizaciones/pagar
+Content-Type: application/json
+
+{
+  "numCredito": 1002,
+  "numCuota": 1,
+  "numCuenta": "10000005"
+}
+
+# ============================================================
+# SERVICIOS ESPECIFICOS
+# ============================================================
+
+### Verificar sujeto de credito
+POST {{SISTEMA_BANQUITO_HostAddress}}/api/sujeto-credito/verificar
+Content-Type: application/json
+
+{
+  "cedula": "0102030405"
+}
+
+### Calcular monto maximo
+POST {{SISTEMA_BANQUITO_HostAddress}}/api/monto-maximo/calcular
+Content-Type: application/json
+
+{
+  "codCliente": 106
+}
+
+### Otorgar credito (P = 450, n = 6 -> cuota 78.65)
+POST {{SISTEMA_BANQUITO_HostAddress}}/api/credito/otorgar
+Content-Type: application/json
+
+{
+  "codCliente": 106,
+  "precioTelefono": 450.00,
+  "numCuotas": 6
+}
+
+### Consultar tabla de amortizacion (por credito o por cliente)
+POST {{SISTEMA_BANQUITO_HostAddress}}/api/amortizacion/consultar
+Content-Type: application/json
+
+{
+  "numCredito": 1002
+}

@@ -1,0 +1,54 @@
+name: sistema_banquito
+
+services:
+  sistema_banquito:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: sistema_banquito
+    env_file:
+      - .development.env
+    environment:
+      ACCEPT_EULA: "Y"
+      MSSQL_PID: Developer
+    ports:
+      - "1433:1433"
+    volumes:
+      - sistema_banquito_datos:/var/opt/mssql
+    networks:
+      - sistema_banquito_red
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "/opt/mssql-tools18/bin/sqlcmd -C -S localhost -U sa -P \"$$MSSQL_SA_PASSWORD\" -Q \"SELECT 1\" -b -o /dev/null",
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 15
+      start_period: 30s
+    restart: unless-stopped
+
+  sistema_banquito_init:
+    build:
+      context: ..
+      dockerfile: 04. SERVIDOR/Dockerfile.base_datos
+    image: sistema_banquito_init:latest
+    container_name: sistema_banquito_init
+    depends_on:
+      sistema_banquito:
+        condition: service_healthy
+    env_file:
+      - .development.env
+    environment:
+      SQL_SERVER_HOST: sistema_banquito
+    networks:
+      - sistema_banquito_red
+    restart: "no"
+
+volumes:
+  sistema_banquito_datos:
+    name: sistema_banquito_datos
+
+networks:
+  sistema_banquito_red:
+    name: sistema_banquito_red
+    driver: bridge

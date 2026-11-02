@@ -1,0 +1,23 @@
+# ============================================================
+# Imagen dedicada SOLO a generar/cargar las bases de datos:
+#   - BANQUITO     (Core BanQuito)
+#   - FACTURACION  (Comercializadora)
+# No contiene la API: el servidor .NET se ejecuta desde Visual Studio.
+# ============================================================
+FROM mcr.microsoft.com/mssql/server:2022-latest
+
+USER root
+
+RUN mkdir -p /scripts
+
+COPY ["03. BDD/BANQUITO.sql", "/scripts/BANQUITO.sql"]
+COPY ["03. BDD/BANQUITO_DATA.sql", "/scripts/BANQUITO_DATA.sql"]
+COPY ["03. BDD/Facturacion.sql", "/scripts/Facturacion.sql"]
+COPY ["03. BDD/Facturacion_DATA.sql", "/scripts/Facturacion_DATA.sql"]
+COPY ["04. SERVIDOR/base_datos/inicializar.sh", "/scripts/inicializar.sh"]
+
+RUN chmod +x /scripts/inicializar.sh
+
+USER mssql
+
+ENTRYPOINT ["/bin/bash", "/scripts/inicializar.sh"]

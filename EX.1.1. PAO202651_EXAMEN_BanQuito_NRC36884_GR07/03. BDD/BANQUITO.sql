@@ -114,7 +114,9 @@ create table AMORTIZACION (
    CAPITAL_PAGADO       decimal(10,2)        not null,
    SALDO                decimal(10,2)        not null,
    FECHA_PAGO           datetime             not null,
-   constraint PK_AMORTIZACION primary key nonclustered (NUM_CUOTA)
+   PAGADA               bit                  not null
+      constraint DF_AMORTIZACION_PAGADA default 0,
+   constraint PK_AMORTIZACION primary key nonclustered (NUM_CUOTA, NUM_CREDITO)
 )
 go
 
