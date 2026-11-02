@@ -1,0 +1,258 @@
+@startuml Diagrama_Clases_Facturacion
+title Sistema de Facturación - Diagrama de clases
+left to right direction
+skinparam packageStyle rectangle
+skinparam classAttributeIconSize 0
+hide circle
+
+package "Controladores" {
+  class ClienteControlador {
+    +Listar(ct)
+    +Buscar(codigo, ct)
+    +BuscarCedula(cedula, ct)
+    +Crear(solicitud, ct)
+    +Actualizar(codigo, solicitud, ct)
+    +Eliminar(codigo, ct)
+  }
+  class ProductoControlador {
+    +Listar(ct)
+    +Buscar(codigo, ct)
+    +Crear(solicitud, ct)
+    +Actualizar(codigo, solicitud, ct)
+    +Eliminar(codigo, ct)
+  }
+  class FacturaControlador {
+    +Crear(solicitud, ct)
+    +Buscar(numero, ct)
+    +Items(numero, ct)
+    +Listar(codigoCliente, cedula, ct)
+  }
+}
+
+package "Servicios" {
+  class ClienteServicio
+  class ProductoServicio
+  class FacturaServicio {
+    +CrearAsync(solicitud, ct)
+    +BuscarAsync(numero, ct)
+    +BuscarClienteAsync(codigo, cedula, ct)
+    +ListarAsync(ct)
+  }
+  class BanquitoCliente {
+    +VerificarAsync(cedula, ct)
+    +MontoMaximoAsync(codigo, ct)
+    +OtorgarAsync(codigo, valor, cuotas, ct)
+  }
+}
+
+package "Modelos.DAO" {
+  class ClienteDAO {
+    -conexion: Conexion
+    +ListarAsync(ct): Task<List<Cliente>>
+    +PorCodigoAsync(codigo, ct): Task<Cliente?>
+    +PorCedulaAsync(cedula, ct): Task<Cliente?>
+    +CrearAsync(cliente, ct): Task<int>
+    +ActualizarAsync(cliente, ct): Task<bool>
+    +EliminarAsync(codigo, ct): Task<bool>
+  }
+  class ProductoDAO {
+    -conexion: Conexion
+    +ListarAsync(ct): Task<List<Producto>>
+    +PorCodigoAsync(codigo, ct): Task<Producto?>
+    +CrearAsync(producto, ct): Task<int>
+    +ActualizarAsync(producto, ct): Task<bool>
+    +EliminarAsync(codigo, ct): Task<bool>
+  }
+  class FacturaDAO {
+    -conexion: Conexion
+    +CrearAsync(factura, ct): Task<int>
+    +PorNumeroAsync(numero, ct): Task<Factura?>
+    +PorClienteAsync(codigo, cedula, ct): Task<List<Factura>>
+    +ListarAsync(ct): Task<List<Factura>>
+  }
+}
+
+package "Modelos" {
+  class Conexion {
+    -cadenaConexion: string
+    +CrearConexion(): SqlConnection
+    +ProbarConexionAsync(ct): Task<bool>
+  }
+  class Cliente {
+    +CodCliente: int
+    +Cedula: string
+    +Nombre: string
+  }
+  class Producto {
+    +NumInventario: int
+    +Nombre: string
+    +Precio: decimal
+  }
+  class Factura {
+    +NumFactura: int
+    +CodCliente: int
+    +Fecha: DateTime
+    +TipoPago: string
+    +Valor: decimal
+  }
+  class ItemFactura {
+    +NumItem: int
+    +NumFactura: int
+    +NumInventario: int
+    +Valor: decimal
+    +Cantidad: int
+    +NombreProducto: string
+  }
+}
+
+package "Modelos.DTO" {
+  class SolicitudBusquedaDTO {
+    +Valor: string
+  }
+  class SolicitudClienteDTO {
+    +Cedula: string
+    +Nombre: string
+  }
+  class SolicitudProductoDTO {
+    +Nombre: string
+    +Precio: decimal
+  }
+  class SolicitudFacturaDTO {
+    +CodCliente: int
+    +TipoPago: string
+    +NumCuotas: int?
+    +Items: List<SolicitudItemFacturaDTO>
+  }
+  class SolicitudItemFacturaDTO {
+    +NumInventario: int
+    +Cantidad: int
+  }
+  class RespuestaClienteDTO {
+    +CodCliente: int
+    +Cedula: string
+    +Nombre: string
+  }
+  class RespuestaProductoDTO {
+    +NumInventario: int
+    +Nombre: string
+    +Precio: decimal
+  }
+  class RespuestaFacturaDTO {
+    +NumFactura: int
+    +CodCliente: int
+    +Cedula: string
+    +NombreCliente: string
+    +Fecha: DateTime
+    +TipoPago: string
+    +Valor: decimal
+    +Items: List<RespuestaItemFacturaDTO>
+  }
+  class RespuestaItemFacturaDTO {
+    +NumItem: int
+    +NumInventario: int
+    +NombreProducto: string
+    +Valor: decimal
+    +Cantidad: int
+  }
+  class RespuestaGenericaDTO {
+    +Exitoso: bool
+    +Mensaje: string
+  }
+  class SolicitudSujetoBanquitoDTO {
+    +Cedula: string
+  }
+  class RespuestaSujetoBanquitoDTO {
+    +SujetoCredito: bool
+    +CodCliente: int?
+    +Motivo: string?
+  }
+  class SolicitudMontoBanquitoDTO {
+    +CodCliente: int
+  }
+  class RespuestaMontoBanquitoDTO {
+    +CodCliente: int
+    +MontoMaximo: decimal
+  }
+  class SolicitudOtorgarBanquitoDTO {
+    +CodCliente: int
+    +PrecioTelefono: decimal
+    +NumCuotas: int
+  }
+  class RespuestaOtorgarBanquitoDTO {
+    +IdCredito: int
+    +Aprobado: bool
+    +Motivo: string?
+  }
+}
+
+package "Modelos.Mapeo" {
+  class MapeoFacturacion <<static>> {
+    +ADto(cliente): RespuestaClienteDTO
+    +ADto(producto): RespuestaProductoDTO
+    +ADto(factura): RespuestaFacturaDTO
+  }
+}
+
+package "Comun" {
+  class ExcepcionNegocio
+  class ManejadorErrores
+}
+
+class "API BanQuito" as APIBanquito <<REST>>
+database "SQL Server\nFACTURACION" as DBFacturacion
+
+ClienteControlador --> ClienteServicio
+ProductoControlador --> ProductoServicio
+FacturaControlador --> FacturaServicio
+ClienteControlador ..> SolicitudClienteDTO
+ClienteControlador ..> RespuestaClienteDTO
+ClienteControlador ..> RespuestaGenericaDTO
+ProductoControlador ..> SolicitudProductoDTO
+ProductoControlador ..> RespuestaProductoDTO
+ProductoControlador ..> RespuestaGenericaDTO
+FacturaControlador ..> SolicitudFacturaDTO
+FacturaControlador ..> RespuestaFacturaDTO
+ClienteServicio --> ClienteDAO
+ProductoServicio --> ProductoDAO
+FacturaServicio --> ClienteDAO
+FacturaServicio --> ProductoDAO
+FacturaServicio --> FacturaDAO
+FacturaServicio --> BanquitoCliente
+BanquitoCliente ..> APIBanquito : HTTP/JSON
+ClienteDAO --> Conexion
+ProductoDAO --> Conexion
+FacturaDAO --> Conexion
+ClienteDAO ..> Cliente
+ProductoDAO ..> Producto
+FacturaDAO ..> Factura
+FacturaDAO ..> ItemFactura
+Conexion --> DBFacturacion
+Factura "1" *-- "1..*" ItemFactura
+Cliente "1" -- "0..*" Factura
+Producto "1" -- "0..*" ItemFactura
+FacturaServicio ..> SolicitudFacturaDTO
+FacturaServicio ..> RespuestaFacturaDTO
+SolicitudFacturaDTO o-- SolicitudItemFacturaDTO
+RespuestaFacturaDTO o-- RespuestaItemFacturaDTO
+ClienteServicio ..> RespuestaClienteDTO
+ProductoServicio ..> RespuestaProductoDTO
+BanquitoCliente ..> SolicitudSujetoBanquitoDTO
+BanquitoCliente ..> RespuestaSujetoBanquitoDTO
+BanquitoCliente ..> SolicitudMontoBanquitoDTO
+BanquitoCliente ..> RespuestaMontoBanquitoDTO
+BanquitoCliente ..> SolicitudOtorgarBanquitoDTO
+BanquitoCliente ..> RespuestaOtorgarBanquitoDTO
+FacturaDAO ..> Cliente
+FacturaDAO ..> Producto
+FacturaServicio ..> MapeoFacturacion
+ClienteServicio ..> MapeoFacturacion
+ProductoServicio ..> MapeoFacturacion
+ManejadorErrores ..> ExcepcionNegocio
+
+note right of FacturaServicio
+Pago EFECTIVO: aplica 42% de descuento
+al total de la factura.
+Pago CREDITO: conserva el importe íntegro;
+BanQuito gestiona crédito y amortización.
+end note
+@enduml

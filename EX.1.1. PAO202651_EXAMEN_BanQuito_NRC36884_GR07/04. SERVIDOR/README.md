@@ -25,6 +25,27 @@
 
 ## Endpoints
 
+### Sistema de facturación
+
+Proyecto: `Sistema Facturacion/Sistema Facturacion`. URL local por defecto: `http://localhost:5226`.
+
+| Método | Ruta | Descripción |
+| --- | --- | --- |
+| GET/POST | `/api/clientes` | Listar y crear clientes locales |
+| GET/PUT/DELETE | `/api/clientes/{codigo}` | Buscar, actualizar o eliminar cliente |
+| GET | `/api/clientes/por-cedula/{cedula}` | Buscar cliente por cédula |
+| GET/POST | `/api/productos` | Listar y crear teléfonos disponibles |
+| GET/PUT/DELETE | `/api/productos/{codigo}` | Buscar, actualizar o eliminar teléfono |
+| POST | `/api/facturas` | Emitir factura con ítems referenciados por código |
+| GET | `/api/facturas/{numero}` | Consultar encabezado y detalle |
+| GET | `/api/facturas/{numero}/items` | Consultar los ítems de una factura |
+| GET | `/api/facturas?cedula={cedula}` | Consultar facturas del cliente por cédula |
+| GET | `/api/facturas?codigoCliente={codigo}` | Consultar facturas por código local |
+
+En efectivo el total es el 58% del subtotal (42% de descuento). En crédito se conserva el importe íntegro; BanQuito valida elegibilidad/tope y registra el crédito con su amortización. Ejemplos completos están en `Sistema Facturacion/Sistema Facturacion/Sistema Facturacion.http`.
+
+Los dos proyectos leen las cadenas `ConnectionStrings__Facturacion` y `ConnectionStrings__Banquito` desde `.development.env` al ejecutar en ambiente Development. Para pruebas locales, ambas bases se sirven desde SQL Server en `localhost,1433`; BanQuito usa `http://localhost:5173/`.
+
 ### Servicios específicos
 
 | Método | Ruta | Descripción |
@@ -131,6 +152,76 @@ Respuestas
 docker compose down -v
 docker compose up -d --build
 ```
+@Sistema_Facturacion_HostAddress = http://localhost:5226
 
-## .development.env
+### Listar clientes
+GET {{Sistema_Facturacion_HostAddress}}/api/clientes
+Accept: application/json
+
+### Buscar cliente por cédula
+GET {{Sistema_Facturacion_HostAddress}}/api/clientes/por-cedula/0102030405
+Accept: application/json
+
+### Listar teléfonos disponibles
+GET {{Sistema_Facturacion_HostAddress}}/api/productos
+Accept: application/json
+
+### Crear factura en efectivo (descuento del 42% aplicado al total)
+POST {{Sistema_Facturacion_HostAddress}}/api/facturas
+Content-Type: application/json
+
+{
+  "codCliente": 106,
+  "tipoPago": "EFECTIVO",
+  "items": [
+    { "numInventario": 1, "cantidad": 1 }
+  ]
+}
+
+### Crear factura a crédito (precio íntegro; BanQuito registra crédito y amortización)
+POST {{Sistema_Facturacion_HostAddress}}/api/facturas
+Content-Type: application/json
+
+{
+  "codCliente": 106,
+  "tipoPago": "CREDITO",
+  "numCuotas": 6,
+  "items": [
+    { "numInventario": 1, "cantidad": 1 }
+  ]
+}
+
+### Consultar factura por número
+GET {{Sistema_Facturacion_HostAddress}}/api/facturas/5001
+Accept: application/json
+
+### Consultar ítems de una factura
+GET {{Sistema_Facturacion_HostAddress}}/api/facturas/5001/items
+Accept: application/json
+
+### Consultar facturas por cédula
+GET {{Sistema_Facturacion_HostAddress}}/api/facturas?cedula=0102030405
+Accept: application/json
+
+### Consultar facturas por código de cliente
+GET {{Sistema_Facturacion_HostAddress}}/api/facturas?codigoCliente=106
+Accept: application/json
+# .env muestra
+## .development.env BANQUITO
 MSSQL_SA_PASSWORD=Contrasena2616164
+
+# .development.env Facturacion
+FACTURACION_DB_SERVER=localhost,1433
+FACTURACION_DB_NAME=FACTURACION
+FACTURACION_DB_USER=sa
+FACTURACION_DB_PASSWORD=Contrasena2616164
+
+BANQUITO_DB_SERVER=localhost,1433
+BANQUITO_DB_NAME=BANQUITO
+BANQUITO_DB_USER=sa
+BANQUITO_DB_PASSWORD=Contrasena2616164
+
+# URL del API BanQuito para consumo desde facturacion en ejecucion local.
+BANQUITO_BASE_URL=http://localhost:5173/
+BANQUITO_TIMEOUT_SECONDS=10
+

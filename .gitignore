@@ -1,6 +1,7 @@
 # Artefactos de compilación de .NET
 bin/
 obj/
+artifacts/Facturacion/
 
 # Archivos de usuario de Visual Studio
 *.user

@@ -1,0 +1,6 @@
+<Project>
+  <PropertyGroup>
+    <!-- Mantiene cortas las rutas de los binarios nativos de SqlClient en Windows. -->
+    <BaseOutputPath>$(MSBuildThisFileDirectory)..\..\..\..\artifacts\Facturacion\bin\</BaseOutputPath>
+  </PropertyGroup>
+</Project>
