@@ -99,6 +99,7 @@ public final class VentanaEureka extends JFrame {
         agregarSeccion(navegacion, grupoNavegacion, contenido, "Movimientos", "movimientos", crearMovimientos(), false);
         agregarSeccion(navegacion, grupoNavegacion, contenido, "Transferir", "transferir", crearTransferencia(), false);
         agregarSeccion(navegacion, grupoNavegacion, contenido, "Operaciones", "operaciones", crearOperaciones(), false);
+        agregarSeccion(navegacion, grupoNavegacion, contenido, "Cuentas", "cuentas", crearAdministracion(), false);
         agregarSeccion(navegacion, grupoNavegacion, contenido, "Perfil", "perfil", crearPerfil(), false);
         cabecera.add(navegacion, BorderLayout.SOUTH);
         principal.add(cabecera, BorderLayout.NORTH);
@@ -225,6 +226,44 @@ public final class VentanaEureka extends JFrame {
         }, null));
         p.add(ver, BorderLayout.NORTH); p.add(new JScrollPane(datos), BorderLayout.CENTER);
         return p;
+    }
+
+    private JPanel crearAdministracion() {
+        JPanel vista = formulario("Crear cuenta para un cliente",
+                "Selecciona al titular; el sistema genera y asigna una cuenta única automáticamente.");
+        JPanel p = contenidoFormulario(vista);
+        JComboBox<Cliente> clientes = TemaEureka.selector(new Cliente[0]);
+        clientes.setEnabled(false);
+        JLabel estado = mensajeEstado();
+        JButton cargar = TemaEureka.boton("Cargar clientes");
+        JButton crear = TemaEureka.boton("Crear y asignar cuenta");
+        crear.setEnabled(false);
+        p.add(cargar); p.add(Box.createVerticalStrut(16));
+        p.add(grupoCampo("Cliente titular", clientes)); p.add(Box.createVerticalStrut(14));
+        p.add(estado); p.add(crear);
+        cargar.addActionListener(e -> ejecutarAsync(() -> {
+            List<Cliente> lista = controlador.clientesParaCuenta();
+            SwingUtilities.invokeLater(() -> {
+                clientes.removeAllItems();
+                for (Cliente cliente : lista) clientes.addItem(cliente);
+                clientes.setSelectedIndex(-1);
+                clientes.setEnabled(!lista.isEmpty()); crear.setEnabled(!lista.isEmpty());
+                estado.setText(lista.isEmpty() ? "No existen clientes disponibles." : "Selecciona el titular de la nueva cuenta.");
+                estado.setForeground(TemaEureka.MUTED);
+            });
+        }, estado));
+        crear.addActionListener(e -> {
+            Cliente cliente = (Cliente) clientes.getSelectedItem();
+            if (cliente == null) { error(estado, "Selecciona un cliente antes de crear la cuenta."); return; }
+            ejecutarAsync(() -> {
+                Cuenta cuenta = controlador.crearCuentaParaUsuario(cliente.id());
+                SwingUtilities.invokeLater(() -> {
+                    clientes.setSelectedIndex(-1);
+                    exito(estado, "Cuenta " + cuenta.numero() + " creada y asignada a " + cliente.nombre() + ".");
+                });
+            }, estado);
+        });
+        return vista;
     }
 
     private JPanel formulario(String titulo, String descripcion) {
