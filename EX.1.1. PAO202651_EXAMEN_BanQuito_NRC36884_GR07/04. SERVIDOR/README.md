@@ -38,13 +38,14 @@
 
 Base URL: http://localhost:5173
 También tienes todos estos ejemplos listos en SISTEMA_BANQUITO.http.
-Diagnóstico
-Método	Ruta
-GET	/api/salud
-GET	/api/salud/conexion
-GET	/openapi/v1.json (documento OpenAPI)
-Servicios específicos
-Verificar sujeto de crédito
+**Diagnóstico**
+| Método |	Ruta |
+| --- | --- |
+| GET	| /api/salud |
+| GET	| /api/salud/conexion |
+| GET	| /openapi/v1.json (documento OpenAPI) |
+#### Servicios específicos
+**Verificar sujeto de crédito** 
 POST /api/sujeto-credito/verificar
 { "cedula": "0102030405" }
 Con el seed: Ana true, Luis EDAD_INSUFICIENTE, María SIN_DEPOSITO, Carlos CREDITO_ACTIVO y Sofía CREDITO_ACTIVO (tiene el crédito 1002).
