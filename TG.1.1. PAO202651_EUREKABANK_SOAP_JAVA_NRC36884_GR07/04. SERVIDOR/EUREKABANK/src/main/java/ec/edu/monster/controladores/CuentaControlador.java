@@ -89,4 +89,19 @@ public class CuentaControlador {
             @WebParam(name = "esperaMaximaMs") long esperaMaximaMs) throws TransaccionExcepcion {
         return cuentaServicio.esperarCambioDisponibilidad(token, cuentaId, versionConocida, esperaMaximaMs);
     }
+
+    @WebMethod(operationName = "listarDisponibilidades")
+    @WebResult(name = "disponibilidad")
+    public List<EstadoCuentaDTO> listarDisponibilidades(
+            @WebParam(name = "token", header = true) String token) throws TransaccionExcepcion {
+        return cuentaServicio.listarDisponibilidades(token);
+    }
+
+    @WebMethod(operationName = "recuperarDisponibilidadCuenta")
+    @WebResult(name = "disponibilidad")
+    public EstadoCuentaDTO recuperarDisponibilidadCuenta(
+            @WebParam(name = "token", header = true) String token,
+            @WebParam(name = "cuentaId") String cuentaId) throws TransaccionExcepcion {
+        return cuentaServicio.recuperarDisponibilidad(token, cuentaId);
+    }
 }

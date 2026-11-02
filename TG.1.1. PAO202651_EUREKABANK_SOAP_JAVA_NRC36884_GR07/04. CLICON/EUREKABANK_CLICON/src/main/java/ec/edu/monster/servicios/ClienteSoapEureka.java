@@ -27,6 +27,26 @@ public final class ClienteSoapEureka {
         for (Element e : elementos(d,"return")) salida.add(new Cuenta(texto(e,"cuentaId"), texto(e,"cuentaNumero"), decimal(texto(e,"cuentaSaldo")), texto(e,"cuentaEstado"), texto(e,"sucursalId")));
         return salida;
     }
+    public Map<String, String> disponibilidades(String token) throws Exception {
+        Document d = llamar("CuentaServicio/CuentaControlador", "listarDisponibilidades", token, ""); comprobarError(d);
+        Map<String, String> salida = new HashMap<>();
+        for (Element e : elementos(d, "disponibilidad")) salida.put(texto(e, "cuentaId"), texto(e, "estado"));
+        return salida;
+    }
+    public List<Cliente> clientesParaCuenta(String token) throws Exception {
+        Document d = llamar("CuentaServicio/CuentaControlador", "listarClientesParaCuenta", token, ""); comprobarError(d);
+        List<Cliente> salida = new ArrayList<>();
+        for (Element e : elementos(d, "cliente")) salida.add(new Cliente(texto(e, "usuarioId"),
+                texto(e, "nombreCompleto"), texto(e, "usuario")));
+        return salida;
+    }
+    public Cuenta crearCuentaParaUsuario(String token, String usuarioId) throws Exception {
+        Document d = llamar("CuentaServicio/CuentaControlador", "crearCuentaParaUsuario", token,
+                "<usuarioId>" + esc(usuarioId) + "</usuarioId>"); comprobarError(d);
+        Element e = primero(d, "cuenta");
+        return new Cuenta(texto(e, "cuentaId"), texto(e, "cuentaNumero"),
+                decimal(texto(e, "cuentaSaldo")), texto(e, "cuentaEstado"), texto(e, "sucursalId"));
+    }
     public List<Movimiento> movimientos(String token, String cuentaId) throws Exception {
         Document d = llamar("TransaccionServicio/TransaccionControlador", "listarPorCuenta", token, "<cuentaId>"+esc(cuentaId)+"</cuentaId>"); comprobarError(d);
         List<Movimiento> salida = new ArrayList<>();

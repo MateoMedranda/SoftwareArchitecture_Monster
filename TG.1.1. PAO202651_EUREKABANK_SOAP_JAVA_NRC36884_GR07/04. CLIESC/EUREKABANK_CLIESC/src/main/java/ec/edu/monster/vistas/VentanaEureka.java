@@ -5,6 +5,7 @@ import ec.edu.monster.modelos.Modelos.*;
 import java.awt.*;
 import java.math.BigDecimal;
 import java.net.URL;
+import java.util.Map;
 import java.util.List;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -21,8 +22,10 @@ public final class VentanaEureka extends JFrame {
     private final JTextField usuario = new JTextField(24);
     private final JPasswordField contrasenia = new JPasswordField(24);
     private JButton botonIngresar;
+    private boolean actualizandoCuentas;
+    private final Timer monitorDisponibilidad = new Timer(500, e -> refrescarCuentas());
     private final DefaultTableModel modeloCuentas = new DefaultTableModel(
-            new String[]{"Número de cuenta", "Saldo", "Estado", "Sucursal"}, 0) {
+            new String[]{"Número de cuenta", "Saldo", "Estado", "Disponibilidad", "Sucursal"}, 0) {
         @Override public boolean isCellEditable(int fila, int columna) { return false; }
     };
     private final DefaultTableModel modeloMovimientos = new DefaultTableModel(
@@ -160,14 +163,17 @@ public final class VentanaEureka extends JFrame {
         p.add(grupoCampo("Número de cuenta origen", origen)); p.add(Box.createVerticalStrut(12));
         p.add(grupoCampo("Número de cuenta destino", destino)); p.add(Box.createVerticalStrut(12));
         p.add(grupoCampo("Monto", monto)); p.add(Box.createVerticalStrut(14)); p.add(estado); p.add(transferir);
-        transferir.addActionListener(e -> ejecutarAsync(() -> {
-            controlador.transferir(origen.getText().trim(), destino.getText().trim(),
-                    new BigDecimal(monto.getText().trim()));
+        transferir.addActionListener(e -> {
+            final BigDecimal valor;
+            try { validarCuenta(origen.getText(), "Cuenta origen"); validarCuenta(destino.getText(), "Cuenta destino"); if (origen.getText().trim().equals(destino.getText().trim())) throw new IllegalArgumentException("Las cuentas de origen y destino deben ser diferentes."); valor = validarMonto(monto.getText()); }
+            catch (IllegalArgumentException ex) { error(estado, ex.getMessage()); return; }
+            ejecutarAsync(() -> {
+            controlador.transferir(origen.getText().trim(), destino.getText().trim(), valor);
             SwingUtilities.invokeLater(() -> {
                 origen.setText(""); destino.setText(""); monto.setText("");
                 exito(estado, "Transferencia completada y auditada.");
             });
-        }, estado));
+        }, estado); });
         return vista;
     }
 
@@ -189,9 +195,12 @@ public final class VentanaEureka extends JFrame {
                 return;
             }
             String operacion = "Depósito".equals(seleccionado) ? "INGRESO" : "RETIRO";
+            final BigDecimal valor;
+            try { validarCuenta(cuenta.getText(), "Número de cuenta"); valor = validarMonto(monto.getText()); }
+            catch (IllegalArgumentException ex) { error(estado, ex.getMessage()); return; }
             ejecutarAsync(() -> {
                 controlador.movimiento(operacion, cuenta.getText().trim(),
-                        new BigDecimal(monto.getText().trim()));
+                        valor);
                 SwingUtilities.invokeLater(() -> {
                     tipo.setSelectedIndex(0); cuenta.setText(""); monto.setText("");
                     exito(estado, seleccionado + " registrado correctamente.");
@@ -205,10 +214,12 @@ public final class VentanaEureka extends JFrame {
         JTextField reversa = campo();
         JButton reversar = TemaEureka.boton("Registrar reversa");
         p.add(grupoCampo("ID de transacción", reversa)); p.add(Box.createVerticalStrut(12)); p.add(reversar);
-        reversar.addActionListener(e -> ejecutarAsync(() -> {
+        reversar.addActionListener(e -> {
+            if (!reversa.getText().trim().matches("[0-9a-fA-F-]{36}")) { error(estado, "Ingresa un ID de transacción válido."); return; }
+            ejecutarAsync(() -> {
             controlador.reversar(reversa.getText().trim());
             SwingUtilities.invokeLater(() -> { reversa.setText(""); exito(estado, "Reversa registrada correctamente."); });
-        }, estado));
+        }, estado); });
         return vista;
     }
 
@@ -320,6 +331,22 @@ public final class VentanaEureka extends JFrame {
         campo.setPreferredSize(new Dimension(360, 44));
     }
 
+    private void validarCuenta(String valor, String etiqueta) {
+        if (valor == null || !valor.trim().matches("\\d{10}")) {
+            throw new IllegalArgumentException(etiqueta + " debe tener exactamente 10 dígitos.");
+        }
+    }
+
+    private BigDecimal validarMonto(String valor) {
+        try {
+            BigDecimal monto = new BigDecimal(valor == null ? "" : valor.trim());
+            if (monto.compareTo(BigDecimal.ZERO) <= 0) throw new NumberFormatException();
+            return monto;
+        } catch (NumberFormatException e) {
+            throw new IllegalArgumentException("El monto debe ser un número mayor a cero.");
+        }
+    }
+
     private JLabel mensajeEstado() {
         JLabel etiqueta = new JLabel(" ");
         etiqueta.setAlignmentX(Component.LEFT_ALIGNMENT);
@@ -336,12 +363,14 @@ public final class VentanaEureka extends JFrame {
                 estadoLogin.setText(" ");
                 getRootPane().setDefaultButton(null);
                 paginas.show(raiz, "app");
+                monitorDisponibilidad.start();
                 refrescarCuentas();
             });
         }, estadoLogin);
     }
 
     private void cerrarSesion() {
+        monitorDisponibilidad.stop();
         ejecutarAsync(() -> {
             try { controlador.cerrarSesion(); } catch (Exception ignored) { controlador.invalidarSesion(); }
             SwingUtilities.invokeLater(() -> volverAlLogin("Sesión cerrada correctamente."));
@@ -349,13 +378,23 @@ public final class VentanaEureka extends JFrame {
     }
 
     private void refrescarCuentas() {
+        if (actualizandoCuentas || controlador.sesion() == null) return;
+        actualizandoCuentas = true;
         ejecutarAsync(() -> {
-            List<Cuenta> lista = controlador.cuentas();
-            SwingUtilities.invokeLater(() -> {
-                modeloCuentas.setRowCount(0);
-                for (Cuenta c : lista) modeloCuentas.addRow(
-                    new Object[]{c.numero(), "$ " + c.saldo(), c.estado(), c.sucursal()});
-            });
+            try {
+                List<Cuenta> lista = controlador.cuentas();
+                Map<String, String> disponibilidades = controlador.disponibilidades();
+                SwingUtilities.invokeLater(() -> {
+                    modeloCuentas.setRowCount(0);
+                    for (Cuenta c : lista) modeloCuentas.addRow(
+                        new Object[]{c.numero(), "$ " + c.saldo(), c.estado(),
+                            disponibilidades.getOrDefault(c.id(), "DISPONIBLE"), c.sucursal()});
+                    actualizandoCuentas = false;
+                });
+            } catch (Exception e) {
+                SwingUtilities.invokeLater(() -> actualizandoCuentas = false);
+                throw e;
+            }
         }, null);
     }
 
@@ -386,6 +425,8 @@ public final class VentanaEureka extends JFrame {
     }
 
     private void volverAlLogin(String mensaje) {
+        monitorDisponibilidad.stop();
+        actualizandoCuentas = false;
         contrasenia.setText("");
         estadoLogin.setForeground(TemaEureka.ERROR);
         estadoLogin.setText(mensaje);

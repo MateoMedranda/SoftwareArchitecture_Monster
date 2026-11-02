@@ -223,4 +223,32 @@ public class CuentaServicio {
                     "ESPERA_INTERRUMPIDA", "La espera del cambio de disponibilidad fue interrumpida.", "cuentaId"), e);
         }
     }
+
+    /** Devuelve el semáforo temporal de todas las cuentas permitidas al usuario. */
+    public List<EstadoCuentaDTO> listarDisponibilidades(String token) throws TransaccionExcepcion {
+        List<EstadoCuentaDTO> estados = new ArrayList<>();
+        for (CuentaDTO cuenta : listarCuentas(token)) {
+            estados.add(disponibilidadCuentaServicio.obtenerEstado(cuenta.getCuentaId()));
+        }
+        return estados;
+    }
+
+    /**
+     * Recuperación administrativa segura: en este diseño los bloqueos nunca se
+     * persisten. Solo confirma/libera estados ya inactivos; jamás rompe un lock
+     * vivo porque hacerlo podría violar la transacción ACID en curso.
+     */
+    public EstadoCuentaDTO recuperarDisponibilidad(String token, String cuentaId) throws TransaccionExcepcion {
+        Claims claims = validarToken(token);
+        if (!esAdminOCajero(claims)) {
+            throw new TransaccionExcepcion("Acceso denegado",
+                    new RespuestaError("ACCESO_DENEGADO", "Solo ADMIN o CAJERO pueden recuperar disponibilidad.", "token"));
+        }
+        EstadoCuentaDTO estado = obtenerDisponibilidad(token, cuentaId);
+        if (estado.isBloqueada()) {
+            throw new TransaccionExcepcion("Cuenta en operación",
+                    new RespuestaError("CUENTA_BLOQUEADA", "La cuenta está en una transacción activa y no puede liberarse manualmente.", "cuentaId"));
+        }
+        return estado;
+    }
 }

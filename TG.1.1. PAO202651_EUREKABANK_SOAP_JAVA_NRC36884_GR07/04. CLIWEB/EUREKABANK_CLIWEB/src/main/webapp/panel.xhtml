@@ -4,12 +4,12 @@
 <f:metadata><f:viewAction action="#{bancaBean.cargarCuentas}" if="#{sesionBean.activa}"/></f:metadata>
 <h:head>
   <title>EUREKABANK · Panel</title>
-  <h:outputStylesheet library="css" name="eureka.css"/><style type="text/css">.icon-button svg{width:17px;height:17px;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}.icon-button svg circle{fill:currentColor;stroke:none}.admin-surface{margin-top:26px;display:grid;grid-template-columns:1.3fr 1fr;gap:28px;background:linear-gradient(120deg,#fff,#ebfbfc);border:1px solid #cfe0ea;border-radius:16px;padding:22px;box-shadow:0 9px 24px #1844630d}.admin-surface h2{margin:0;color:#123a5a}.admin-surface p{color:#597083;line-height:1.6}.admin-form{margin-top:0;align-content:center}@media(max-width:760px){.admin-surface{display:block}.admin-form{margin-top:18px}}</style>
+  <h:outputStylesheet library="css" name="eureka.css"/><style type="text/css">.icon-button svg{width:17px;height:17px;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}.icon-button svg circle{fill:currentColor;stroke:none}.availability{display:inline-flex;align-items:center;gap:6px;margin-top:10px;padding:5px 9px;border-radius:20px;font-size:11px;font-weight:bold;letter-spacing:.5px}.availability:before{content:'';width:7px;height:7px;border-radius:50%;background:currentColor}.available{color:#087d55;background:#e6f8ef}.blocked{color:#b8394b;background:#fff0f2}.admin-surface{margin-top:26px;display:grid;grid-template-columns:1.3fr 1fr;gap:28px;background:linear-gradient(120deg,#fff,#ebfbfc);border:1px solid #cfe0ea;border-radius:16px;padding:22px;box-shadow:0 9px 24px #1844630d}.admin-surface h2{margin:0;color:#123a5a}.admin-surface p{color:#597083;line-height:1.6}.admin-form{margin-top:0;align-content:center}@media(max-width:760px){.admin-surface{display:block}.admin-form{margin-top:18px}}</style>
 </h:head>
 <h:body>
   <header class="topbar">
     <a class="brand"><h:graphicImage library="img" name="logo.png" styleClass="brand-logo small"/><span>◆ EUREKABANK</span></a>
-    <nav><a href="#cuentas">Resumen</a><a href="#historial">Movimientos</a><a href="#transferir">Transferir</a><a href="#operar">Operar</a><a href="#administrar">Cuentas</a>
+    <nav><a href="#cuentas">Resumen</a><a href="#historial">Movimientos</a><a href="#transferir">Transferir</a><a href="#operar">Operar</a><a href="#perfil">Perfil</a><a href="#administrar">Cuentas</a>
       <h:form styleClass="inline"><span>Hola, #{sesionBean.nombre}</span><h:commandButton value="Salir" action="#{sesionBean.salir}" styleClass="ghost"/></h:form>
     </nav>
   </header>
@@ -17,17 +17,18 @@
     <section class="hero"><div><p class="eyebrow">PANEL PRINCIPAL</p><h1>Gestión financiera<br/>con claridad.</h1><p>Consulta saldos, realiza operaciones y administra movimientos de forma segura.</p></div><div class="secure">✓<br/><b>Operaciones auditables</b><small>Todo cambio se valida y registra en el servidor.</small></div></section>
     <h:panelGroup id="globalMessage" layout="block"><h:panelGroup rendered="#{not empty bancaBean.mensaje}" layout="block" styleClass="alert">#{bancaBean.mensaje}</h:panelGroup></h:panelGroup>
     <h:panelGroup id="accountsPanel" layout="block"><section id="cuentas">
-      <div class="section-title"><div><p class="eyebrow">PRODUCTOS</p><h2>Mis cuentas</h2></div><h:form><h:commandButton value="↻ Actualizar" action="#{bancaBean.cargarCuentas}" styleClass="ghost"/></h:form></div>
+      <div class="section-title"><div><p class="eyebrow">PRODUCTOS</p><h2>Mis cuentas</h2></div><div class="inline"><select class="field" style="width:auto;padding:7px" onchange="filterAccounts(this.value)"><option value="TODAS">Todas</option><option value="DISPONIBLE">Disponibles</option><option value="BLOQUEADA">Bloqueadas</option></select><h:form><h:commandButton value="↻ Actualizar" action="#{bancaBean.cargarCuentas}" styleClass="ghost"/></h:form></div></div>
       <div class="cards">
         <ui:repeat value="#{bancaBean.cuentas}" var="c">
-          <article class="account-card">
-            <span>CUENTA #{c.estado}</span>
+          <article class="account-card" data-availability="#{c.disponibilidad}">
+            <span>CUENTA #{c.estado}</span><div class="availability #{c.disponibilidad eq 'BLOQUEADA' ? 'blocked' : 'available'}">#{c.disponibilidad}</div>
             <div class="number-row"><h3 class="account-number masked" data-number="#{c.numero}">••••••#{c.numero.substring(c.numero.length()-4)}</h3><button type="button" class="icon-button" title="Mostrar número" onclick="toggleAccount(this)"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2.5 12s3.4-6 9.5-6 9.5 6 9.5 6-3.4 6-9.5 6-9.5-6-9.5-6Z"/><circle cx="12" cy="12" r="2.7"/></svg></button><button type="button" class="icon-button" title="Copiar número" onclick="copyAccount(this)"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="8" y="8" width="11" height="12" rx="2"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h2"/></svg></button></div>
             <strong>$ <h:outputText value="#{c.saldo}"><f:convertNumber minFractionDigits="2" maxFractionDigits="2"/></h:outputText></strong><small>Sucursal #{c.sucursal}</small>
           </article>
         </ui:repeat>
       </div>
     </section></h:panelGroup>
+    <section id="perfil" class="surface" style="margin-top:26px"><p class="eyebrow">PERFIL BANCARIO</p><h2>Mi información</h2><h:form id="profileForm" styleClass="form-grid"><h:commandButton value="Consultar mi perfil" action="#{bancaBean.cargarPerfil}" styleClass="ghost"><f:ajax execute="@this" render="profilePanel :globalMessage"/></h:commandButton><h:panelGroup id="profilePanel" layout="block" rendered="#{not empty bancaBean.perfil}"><p><b>#{bancaBean.perfil.nombre}</b><br/>@#{bancaBean.perfil.usuario}<br/>#{bancaBean.perfil.telefono}</p></h:panelGroup></h:form></section>
     <section id="administrar" class="admin-surface">
       <div><p class="eyebrow">ADMINISTRACIÓN</p><h2>Crear cuenta para un cliente</h2><p>Selecciona el titular. El sistema genera un número único, crea la cuenta activa con saldo inicial cero y la asigna automáticamente.</p></div>
       <h:form id="adminForm" styleClass="form-grid admin-form">
@@ -48,9 +49,12 @@
       <article class="surface"><p class="eyebrow">CORRECCIÓN AUDITABLE</p><h2>Reversar movimiento</h2><p>La reversa registra un movimiento compensatorio; no elimina el original.</p><h:form styleClass="form-grid"><h:inputText value="#{bancaBean.transaccionId}" required="true" styleClass="field" a:placeholder="ID de transacción"/><h:commandButton value="Reversar movimiento" action="#{bancaBean.reversar}" styleClass="danger"><f:ajax execute="@form" render=":accountsPanel :globalMessage"/></h:commandButton></h:form></article>
     </section>
   </main>
+  <h:form id="availabilityForm" style="display:none"><h:commandButton id="availabilityButton" action="#{bancaBean.refrescarDisponibilidades}"><f:ajax execute="@this" render=":accountsPanel"/></h:commandButton></h:form>
   <script type="text/javascript">
     function toggleAccount(button){var number=button.parentElement.querySelector('.account-number');var value=number.dataset.number;var visible=number.classList.toggle('visible');number.textContent=visible?value:'••••••'+value.slice(-4);button.title=visible?'Ocultar número':'Mostrar número';}
     function copyAccount(button){var value=button.parentElement.querySelector('.account-number').dataset.number;var old=button.innerHTML;navigator.clipboard.writeText(value).then(function(){button.textContent='✓';setTimeout(function(){button.innerHTML=old;},1200);});}
+    function filterAccounts(state){document.querySelectorAll('.account-card').forEach(function(card){card.style.display=state==='TODAS'||card.dataset.availability===state?'':'none';});}
+    setInterval(function(){var button=document.getElementById('availabilityForm:availabilityButton');if(button)button.click();},450);
   </script>
 </h:body>
 </html>
