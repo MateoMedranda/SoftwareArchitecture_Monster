@@ -22,6 +22,78 @@ public class CuentaDAO {
         }
     }
 
+    /**
+     * Crea y asigna una cuenta en una única transacción JDBC. El número público
+     * se deriva en el servidor y se respalda con la restricción UNIQUE de BDD.
+     */
+    public CuentaDTO crearYAsignarAutomaticamente(String usuarioId) throws SQLException {
+        SQLException ultimoError = null;
+        for (int intento = 0; intento < 5; intento++) {
+            try (Connection con = conexionBDD.getConexion()) {
+                con.setAutoCommit(false);
+                try {
+                    String sucursalId = obtenerSucursalPredeterminada(con);
+                    if (sucursalId == null) throw new SQLException("No existe una sucursal para asignar la cuenta.");
+                    String numero = siguienteNumeroPublico(con);
+                    CuentaDTO cuenta = new CuentaDTO();
+                    cuenta.setCuentaId(java.util.UUID.randomUUID().toString());
+                    cuenta.setCuentaNumero(numero);
+                    cuenta.setSucursalId(sucursalId);
+                    cuenta.setCuentaSaldo(BigDecimal.ZERO);
+                    cuenta.setCuentaEstado("ACTIVA");
+                    insertar(con, cuenta);
+                    try (PreparedStatement ps = con.prepareStatement(
+                            "INSERT INTO PERTENECE (CUENTA_ID,USUARIO_ID) VALUES (?,?)")) {
+                        ps.setString(1, cuenta.getCuentaId());
+                        ps.setString(2, usuarioId);
+                        ps.executeUpdate();
+                    }
+                    con.commit();
+                    return cuenta;
+                } catch (SQLException e) {
+                    con.rollback();
+                    ultimoError = e;
+                    if (!esNumeroDuplicado(e)) throw e;
+                } finally {
+                    try { con.setAutoCommit(true); } catch (SQLException ignored) { }
+                }
+            }
+        }
+        throw ultimoError == null ? new SQLException("No fue posible generar un número de cuenta.") : ultimoError;
+    }
+
+    private String obtenerSucursalPredeterminada(Connection con) throws SQLException {
+        try (PreparedStatement ps = con.prepareStatement(
+                "SELECT SUCURSAL_ID FROM SUCURSAL ORDER BY SUCURSAL_ID LIMIT 1");
+             ResultSet rs = ps.executeQuery()) {
+            return rs.next() ? rs.getString("SUCURSAL_ID") : null;
+        }
+    }
+
+    private String siguienteNumeroPublico(Connection con) throws SQLException {
+        String sql = "SELECT COALESCE(MAX(CAST(CUENTA_NUMERO AS UNSIGNED)), 1000000000) AS ULTIMO FROM CUENTA";
+        try (PreparedStatement ps = con.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
+            if (!rs.next()) throw new SQLException("No se pudo calcular el siguiente número de cuenta.");
+            long siguiente = Math.max(1_000_000_000L, rs.getLong("ULTIMO")) + 1;
+            if (siguiente > 9_999_999_999L) throw new SQLException("Se agotaron los números de cuenta disponibles.");
+            return String.format("%010d", siguiente);
+        }
+    }
+
+    private void insertar(Connection con, CuentaDTO c) throws SQLException {
+        String sql = "INSERT INTO CUENTA (CUENTA_ID,CUENTA_NUMERO,SUCURSAL_ID,CUENTA_SALDO,CUENTA_ESTADO) VALUES (?,?,?,?,?)";
+        try (PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setString(1, c.getCuentaId()); ps.setString(2, c.getCuentaNumero()); ps.setString(3, c.getSucursalId());
+            ps.setBigDecimal(4, c.getCuentaSaldo()); ps.setString(5, c.getCuentaEstado());
+            ps.executeUpdate();
+        }
+    }
+
+    private boolean esNumeroDuplicado(SQLException e) {
+        return "23000".equals(e.getSQLState()) && e.getMessage() != null
+                && e.getMessage().contains("UK_CUENTA_NUMERO");
+    }
+
     public CuentaDTO obtenerPorId(String id) throws SQLException {
         String sql = "SELECT CUENTA_ID,CUENTA_NUMERO,SUCURSAL_ID,CUENTA_SALDO,CUENTA_ESTADO FROM CUENTA WHERE CUENTA_ID=?";
         try (Connection con = conexionBDD.getConexion(); PreparedStatement ps = con.prepareStatement(sql)) {

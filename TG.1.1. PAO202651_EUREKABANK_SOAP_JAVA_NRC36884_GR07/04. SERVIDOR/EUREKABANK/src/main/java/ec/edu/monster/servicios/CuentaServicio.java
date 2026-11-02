@@ -6,6 +6,7 @@ import ec.edu.monster.modelos.DAO.CuentaDAO;
 import ec.edu.monster.modelos.DAO.PerteneceDAO;
 import ec.edu.monster.modelos.DAO.RolDAO;
 import ec.edu.monster.modelos.DAO.UsuarioDAO;
+import ec.edu.monster.modelos.DTO.ClienteCuentaDTO;
 import ec.edu.monster.modelos.DTO.CuentaDTO;
 import ec.edu.monster.modelos.DTO.EstadoCuentaDTO;
 import ec.edu.monster.modelos.DTO.PerteneceDTO;
@@ -77,6 +78,55 @@ public class CuentaServicio {
             throw new TransaccionExcepcion("Saldo inicial inválido", new RespuestaError("SALDO_INICIAL_INVALIDO","Las cuentas nuevas deben crearse con saldo cero. Acredite fondos mediante una transacción.","cuentaSaldo"));
         try { cuentaDAO.insertar(cuenta); return true; }
         catch (SQLException e) { throw new TransaccionExcepcion("Error de base de datos", new RespuestaError("ERROR_BASE_DATOS","No se pudo insertar la cuenta.", e.getMessage()), e); }
+    }
+
+    /**
+     * Flujo administrativo: recibe únicamente el titular, genera identificadores
+     * y número público único en el servidor, e inserta la asignación de inmediato.
+     */
+    public CuentaDTO crearCuentaParaUsuario(String token, String usuarioId) throws TransaccionExcepcion {
+        Claims claims = validarToken(token);
+        if (!esAdminOCajero(claims)) {
+            throw new TransaccionExcepcion("Acceso denegado",
+                    new RespuestaError("ACCESO_DENEGADO", "Solo ADMIN o CAJERO pueden crear cuentas.", "token"));
+        }
+        if (usuarioId == null || usuarioId.isBlank()) {
+            throw new TransaccionExcepcion("Cliente requerido",
+                    new RespuestaError("CAMPO_REQUERIDO", "Seleccione el cliente titular de la cuenta.", "usuarioId"));
+        }
+        try {
+            if (usuarioDAO.obtenerPorId(usuarioId.trim()) == null) {
+                throw new TransaccionExcepcion("Cliente no encontrado",
+                        new RespuestaError("USUARIO_NO_ENCONTRADO", "El cliente seleccionado no existe.", "usuarioId"));
+            }
+            return cuentaDAO.crearYAsignarAutomaticamente(usuarioId.trim());
+        } catch (TransaccionExcepcion e) {
+            throw e;
+        } catch (SQLException e) {
+            throw new TransaccionExcepcion("No se pudo crear la cuenta",
+                    new RespuestaError("ERROR_BASE_DATOS", "No se pudo crear y asignar la cuenta.", e.getMessage()), e);
+        }
+    }
+
+    /** Lista datos seguros para el selector administrativo, sin contraseñas ni hashes. */
+    public List<ClienteCuentaDTO> listarClientesParaCuenta(String token) throws TransaccionExcepcion {
+        Claims claims = validarToken(token);
+        if (!esAdminOCajero(claims)) {
+            throw new TransaccionExcepcion("Acceso denegado",
+                    new RespuestaError("ACCESO_DENEGADO", "Solo ADMIN o CAJERO pueden consultar clientes.", "token"));
+        }
+        try {
+            List<ClienteCuentaDTO> resultado = new java.util.ArrayList<>();
+            for (UsuarioDTO usuario : usuarioDAO.listar()) {
+                resultado.add(new ClienteCuentaDTO(usuario.getUsuarioId(),
+                        usuario.getUsuarioNombre() + " " + usuario.getUsuarioApellido(),
+                        usuario.getUsuarioUsuario()));
+            }
+            return resultado;
+        } catch (SQLException e) {
+            throw new TransaccionExcepcion("Error de base de datos",
+                    new RespuestaError("ERROR_BASE_DATOS", "No se pudieron consultar los clientes.", e.getMessage()), e);
+        }
     }
 
     public boolean actualizarCuenta(String token, CuentaDTO cuenta) throws TransaccionExcepcion {

@@ -1,6 +1,7 @@
 package ec.edu.monster.controladores;
 
 import ec.edu.monster.modelos.DTO.CuentaDTO;
+import ec.edu.monster.modelos.DTO.ClienteCuentaDTO;
 import ec.edu.monster.modelos.DTO.EstadoCuentaDTO;
 import ec.edu.monster.modelos.DTO.PerteneceDTO;
 import ec.edu.monster.modelos.Respuestas.TransaccionExcepcion;
@@ -25,6 +26,20 @@ public class CuentaControlador {
     @WebResult(name = "exitoso")
     public boolean insertarCuenta(@WebParam(name = "token", header = true) String token, @WebParam(name = "cuenta") CuentaDTO cuenta) throws TransaccionExcepcion {
         return cuentaServicio.insertarCuenta(token, cuenta);
+    }
+
+    @WebMethod(operationName = "crearCuentaParaUsuario")
+    @WebResult(name = "cuenta")
+    public CuentaDTO crearCuentaParaUsuario(@WebParam(name = "token", header = true) String token,
+            @WebParam(name = "usuarioId") String usuarioId) throws TransaccionExcepcion {
+        return cuentaServicio.crearCuentaParaUsuario(token, usuarioId);
+    }
+
+    @WebMethod(operationName = "listarClientesParaCuenta")
+    @WebResult(name = "cliente")
+    public List<ClienteCuentaDTO> listarClientesParaCuenta(
+            @WebParam(name = "token", header = true) String token) throws TransaccionExcepcion {
+        return cuentaServicio.listarClientesParaCuenta(token);
     }
 
     @WebMethod(operationName = "actualizarCuenta")
