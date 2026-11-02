@@ -1,0 +1,4 @@
+package ec.edu.monster.vistas;
+import java.awt.*; import javax.swing.*; import javax.swing.border.*;
+/** Tokens de diseño compartidos con la interfaz web y móvil. */
+public final class TemaEureka {private TemaEureka(){}public static final Color FONDO=new Color(245,248,251),PANEL=Color.WHITE,ACENTO=new Color(36,91,135),TEXTO=new Color(23,50,77),MUTED=new Color(97,116,133),ERROR=new Color(181,59,75);public static void aplicar(){UIManager.put("Panel.background",FONDO);UIManager.put("Label.foreground",TEXTO);UIManager.put("Button.background",ACENTO);UIManager.put("Button.foreground",Color.WHITE);UIManager.put("Button.font",new Font("Segoe UI",Font.BOLD,13));}public static Border borde(){return new CompoundBorder(new LineBorder(new Color(217,227,235)),new EmptyBorder(24,24,24,24));}public static JButton boton(String s){JButton b=new JButton(s);b.setFocusPainted(false);b.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));return b;}}
