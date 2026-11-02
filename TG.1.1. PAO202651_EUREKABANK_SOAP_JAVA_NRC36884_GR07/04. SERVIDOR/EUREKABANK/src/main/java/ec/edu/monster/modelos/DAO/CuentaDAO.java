@@ -4,6 +4,7 @@ import ec.edu.monster.conexion.ConexionBDD;
 import ec.edu.monster.modelos.DTO.CuentaDTO;
 import jakarta.ejb.EJB;
 import jakarta.ejb.Stateless;
+import java.math.BigDecimal;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
