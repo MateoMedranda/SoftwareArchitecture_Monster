@@ -1,13 +1,410 @@
 package ec.edu.monster.vistas;
-import ec.edu.monster.controladores.BancaControlador;import ec.edu.monster.modelos.Modelos.*;import java.awt.*;import java.awt.event.*;import java.math.BigDecimal;import java.net.URL;import java.util.List;import javax.swing.*;import javax.swing.table.DefaultTableModel;
-/** Vistas Swing. La comunicación se delega siempre al controlador MVC. */
-public final class VentanaEureka extends JFrame {private final BancaControlador c=new BancaControlador();private final CardLayout pages=new CardLayout();private final JPanel root=new JPanel(pages);private final JLabel saludo=new JLabel();private final DefaultTableModel cuentas=new DefaultTableModel(new String[]{"Número de cuenta","Saldo","Estado","Sucursal"},0){public boolean isCellEditable(int r,int col){return false;}};private final DefaultTableModel movimientos=new DefaultTableModel(new String[]{"ID","Tipo","Monto","Fecha"},0){public boolean isCellEditable(int r,int col){return false;}};
- public VentanaEureka(){super("EUREKABANK · Banca digital");TemaEureka.aplicar();setDefaultCloseOperation(EXIT_ON_CLOSE);setMinimumSize(new Dimension(1020,680));root.add(login(),"login");root.add(app(),"app");setContentPane(root);pack();setLocationRelativeTo(null);}
- private JPanel login(){JPanel p=new JPanel(new GridBagLayout());p.setBackground(TemaEureka.FONDO);JPanel card=new JPanel(new GridBagLayout());card.setBackground(TemaEureka.PANEL);card.setBorder(TemaEureka.borde());GridBagConstraints g=new GridBagConstraints();g.insets=new Insets(8,8,8,8);g.fill=GridBagConstraints.HORIZONTAL;g.gridx=0;g.weightx=1;JLabel logo=logo();g.gridy=0;card.add(logo,g);g.gridy++;JLabel title=new JLabel("Tu banca, con claridad.",SwingConstants.CENTER);title.setFont(new Font("Segoe UI",Font.BOLD,25));card.add(title,g);g.gridy++;JLabel subtitle=new JLabel("Ingresa para consultar y operar tus cuentas.",SwingConstants.CENTER);subtitle.setForeground(TemaEureka.MUTED);card.add(subtitle,g);g.gridy++;JTextField user=new JTextField(24);user.setBorder(BorderFactory.createTitledBorder("Usuario"));card.add(user,g);g.gridy++;JPasswordField pass=new JPasswordField();pass.setBorder(BorderFactory.createTitledBorder("Contraseña"));card.add(pass,g);g.gridy++;JLabel status=new JLabel(" ",SwingConstants.CENTER);status.setForeground(TemaEureka.ERROR);card.add(status,g);g.gridy++;JButton enter=TemaEureka.boton("Ingresar a mi banca");card.add(enter,g);getRootPane().setDefaultButton(enter);enter.addActionListener(e->cargarAsync(()->{c.login(user.getText().trim(),new String(pass.getPassword()));SwingUtilities.invokeLater(()->{saludo.setText("Hola, "+c.sesion().nombre());pages.show(root,"app");refrescarCuentas();});},status));p.add(card);return p;}
- private JPanel app(){JPanel main=new JPanel(new BorderLayout());main.setBackground(TemaEureka.FONDO);JPanel nav=new JPanel(new BorderLayout());nav.setBackground(TemaEureka.PANEL);nav.setBorder(BorderFactory.createEmptyBorder(14,24,14,24));JLabel mark=new JLabel("◆ EUREKABANK");mark.setFont(new Font("Segoe UI",Font.BOLD,18));nav.add(mark,BorderLayout.WEST);saludo.setForeground(TemaEureka.MUTED);nav.add(saludo,BorderLayout.EAST);main.add(nav,BorderLayout.NORTH);JTabbedPane tabs=new JTabbedPane();tabs.addTab("Resumen",resumen());tabs.addTab("Movimientos",movimientos());tabs.addTab("Transferir",transferir());tabs.addTab("Operaciones",operaciones());tabs.addTab("Perfil",perfil());main.add(tabs);return main;}
- private JPanel resumen(){JPanel p=new JPanel(new BorderLayout(16,16));p.setBorder(new javax.swing.border.EmptyBorder(24,24,24,24));JTable t=new JTable(cuentas);t.setRowHeight(34);p.add(new JLabel("Mis cuentas",SwingConstants.LEFT),BorderLayout.NORTH);p.add(new JScrollPane(t));JButton b=TemaEureka.boton("Actualizar saldos");b.addActionListener(e->refrescarCuentas());p.add(b,BorderLayout.SOUTH);return p;}
- private JPanel movimientos(){JPanel p=new JPanel(new BorderLayout(12,12));p.setBorder(new javax.swing.border.EmptyBorder(24,24,24,24));JPanel top=new JPanel(new FlowLayout(FlowLayout.LEFT));JTextField id=new JTextField(32);top.add(new JLabel("Cuenta:"));top.add(id);JButton b=TemaEureka.boton("Consultar historial");top.add(b);p.add(top,BorderLayout.NORTH);p.add(new JScrollPane(new JTable(movimientos)));b.addActionListener(e->cargarAsync(()->{List<Movimiento> ms=c.movimientos(id.getText().trim());SwingUtilities.invokeLater(()->{movimientos.setRowCount(0);for(Movimiento m:ms)movimientos.addRow(new Object[]{m.id(),m.tipo(),"$ "+m.monto(),m.fecha()});});},null));return p;}
- private JPanel transferir(){JPanel p=formulario("Transferencia entre cuentas");JTextField o=input("Número de cuenta origen"),d=input("Número de cuenta destino"),m=input("Monto");p.add(o);p.add(d);p.add(m);JLabel s=estado();p.add(s);JButton b=TemaEureka.boton("Confirmar transferencia");p.add(b);b.addActionListener(e->cargarAsync(()->{c.transferir(o.getText().trim(),d.getText().trim(),new BigDecimal(m.getText().trim()));SwingUtilities.invokeLater(()->{s.setForeground(TemaEureka.ACENTO);s.setText("Transferencia completada y auditada.");refrescarCuentas();});},s));return p;}
- private JPanel operaciones(){JPanel p=formulario("Operaciones de caja");JTextField cuenta=input("Número de cuenta"),monto=input("Monto"),reversa=input("ID para reversar");p.add(cuenta);p.add(monto);JLabel s=estado();p.add(s);JButton deposito=TemaEureka.boton("Registrar depósito"),retiro=TemaEureka.boton("Registrar retiro"),rev=TemaEureka.boton("Reversar movimiento");p.add(deposito);p.add(retiro);p.add(reversa);p.add(rev);deposito.addActionListener(e->registrarMovimiento("INGRESO",cuenta,monto,s));retiro.addActionListener(e->registrarMovimiento("RETIRO",cuenta,monto,s));rev.addActionListener(e->cargarAsync(()->{c.reversar(reversa.getText().trim());SwingUtilities.invokeLater(()->{s.setForeground(TemaEureka.ACENTO);s.setText("Reversa registrada correctamente.");});},s));return p;}
- private JPanel perfil(){JPanel p=new JPanel(new BorderLayout());p.setBorder(new javax.swing.border.EmptyBorder(24,24,24,24));JTextArea area=new JTextArea();area.setEditable(false);area.setFont(new Font("Segoe UI",Font.PLAIN,16));JButton b=TemaEureka.boton("Ver mi perfil");b.addActionListener(e->cargarAsync(()->{Perfil x=c.perfil();SwingUtilities.invokeLater(()->area.setText("PERFIL BANCARIO\n\n"+x.nombre()+"\n@"+x.usuario()+"\n"+x.telefono()+"\n\nCuentas asociadas: "+x.cuentas().size()));},null));p.add(b,BorderLayout.NORTH);p.add(new JScrollPane(area));return p;}
- private void registrarMovimiento(String tipo,JTextField cuenta,JTextField monto,JLabel estado){cargarAsync(()->{c.movimiento(tipo,cuenta.getText().trim(),new BigDecimal(monto.getText().trim()));SwingUtilities.invokeLater(()->{estado.setForeground(TemaEureka.ACENTO);estado.setText("Operación registrada de forma auditable.");refrescarCuentas();});},estado);}private JPanel formulario(String titulo){JPanel p=new JPanel();p.setLayout(new BoxLayout(p,BoxLayout.Y_AXIS));p.setBorder(new javax.swing.border.EmptyBorder(32,260,32,260));JLabel l=new JLabel(titulo);l.setFont(new Font("Segoe UI",Font.BOLD,22));p.add(l);p.add(Box.createVerticalStrut(18));return p;}private JTextField input(String hint){JTextField x=new JTextField();x.setMaximumSize(new Dimension(Integer.MAX_VALUE,46));x.setBorder(BorderFactory.createTitledBorder(hint));x.setAlignmentX(Component.LEFT_ALIGNMENT);x.setFont(new Font("Segoe UI",Font.PLAIN,14));return x;}private JLabel estado(){JLabel l=new JLabel(" ");l.setForeground(TemaEureka.ERROR);l.setAlignmentX(Component.LEFT_ALIGNMENT);return l;}private JLabel logo(){URL u=getClass().getResource("/img/logo.png");if(u!=null){ImageIcon i=new ImageIcon(u);return new JLabel(new ImageIcon(i.getImage().getScaledInstance(76,76,Image.SCALE_SMOOTH)),SwingConstants.CENTER);}JLabel x=new JLabel("◆",SwingConstants.CENTER);x.setFont(new Font("Segoe UI",Font.BOLD,64));x.setForeground(TemaEureka.ACENTO);return x;}private void refrescarCuentas(){cargarAsync(()->{List<Cuenta> cs=c.cuentas();SwingUtilities.invokeLater(()->{cuentas.setRowCount(0);for(Cuenta x:cs)cuentas.addRow(new Object[]{x.numero(),"$ "+x.saldo(),x.estado(),x.sucursal()});});},null);}private void cargarAsync(Tarea task,JLabel status){new Thread(()->{try{task.run();}catch(Exception x){if(status!=null)SwingUtilities.invokeLater(()->{status.setForeground(TemaEureka.ERROR);status.setText(x.getMessage());});}},"eurekabank-soap").start();}@FunctionalInterface private interface Tarea{void run()throws Exception;}}
+
+import ec.edu.monster.controladores.BancaControlador;
+import ec.edu.monster.modelos.Modelos.*;
+import java.awt.*;
+import java.math.BigDecimal;
+import java.net.URL;
+import java.util.List;
+import javax.swing.*;
+import javax.swing.border.EmptyBorder;
+import javax.swing.table.DefaultTableModel;
+
+/** Interfaz Swing MVC: no realiza llamadas SOAP directamente. */
+public final class VentanaEureka extends JFrame {
+    private final BancaControlador controlador = new BancaControlador();
+    private final CardLayout paginas = new CardLayout();
+    private final CardLayout secciones = new CardLayout();
+    private final JPanel raiz = new JPanel(paginas);
+    private final JLabel saludo = new JLabel();
+    private final JLabel estadoLogin = new JLabel(" ", SwingConstants.CENTER);
+    private final JTextField usuario = new JTextField(24);
+    private final JPasswordField contrasenia = new JPasswordField(24);
+    private JButton botonIngresar;
+    private final DefaultTableModel modeloCuentas = new DefaultTableModel(
+            new String[]{"Número de cuenta", "Saldo", "Estado", "Sucursal"}, 0) {
+        @Override public boolean isCellEditable(int fila, int columna) { return false; }
+    };
+    private final DefaultTableModel modeloMovimientos = new DefaultTableModel(
+            new String[]{"ID", "Tipo", "Monto", "Fecha"}, 0) {
+        @Override public boolean isCellEditable(int fila, int columna) { return false; }
+    };
+
+    public VentanaEureka() {
+        super("EUREKABANK · Banca digital");
+        TemaEureka.aplicar();
+        setDefaultCloseOperation(EXIT_ON_CLOSE);
+        setMinimumSize(new Dimension(1040, 700));
+        raiz.add(crearLogin(), "login");
+        raiz.add(crearAplicacion(), "app");
+        setContentPane(raiz);
+        pack();
+        setLocationRelativeTo(null);
+    }
+
+    private JPanel crearLogin() {
+        JPanel fondo = new JPanel(new GridBagLayout());
+        fondo.setBackground(TemaEureka.FONDO);
+        prepararCampoLogin(usuario);
+        prepararCampoLogin(contrasenia);
+        JPanel tarjeta = new JPanel(new GridBagLayout());
+        tarjeta.setPreferredSize(new Dimension(430, 510));
+        tarjeta.setBackground(TemaEureka.PANEL);
+        tarjeta.setBorder(TemaEureka.borde());
+        GridBagConstraints g = new GridBagConstraints();
+        g.insets = new Insets(9, 14, 9, 14);
+        g.fill = GridBagConstraints.HORIZONTAL;
+        g.gridx = 0; g.weightx = 1;
+        g.gridy = 0; tarjeta.add(logo(), g);
+        g.gridy++; JLabel titulo = new JLabel("Tu banca, con claridad.", SwingConstants.CENTER);
+        titulo.setFont(new Font("Segoe UI", Font.BOLD, 27)); tarjeta.add(titulo, g);
+        g.gridy++; JLabel subtitulo = new JLabel("Ingresa para consultar y operar tus cuentas.", SwingConstants.CENTER);
+        subtitulo.setForeground(TemaEureka.MUTED); tarjeta.add(subtitulo, g);
+        g.gridy++; tarjeta.add(grupoCampo("Usuario", usuario), g);
+        g.gridy++; tarjeta.add(grupoCampo("Contraseña", contrasenia), g);
+        g.gridy++; estadoLogin.setForeground(TemaEureka.ERROR); tarjeta.add(estadoLogin, g);
+        g.gridy++; botonIngresar = TemaEureka.boton("Ingresar a mi banca"); tarjeta.add(botonIngresar, g);
+        getRootPane().setDefaultButton(botonIngresar);
+        botonIngresar.addActionListener(e -> iniciarSesion());
+        fondo.add(tarjeta);
+        return fondo;
+    }
+
+    private JPanel crearAplicacion() {
+        JPanel principal = new JPanel(new BorderLayout());
+        principal.setBackground(TemaEureka.FONDO);
+        JPanel barra = new JPanel(new BorderLayout());
+        barra.setBackground(TemaEureka.PANEL);
+        barra.setBorder(new EmptyBorder(13, 28, 13, 28));
+        JLabel marca = new JLabel("EUREKABANK");
+        marca.setFont(new Font("Segoe UI", Font.BOLD, 19));
+        marca.setForeground(TemaEureka.TEXTO);
+        barra.add(marca, BorderLayout.WEST);
+        JPanel derecha = new JPanel(new FlowLayout(FlowLayout.RIGHT, 13, 0));
+        derecha.setOpaque(false);
+        saludo.setForeground(TemaEureka.MUTED);
+        JButton salir = TemaEureka.boton("Cerrar sesión");
+        salir.addActionListener(e -> cerrarSesion());
+        derecha.add(saludo); derecha.add(salir); barra.add(derecha, BorderLayout.EAST);
+        JPanel cabecera = new JPanel(new BorderLayout());
+        cabecera.setBackground(TemaEureka.PANEL);
+        cabecera.add(barra, BorderLayout.NORTH);
+        JPanel navegacion = new JPanel(new FlowLayout(FlowLayout.LEFT, 3, 0));
+        navegacion.setBackground(TemaEureka.PANEL);
+        navegacion.setBorder(new EmptyBorder(0, 23, 0, 23));
+        JPanel contenido = new JPanel(secciones);
+        contenido.setBackground(TemaEureka.FONDO);
+        ButtonGroup grupoNavegacion = new ButtonGroup();
+        agregarSeccion(navegacion, grupoNavegacion, contenido, "Resumen", "resumen", crearResumen(), true);
+        agregarSeccion(navegacion, grupoNavegacion, contenido, "Movimientos", "movimientos", crearMovimientos(), false);
+        agregarSeccion(navegacion, grupoNavegacion, contenido, "Transferir", "transferir", crearTransferencia(), false);
+        agregarSeccion(navegacion, grupoNavegacion, contenido, "Operaciones", "operaciones", crearOperaciones(), false);
+        agregarSeccion(navegacion, grupoNavegacion, contenido, "Perfil", "perfil", crearPerfil(), false);
+        cabecera.add(navegacion, BorderLayout.SOUTH);
+        principal.add(cabecera, BorderLayout.NORTH);
+        principal.add(contenido, BorderLayout.CENTER);
+        return principal;
+    }
+
+    private void agregarSeccion(JPanel navegacion, ButtonGroup grupo, JPanel contenido, String titulo,
+            String clave, JPanel vista, boolean seleccionada) {
+        JToggleButton boton = TemaEureka.navegacion(titulo);
+        boton.addActionListener(e -> secciones.show(contenido, clave));
+        grupo.add(boton); navegacion.add(boton); contenido.add(vista, clave);
+        if (seleccionada) boton.setSelected(true);
+    }
+
+    private JPanel crearResumen() {
+        JPanel p = new JPanel(new BorderLayout(16, 16));
+        p.setBorder(new EmptyBorder(26, 26, 26, 26));
+        JLabel titulo = new JLabel("Resumen de cuentas");
+        titulo.setFont(new Font("Segoe UI", Font.BOLD, 23));
+        p.add(titulo, BorderLayout.NORTH);
+        JTable tabla = new JTable(modeloCuentas); tabla.setRowHeight(36);
+        p.add(new JScrollPane(tabla), BorderLayout.CENTER);
+        JButton actualizar = TemaEureka.boton("Actualizar saldos");
+        actualizar.addActionListener(e -> refrescarCuentas());
+        p.add(actualizar, BorderLayout.SOUTH);
+        return p;
+    }
+
+    private JPanel crearMovimientos() {
+        JPanel p = new JPanel(new BorderLayout(14, 14));
+        p.setBorder(new EmptyBorder(26, 26, 26, 26));
+        JPanel filtros = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 0));
+        JTextField cuenta = TemaEureka.campo();
+        JButton consultar = TemaEureka.boton("Consultar historial");
+        filtros.add(grupoCampo("Número de cuenta", cuenta)); filtros.add(consultar);
+        p.add(filtros, BorderLayout.NORTH);
+        p.add(new JScrollPane(new JTable(modeloMovimientos)), BorderLayout.CENTER);
+        consultar.addActionListener(e -> ejecutarAsync(() -> {
+            List<Movimiento> lista = controlador.movimientos(cuenta.getText().trim());
+            SwingUtilities.invokeLater(() -> {
+                modeloMovimientos.setRowCount(0);
+                for (Movimiento m : lista) modeloMovimientos.addRow(
+                    new Object[]{m.id(), m.tipo(), "$ " + m.monto(), m.fecha()});
+            });
+        }, null));
+        return p;
+    }
+
+    private JPanel crearTransferencia() {
+        JPanel vista = formulario("Transferencia entre cuentas", "Usa números de cuenta de 10 dígitos.");
+        JPanel p = contenidoFormulario(vista);
+        JTextField origen = campo();
+        JTextField destino = campo();
+        JTextField monto = campo();
+        JLabel estado = mensajeEstado();
+        JButton transferir = TemaEureka.boton("Confirmar transferencia");
+        p.add(grupoCampo("Número de cuenta origen", origen)); p.add(Box.createVerticalStrut(12));
+        p.add(grupoCampo("Número de cuenta destino", destino)); p.add(Box.createVerticalStrut(12));
+        p.add(grupoCampo("Monto", monto)); p.add(Box.createVerticalStrut(14)); p.add(estado); p.add(transferir);
+        transferir.addActionListener(e -> ejecutarAsync(() -> {
+            controlador.transferir(origen.getText().trim(), destino.getText().trim(),
+                    new BigDecimal(monto.getText().trim()));
+            SwingUtilities.invokeLater(() -> {
+                origen.setText(""); destino.setText(""); monto.setText("");
+                exito(estado, "Transferencia completada y auditada.");
+            });
+        }, estado));
+        return vista;
+    }
+
+    private JPanel crearOperaciones() {
+        JPanel vista = formulario("Operaciones de caja", "Selecciona el tipo de operación y confirma sus datos.");
+        JPanel p = contenidoFormulario(vista);
+        JComboBox<String> tipo = TemaEureka.selector(new String[]{"Selecciona una operación", "Depósito", "Retiro"});
+        JTextField cuenta = campo();
+        JTextField monto = campo();
+        JLabel estado = mensajeEstado();
+        JButton registrar = TemaEureka.boton("Registrar operación");
+        p.add(grupoCampo("Tipo de operación", tipo)); p.add(Box.createVerticalStrut(12));
+        p.add(grupoCampo("Número de cuenta", cuenta)); p.add(Box.createVerticalStrut(12));
+        p.add(grupoCampo("Monto", monto)); p.add(Box.createVerticalStrut(14)); p.add(estado); p.add(registrar);
+        registrar.addActionListener(e -> {
+            String seleccionado = (String) tipo.getSelectedItem();
+            if ("Selecciona una operación".equals(seleccionado)) {
+                error(estado, "Selecciona Depósito o Retiro.");
+                return;
+            }
+            String operacion = "Depósito".equals(seleccionado) ? "INGRESO" : "RETIRO";
+            ejecutarAsync(() -> {
+                controlador.movimiento(operacion, cuenta.getText().trim(),
+                        new BigDecimal(monto.getText().trim()));
+                SwingUtilities.invokeLater(() -> {
+                    tipo.setSelectedIndex(0); cuenta.setText(""); monto.setText("");
+                    exito(estado, seleccionado + " registrado correctamente.");
+                });
+            }, estado);
+        });
+        p.add(Box.createVerticalStrut(18));
+        JLabel reversaTitulo = new JLabel("Reversar movimiento");
+        reversaTitulo.setFont(new Font("Segoe UI", Font.BOLD, 16));
+        p.add(reversaTitulo);
+        JTextField reversa = campo();
+        JButton reversar = TemaEureka.boton("Registrar reversa");
+        p.add(grupoCampo("ID de transacción", reversa)); p.add(Box.createVerticalStrut(12)); p.add(reversar);
+        reversar.addActionListener(e -> ejecutarAsync(() -> {
+            controlador.reversar(reversa.getText().trim());
+            SwingUtilities.invokeLater(() -> { reversa.setText(""); exito(estado, "Reversa registrada correctamente."); });
+        }, estado));
+        return vista;
+    }
+
+    private JPanel crearPerfil() {
+        JPanel p = new JPanel(new BorderLayout(12, 12));
+        p.setBorder(new EmptyBorder(26, 26, 26, 26));
+        JTextArea datos = new JTextArea();
+        datos.setEditable(false); datos.setFont(new Font("Segoe UI", Font.PLAIN, 16));
+        JButton ver = TemaEureka.boton("Ver mi perfil");
+        ver.addActionListener(e -> ejecutarAsync(() -> {
+            Perfil perfil = controlador.perfil();
+            SwingUtilities.invokeLater(() -> datos.setText("PERFIL BANCARIO\n\n" + perfil.nombre()
+                    + "\n@" + perfil.usuario() + "\n" + perfil.telefono()
+                    + "\n\nCuentas asociadas: " + perfil.cuentas().size()));
+        }, null));
+        p.add(ver, BorderLayout.NORTH); p.add(new JScrollPane(datos), BorderLayout.CENTER);
+        return p;
+    }
+
+    private JPanel formulario(String titulo, String descripcion) {
+        JPanel exterior = new JPanel(new GridBagLayout());
+        exterior.setBackground(TemaEureka.FONDO);
+        exterior.setBorder(new EmptyBorder(30, 30, 30, 30));
+        JPanel p = new JPanel() {
+            @Override public Dimension getPreferredSize() {
+                Dimension natural = super.getPreferredSize();
+                return new Dimension(620, natural.height);
+            }
+        };
+        p.setLayout(new BoxLayout(p, BoxLayout.Y_AXIS));
+        p.setBackground(TemaEureka.PANEL);
+        p.setBorder(TemaEureka.borde());
+        p.setMaximumSize(new Dimension(620, Integer.MAX_VALUE));
+        JLabel encabezado = new JLabel(titulo); encabezado.setFont(new Font("Segoe UI", Font.BOLD, 24));
+        JLabel detalle = new JLabel(descripcion); detalle.setForeground(TemaEureka.MUTED);
+        p.add(encabezado); p.add(Box.createVerticalStrut(5)); p.add(detalle); p.add(Box.createVerticalStrut(18));
+        exterior.add(p);
+        exterior.putClientProperty("contenidoFormulario", p);
+        return exterior;
+    }
+
+    private JPanel contenidoFormulario(JPanel vista) {
+        return (JPanel) vista.getClientProperty("contenidoFormulario");
+    }
+
+    private JTextField campo() {
+        JTextField campo = TemaEureka.campo();
+        campo.setAlignmentX(Component.LEFT_ALIGNMENT);
+        return campo;
+    }
+
+    private JPanel grupoCampo(String titulo, JComponent control) {
+        JPanel grupo = new JPanel();
+        grupo.setLayout(new BoxLayout(grupo, BoxLayout.Y_AXIS));
+        grupo.setOpaque(false);
+        grupo.setAlignmentX(Component.LEFT_ALIGNMENT);
+        JLabel etiqueta = new JLabel(titulo);
+        etiqueta.setFont(new Font("Segoe UI", Font.BOLD, 13));
+        etiqueta.setForeground(TemaEureka.TEXTO);
+        etiqueta.setAlignmentX(Component.LEFT_ALIGNMENT);
+        control.setAlignmentX(Component.LEFT_ALIGNMENT);
+        grupo.add(etiqueta); grupo.add(Box.createVerticalStrut(6)); grupo.add(control);
+        return grupo;
+    }
+
+    private void prepararCampoLogin(JTextField campo) {
+        campo.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+        campo.setForeground(TemaEureka.TEXTO);
+        campo.setBackground(TemaEureka.PANEL);
+        campo.setBorder(TemaEureka.bordeCampo());
+        campo.setPreferredSize(new Dimension(360, 44));
+    }
+
+    private JLabel mensajeEstado() {
+        JLabel etiqueta = new JLabel(" ");
+        etiqueta.setAlignmentX(Component.LEFT_ALIGNMENT);
+        etiqueta.setForeground(TemaEureka.ERROR);
+        return etiqueta;
+    }
+
+    private void iniciarSesion() {
+        estadoLogin.setText("Conectando...");
+        ejecutarAsync(() -> {
+            Sesion sesion = controlador.login(usuario.getText().trim(), new String(contrasenia.getPassword()));
+            SwingUtilities.invokeLater(() -> {
+                saludo.setText("Hola, " + sesion.nombre());
+                estadoLogin.setText(" ");
+                getRootPane().setDefaultButton(null);
+                paginas.show(raiz, "app");
+                refrescarCuentas();
+            });
+        }, estadoLogin);
+    }
+
+    private void cerrarSesion() {
+        ejecutarAsync(() -> {
+            try { controlador.cerrarSesion(); } catch (Exception ignored) { controlador.invalidarSesion(); }
+            SwingUtilities.invokeLater(() -> volverAlLogin("Sesión cerrada correctamente."));
+        }, null);
+    }
+
+    private void refrescarCuentas() {
+        ejecutarAsync(() -> {
+            List<Cuenta> lista = controlador.cuentas();
+            SwingUtilities.invokeLater(() -> {
+                modeloCuentas.setRowCount(0);
+                for (Cuenta c : lista) modeloCuentas.addRow(
+                    new Object[]{c.numero(), "$ " + c.saldo(), c.estado(), c.sucursal()});
+            });
+        }, null);
+    }
+
+    private void ejecutarAsync(Tarea tarea, JLabel destinoError) {
+        new Thread(() -> {
+            try {
+                tarea.ejecutar();
+            } catch (Exception error) {
+                SwingUtilities.invokeLater(() -> {
+                    String mensaje = limpiar(error.getMessage());
+                    if (sesionInvalida(mensaje)) {
+                        controlador.invalidarSesion();
+                        volverAlLogin("Tu sesión venció. Inicia sesión nuevamente.");
+                    } else if (destinoError != null) {
+                        this.error(destinoError, mensaje);
+                    } else {
+                        JOptionPane.showMessageDialog(this, mensaje, "EUREKABANK", JOptionPane.ERROR_MESSAGE);
+                    }
+                });
+            }
+        }, "eurekabank-soap").start();
+    }
+
+    private boolean sesionInvalida(String mensaje) {
+        String valor = mensaje.toLowerCase();
+        return valor.contains("token invalido") || valor.contains("token inválido")
+                || valor.contains("token expirado") || valor.contains("token revocado");
+    }
+
+    private void volverAlLogin(String mensaje) {
+        contrasenia.setText("");
+        estadoLogin.setForeground(TemaEureka.ERROR);
+        estadoLogin.setText(mensaje);
+        getRootPane().setDefaultButton(botonIngresar);
+        paginas.show(raiz, "login");
+    }
+
+    private void exito(JLabel destino, String mensaje) {
+        destino.setText(" ");
+        mostrarToast(mensaje);
+        refrescarCuentas();
+    }
+
+    /** Notificación breve no modal para confirmar operaciones exitosas. */
+    private void mostrarToast(String mensaje) {
+        JDialog toast = new JDialog(this);
+        toast.setUndecorated(true);
+        toast.setAlwaysOnTop(true);
+        JPanel contenido = new JPanel(new FlowLayout(FlowLayout.LEFT, 12, 10));
+        contenido.setBackground(new Color(12, 125, 104));
+        contenido.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(new Color(5, 92, 79)), new EmptyBorder(3, 8, 3, 10)));
+        JLabel icono = new JLabel("✓");
+        icono.setForeground(Color.WHITE); icono.setFont(new Font("Segoe UI", Font.BOLD, 18));
+        JLabel texto = new JLabel(mensaje);
+        texto.setForeground(Color.WHITE); texto.setFont(new Font("Segoe UI", Font.BOLD, 13));
+        contenido.add(icono); contenido.add(texto);
+        toast.setContentPane(contenido); toast.pack();
+        Point ventana = getLocationOnScreen();
+        toast.setLocation(ventana.x + getWidth() - toast.getWidth() - 28,
+                ventana.y + getHeight() - toast.getHeight() - 42);
+        toast.setVisible(true);
+        Timer cerrar = new Timer(2800, e -> toast.dispose());
+        cerrar.setRepeats(false); cerrar.start();
+    }
+
+    private void error(JLabel destino, String mensaje) {
+        destino.setForeground(TemaEureka.ERROR);
+        destino.setText(mensaje);
+    }
+
+    private JLabel logo() {
+        URL recurso = getClass().getResource("/img/logo.png");
+        if (recurso != null) {
+            ImageIcon icono = new ImageIcon(recurso);
+            return new JLabel(new ImageIcon(icono.getImage().getScaledInstance(76, 76, Image.SCALE_SMOOTH)),
+                    SwingConstants.CENTER);
+        }
+        JLabel respaldo = new JLabel("◆", SwingConstants.CENTER);
+        respaldo.setFont(new Font("Segoe UI", Font.BOLD, 64));
+        respaldo.setForeground(TemaEureka.ACENTO);
+        return respaldo;
+    }
+
+    private String limpiar(String valor) {
+        return valor == null ? "No se pudo completar la operación."
+                : valor.replaceAll("(?s)<[^>]*>", "").trim();
+    }
+
+    @FunctionalInterface private interface Tarea { void ejecutar() throws Exception; }
+}
