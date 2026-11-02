@@ -4,12 +4,12 @@
 <f:metadata><f:viewAction action="#{bancaBean.cargarCuentas}" if="#{sesionBean.activa}"/></f:metadata>
 <h:head>
   <title>EUREKABANK · Panel</title>
-  <h:outputStylesheet library="css" name="eureka.css"/><style type="text/css">.icon-button svg{width:17px;height:17px;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}.icon-button svg circle{fill:currentColor;stroke:none}</style>
+  <h:outputStylesheet library="css" name="eureka.css"/><style type="text/css">.icon-button svg{width:17px;height:17px;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}.icon-button svg circle{fill:currentColor;stroke:none}.admin-surface{margin-top:26px;display:grid;grid-template-columns:1.3fr 1fr;gap:28px;background:linear-gradient(120deg,#fff,#ebfbfc);border:1px solid #cfe0ea;border-radius:16px;padding:22px;box-shadow:0 9px 24px #1844630d}.admin-surface h2{margin:0;color:#123a5a}.admin-surface p{color:#597083;line-height:1.6}.admin-form{margin-top:0;align-content:center}@media(max-width:760px){.admin-surface{display:block}.admin-form{margin-top:18px}}</style>
 </h:head>
 <h:body>
   <header class="topbar">
     <a class="brand"><h:graphicImage library="img" name="logo.png" styleClass="brand-logo small"/><span>◆ EUREKABANK</span></a>
-    <nav><a href="#cuentas">Resumen</a><a href="#historial">Movimientos</a><a href="#transferir">Transferir</a><a href="#operar">Operar</a>
+    <nav><a href="#cuentas">Resumen</a><a href="#historial">Movimientos</a><a href="#transferir">Transferir</a><a href="#operar">Operar</a><a href="#administrar">Cuentas</a>
       <h:form styleClass="inline"><span>Hola, #{sesionBean.nombre}</span><h:commandButton value="Salir" action="#{sesionBean.salir}" styleClass="ghost"/></h:form>
     </nav>
   </header>
@@ -28,6 +28,17 @@
         </ui:repeat>
       </div>
     </section></h:panelGroup>
+    <section id="administrar" class="admin-surface">
+      <div><p class="eyebrow">ADMINISTRACIÓN</p><h2>Crear cuenta para un cliente</h2><p>Selecciona el titular. El sistema genera un número único, crea la cuenta activa con saldo inicial cero y la asigna automáticamente.</p></div>
+      <h:form id="adminForm" styleClass="form-grid admin-form">
+        <h:commandButton value="Cargar clientes" action="#{bancaBean.cargarClientes}" styleClass="ghost"><f:ajax execute="@this" render="adminForm :globalMessage"/></h:commandButton>
+        <h:selectOneMenu value="#{bancaBean.clienteSeleccionado}" styleClass="field" required="true" disabled="#{empty bancaBean.clientes}">
+          <f:selectItem itemLabel="Selecciona el cliente titular" itemValue="" noSelectionOption="true"/>
+          <f:selectItems value="#{bancaBean.clientes}" var="cliente" itemValue="#{cliente.id}" itemLabel="#{cliente.etiqueta}"/>
+        </h:selectOneMenu>
+        <h:commandButton value="Crear y asignar cuenta" action="#{bancaBean.crearCuenta}" styleClass="primary" disabled="#{empty bancaBean.clientes}"><f:ajax execute="@form" render="@form :accountsPanel :globalMessage"/></h:commandButton>
+      </h:form>
+    </section>
     <section class="grid">
       <article id="transferir" class="surface"><p class="eyebrow">TRANSFERENCIA</p><h2>Transferir dinero</h2><p>Utiliza los números de cuenta de 10 dígitos.</p><h:form styleClass="form-grid"><h:inputText value="#{bancaBean.origen}" required="true" styleClass="field" a:placeholder="Número de cuenta origen"/><h:inputText value="#{bancaBean.destino}" required="true" styleClass="field" a:placeholder="Número de cuenta destino"/><h:inputText value="#{bancaBean.monto}" required="true" styleClass="field" a:placeholder="Monto"/><h:commandButton value="Transferir" action="#{bancaBean.transferir}" styleClass="primary"><f:ajax execute="@form" render=":accountsPanel :globalMessage"/></h:commandButton></h:form></article>
       <article id="historial" class="surface"><p class="eyebrow">CONSULTA</p><h2>Movimientos</h2><h:form id="historyForm" styleClass="form-grid"><h:inputText value="#{bancaBean.cuentaId}" styleClass="field" a:placeholder="Número de cuenta"/><h:commandButton value="Consultar historial" action="#{bancaBean.consultarMovimientos}" styleClass="ghost"><f:ajax execute="@form" render="historyPanel"/></h:commandButton><h:panelGroup id="historyPanel" layout="block"><div class="table-wrap"><table><thead><tr><th>Tipo</th><th>Monto</th><th>Fecha</th></tr></thead><tbody><ui:repeat value="#{bancaBean.movimientos}" var="m"><tr><td>#{m.tipo}</td><td>$ #{m.monto}</td><td>#{m.fecha}</td></tr></ui:repeat></tbody></table></div></h:panelGroup></h:form></article>
