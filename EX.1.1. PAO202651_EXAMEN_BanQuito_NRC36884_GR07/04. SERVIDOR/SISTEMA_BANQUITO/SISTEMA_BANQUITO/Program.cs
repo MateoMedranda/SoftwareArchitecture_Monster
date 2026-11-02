@@ -9,6 +9,48 @@ using SISTEMA_BANQUITO.Servicio;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Carga la configuracion compartida al ejecutar localmente; las variables
+// del proceso/sistema prevalecen sobre el archivo.
+if (builder.Environment.IsDevelopment())
+{
+    var archivoEnv = Path.GetFullPath(Path.Combine(builder.Environment.ContentRootPath, "..", "..", ".development.env"));
+    if (File.Exists(archivoEnv))
+    {
+        var valores = new Dictionary<string, string?>(StringComparer.OrdinalIgnoreCase);
+        foreach (var linea in File.ReadLines(archivoEnv))
+        {
+            var contenido = linea.Trim();
+            if (contenido.Length == 0 || contenido.StartsWith('#')) continue;
+            var separador = contenido.IndexOf('=');
+            if (separador <= 0) continue;
+            var clave = contenido[..separador].Trim();
+            var valor = contenido[(separador + 1)..].Trim();
+            if (valor.Length >= 2 && ((valor[0] == '"' && valor[^1] == '"') || (valor[0] == '\'' && valor[^1] == '\''))) valor = valor[1..^1];
+            if (Environment.GetEnvironmentVariable(clave) is null)
+            {
+                valores[clave] = valor;
+                if (clave.Contains("__", StringComparison.Ordinal)) valores[clave.Replace("__", ":", StringComparison.Ordinal)] = valor;
+            }
+        }
+        builder.Configuration.AddInMemoryCollection(valores);
+    }
+    builder.Configuration.AddEnvironmentVariables();
+}
+
+var passwordBanquito = builder.Configuration["BANQUITO_DB_PASSWORD"];
+if (!string.IsNullOrWhiteSpace(passwordBanquito) && Environment.GetEnvironmentVariable("ConnectionStrings__Banquito") is null)
+{
+    builder.Configuration["ConnectionStrings:Banquito"] = new Microsoft.Data.SqlClient.SqlConnectionStringBuilder
+    {
+        DataSource = builder.Configuration["BANQUITO_DB_SERVER"] ?? "localhost,1433",
+        InitialCatalog = builder.Configuration["BANQUITO_DB_NAME"] ?? "BANQUITO",
+        UserID = builder.Configuration["BANQUITO_DB_USER"] ?? "sa",
+        Password = passwordBanquito,
+        TrustServerCertificate = true,
+        Encrypt = false
+    }.ConnectionString;
+}
+
 // Controladores + JSON en camelCase para los DTO (sujetoCredito, codCliente, etc.)
 builder.Services
     .AddControllers()

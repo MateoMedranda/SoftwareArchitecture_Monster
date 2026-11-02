@@ -1,0 +1,360 @@
+@startuml Diagrama_Clases_BanQuito
+title Módulo de Crédito BanQuito - Diagrama de clases
+left to right direction
+skinparam packageStyle rectangle
+skinparam classAttributeIconSize 0
+hide circle
+
+package "Controlador" {
+  class ClienteControlador
+  class CuentaControlador
+  class MovimientoControlador
+  class CreditoControlador
+  class AmortizacionControlador
+  class SujetoCreditoControlador
+  class MontoMaximoControlador
+  class OtorgarCreditoControlador
+  class TablaAmortizacionControlador
+  class SaludControlador
+}
+
+package "Servicio" {
+  class ClienteServicio {
+    +VerificarSujetoCreditoAsync(solicitud, ct)
+  }
+  class CuentaServicio
+  class MovimientoServicio
+  class CreditoServicio {
+    +ObtenerMontoMaximoAsync(solicitud, ct)
+    +OtorgarCreditoAsync(solicitud, ct)
+  }
+  class AmortizacionServicio {
+    +ObtenerTablaAmortizacionAsync(solicitud, ct)
+    +PagarCuotaAsync(solicitud, ct)
+  }
+}
+
+package "Modelo.DAO" {
+  class ClienteDAO {
+    -conexion: Conexion
+    +ListarAsync(ct): Task<List<Cliente>>
+    +ObtenerPorCodigoAsync(codigo, ct): Task<Cliente?>
+    +ObtenerPorCedulaAsync(cedula, ct): Task<Cliente?>
+    +ExisteCedulaAsync(cedula, ct): Task<bool>
+    +SiguienteCodigoAsync(ct): Task<int>
+    +CrearAsync(cliente, ct): Task
+    +ActualizarAsync(cliente, ct): Task<int>
+    +EliminarAsync(codigo, ct): Task<int>
+  }
+  class CuentaDAO {
+    -conexion: Conexion
+    +ListarAsync(ct): Task<List<Cuenta>>
+    +ObtenerPorClienteAsync(codigo, ct): Task<List<Cuenta>>
+    +ObtenerPorNumeroAsync(numero, ct): Task<Cuenta?>
+    +SiguienteNumeroAsync(ct): Task<string>
+    +CrearAsync(cuenta, ct): Task
+    +ActualizarAsync(cuenta, ct): Task<int>
+    +EliminarAsync(numero, ct): Task<int>
+  }
+  class MovimientoDAO {
+    -conexion: Conexion
+    +ListarAsync(ct): Task<List<Movimiento>>
+    +ObtenerPorCodigoAsync(codigo, ct): Task<Movimiento?>
+    +ObtenerPorCuentaAsync(cuenta, desde, ct): Task<List<Movimiento>>
+    +ObtenerPorClienteAsync(codigo, ct): Task<List<Movimiento>>
+    +ObtenerTotalesAsync(codigo, desde, ct): Task<(decimal, decimal)>
+    +ExistePorCuentaAsync(cuenta, ct): Task<bool>
+    +CrearAsync(movimiento, ct): Task<decimal>
+    +ActualizarAsync(movimiento, ct): Task<decimal>
+    +EliminarAsync(codigo, ct): Task<bool>
+  }
+  class CreditoDAO {
+    -conexion: Conexion
+    +ListarAsync(ct): Task<List<Credito>>
+    +ObtenerPorCuentaAsync(cuenta, ct): Task<List<Credito>>
+    +ObtenerPorClienteAsync(codigo, ct): Task<List<Credito>>
+    +ObtenerPorNumeroAsync(numero, ct): Task<Credito?>
+    +ExistePorCuentaAsync(cuenta, ct): Task<bool>
+    +SiguienteNumeroAsync(ct): Task<int>
+    +CrearAsync(credito, ct): Task
+    +ActualizarAsync(credito, ct): Task<int>
+    +EliminarAsync(numero, ct): Task<bool>
+  }
+  class AmortizacionDAO {
+    -conexion: Conexion
+    +ObtenerPorCreditoAsync(credito, ct): Task<List<Amortizacion>>
+    +ObtenerCuotaAsync(credito, cuota, ct): Task<Amortizacion?>
+    +CrearLoteAsync(cuotas, ct): Task
+    +RegistrarPagoAsync(credito, cuota, cuenta, ct): Task<decimal>
+  }
+  class ParametrosSql <<static>> {
+    +AgregarDecimal(command, nombre, valor): void
+  }
+}
+
+package "Modelo" {
+  class Conexion {
+    -cadenaConexion: string
+    +CrearConexion(): SqlConnection
+    +ProbarConexionAsync(ct): Task<bool>
+  }
+  class Cliente {
+    +CodCliente: int
+    +Cedula: string
+    +Nombre: string
+    +Genero: string
+    +FechaNacimiento: DateTime
+  }
+  class Cuenta {
+    +NumCuenta: string
+    +CodCliente: int
+    +SaldoCuenta: decimal
+  }
+  class Movimiento {
+    +CodMovimiento: int
+    +NumCuenta: string
+    +Tipo: TipoMov
+    +Valor: decimal
+    +Fecha: DateTime
+  }
+  enum TipoMov {
+    DEP
+    RET
+  }
+  class Credito {
+    +NumCredito: int
+    +NumCuenta: string
+    +CreditoTotal: decimal
+    +FechaCreacion: DateTime
+    +FechaActualizacion: DateTime
+  }
+  class Amortizacion {
+    +NumCuota: int
+    +NumCredito: int
+    +ValorCuota: decimal
+    +InteresPagado: decimal
+    +CapitalPagado: decimal
+    +Saldo: decimal
+    +FechaPago: DateTime
+    +Pagada: bool
+  }
+}
+
+package "Modelo.DTO" {
+  class SolicitudSujetoCreditoDTO {
+    +Cedula: string
+  }
+  class RespuestaSujetoCreditoDTO {
+    +SujetoCredito: bool
+    +CodCliente: int?
+    +Motivo: string?
+  }
+  class SolicitudMontoMaximoDTO {
+    +CodCliente: int
+  }
+  class RespuestaMontoMaximoDTO {
+    +CodCliente: int
+    +MontoMaximo: decimal
+  }
+  class SolicitudOtorgarCreditoDTO {
+    +CodCliente: int
+    +PrecioTelefono: decimal
+    +NumCuotas: int
+  }
+  class RespuestaOtorgarCreditoDTO {
+    +IdCredito: int
+    +Aprobado: bool
+    +Motivo: string?
+    +TablaAmortizacion: List<CuotaDTO>
+  }
+  class SolicitudTablaAmortizacionDTO {
+    +NumCredito: int?
+    +CodCliente: int?
+  }
+  class RespuestaTablaAmortizacionDTO {
+    +NumCredito: int
+    +Cuotas: List<CuotaDTO>
+  }
+  class CuotaDTO {
+    +NumCuota: int
+    +ValorCuota: decimal
+    +InteresPagado: decimal
+    +CapitalPagado: decimal
+    +Saldo: decimal
+    +FechaPago: DateTime
+    +Pagada: bool
+  }
+  class SolicitudPagoCuota {
+    +NumCredito: int
+    +NumCuota: int
+    +NumCuenta: string
+  }
+  class SolicitudCliente {
+    +Cedula: string
+    +Nombre: string
+    +Genero: string
+    +FechaNacimiento: DateTime
+  }
+  class RespuestaCliente {
+    +CodCliente: int
+    +Cedula: string
+    +Nombre: string
+    +Genero: string
+    +FechaNacimiento: DateTime
+    +Edad: int
+  }
+  class SolicitudCuenta {
+    +CodCliente: int
+    +SaldoCuenta: decimal
+  }
+  class RespuestaCuenta {
+    +NumCuenta: string
+    +CodCliente: int
+    +SaldoCuenta: decimal
+  }
+  class SolicitudMovimiento {
+    +NumCuenta: string
+    +Tipo: TipoMov
+    +Valor: decimal
+    +Fecha: DateTime?
+  }
+  class RespuestaMovimiento {
+    +CodMovimiento: int
+    +NumCuenta: string
+    +Tipo: string
+    +Valor: decimal
+    +Fecha: DateTime
+    +SaldoCuenta: decimal?
+  }
+  class RespuestaCredito {
+    +NumCredito: int
+    +NumCuenta: string
+    +CreditoTotal: decimal
+    +FechaCreacion: DateTime
+    +FechaActualizacion: DateTime
+  }
+  class SolicitudActualizarCredito {
+    +CreditoTotal: decimal
+  }
+  class SolicitudBusquedaPorInt {
+    +Valor: int
+  }
+  class SolicitudBusquedaPorString {
+    +Valor: string
+  }
+  class RespuestaGenerica {
+    +Exitoso: bool
+    +Mensaje: string
+    +ProcesoHttp: string
+  }
+  class RespuestaErrorDTO {
+    +Mensaje: string
+    +Detalle: string?
+  }
+  class RespuestaSaludDTO {
+    +Conectado: bool
+    +BaseDatos: string
+    +Detalle: string?
+  }
+}
+
+package "Modelo.Mapeo" {
+  class MapeoCliente <<static>>
+  class MapeoCuenta <<static>>
+  class MapeoMovimiento <<static>>
+  class MapeoCredito <<static>>
+  class MapeoAmortizacion <<static>>
+}
+
+package "Comun" {
+  class ExcepcionNegocio
+  class ManejadorErrores
+}
+
+class SqlParameterCollection <<ADO.NET>>
+database "SQL Server\nBANQUITO" as DBBanquito
+
+ClienteControlador --> ClienteServicio
+CuentaControlador --> CuentaServicio
+MovimientoControlador --> MovimientoServicio
+CreditoControlador --> CreditoServicio
+AmortizacionControlador --> AmortizacionServicio
+SujetoCreditoControlador --> ClienteServicio
+MontoMaximoControlador --> CreditoServicio
+OtorgarCreditoControlador --> CreditoServicio
+TablaAmortizacionControlador --> AmortizacionServicio
+
+ClienteServicio --> ClienteDAO
+ClienteServicio --> CuentaDAO
+ClienteServicio --> MovimientoDAO
+ClienteServicio --> CreditoDAO
+CuentaServicio --> CuentaDAO
+MovimientoServicio --> MovimientoDAO
+CreditoServicio --> ClienteDAO
+CreditoServicio --> CuentaDAO
+CreditoServicio --> MovimientoDAO
+CreditoServicio --> CreditoDAO
+CreditoServicio --> AmortizacionDAO
+CreditoServicio --> ClienteServicio
+AmortizacionServicio --> CreditoDAO
+AmortizacionServicio --> AmortizacionDAO
+AmortizacionServicio --> CuentaDAO
+
+ClienteDAO --> Conexion
+CuentaDAO --> Conexion
+MovimientoDAO --> Conexion
+CreditoDAO --> Conexion
+AmortizacionDAO --> Conexion
+ClienteDAO ..> Cliente
+CuentaDAO ..> Cuenta
+MovimientoDAO ..> Movimiento
+CreditoDAO ..> Credito
+AmortizacionDAO ..> Amortizacion
+ParametrosSql ..> SqlParameterCollection : AgregarDecimal
+Conexion --> DBBanquito
+
+Cliente "1" -- "1..*" Cuenta
+Cuenta "1" -- "0..*" Movimiento
+Cuenta "1" -- "0..*" Credito
+Credito "1" *-- "1..*" Amortizacion
+Movimiento ..> TipoMov
+
+ClienteServicio ..> MapeoCliente
+CuentaServicio ..> MapeoCuenta
+MovimientoServicio ..> MapeoMovimiento
+CreditoServicio ..> MapeoCredito
+AmortizacionServicio ..> MapeoAmortizacion
+SujetoCreditoControlador ..> SolicitudSujetoCreditoDTO
+SujetoCreditoControlador ..> RespuestaSujetoCreditoDTO
+MontoMaximoControlador ..> SolicitudMontoMaximoDTO
+MontoMaximoControlador ..> RespuestaMontoMaximoDTO
+OtorgarCreditoControlador ..> SolicitudOtorgarCreditoDTO
+OtorgarCreditoControlador ..> RespuestaOtorgarCreditoDTO
+TablaAmortizacionControlador ..> SolicitudTablaAmortizacionDTO
+TablaAmortizacionControlador ..> RespuestaTablaAmortizacionDTO
+RespuestaTablaAmortizacionDTO o-- CuotaDTO
+RespuestaOtorgarCreditoDTO o-- CuotaDTO
+ManejadorErrores ..> ExcepcionNegocio
+
+ClienteControlador ..> SolicitudCliente
+ClienteControlador ..> RespuestaCliente
+ClienteControlador ..> SolicitudBusquedaPorInt
+ClienteControlador ..> SolicitudBusquedaPorString
+CuentaControlador ..> SolicitudCuenta
+CuentaControlador ..> RespuestaCuenta
+MovimientoControlador ..> SolicitudMovimiento
+MovimientoControlador ..> RespuestaMovimiento
+CreditoControlador ..> RespuestaCredito
+CreditoControlador ..> SolicitudActualizarCredito
+AmortizacionControlador ..> SolicitudPagoCuota
+AmortizacionControlador ..> CuotaDTO
+SaludControlador ..> RespuestaSaludDTO
+SaludControlador ..> RespuestaErrorDTO
+
+note right of CreditoServicio
+Verifica sujeto de crédito y calcula
+el máximo con la regla vigente del caso.
+Al aprobar, registra crédito y genera
+la tabla de amortización en BanQuito.
+end note
+@enduml
