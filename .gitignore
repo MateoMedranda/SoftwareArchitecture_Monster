@@ -7,4 +7,4 @@ obj/
 .vs/
 .development.env
 # Variables de entorno con credenciales
-.env
+*.env
