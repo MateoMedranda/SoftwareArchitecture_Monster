@@ -118,6 +118,9 @@ public class CuentaServicio {
         try {
             List<ClienteCuentaDTO> resultado = new java.util.ArrayList<>();
             for (UsuarioDTO usuario : usuarioDAO.listar()) {
+                // El flujo crea cuentas para titulares de tipo CLIENTE, nunca para
+                // cuentas administrativas (ADMIN/CAJERO).
+                if (!"CLIENTE".equalsIgnoreCase(rolNombre(usuario.getRolId()))) continue;
                 resultado.add(new ClienteCuentaDTO(usuario.getUsuarioId(),
                         usuario.getUsuarioNombre() + " " + usuario.getUsuarioApellido(),
                         usuario.getUsuarioUsuario()));

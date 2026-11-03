@@ -18,6 +18,7 @@ public class BancaBean {
     private List<MovimientoVista> movimientos = List.of();
     private List<ClienteCuentaVista> clientes = List.of();
     private String cuentaId, origen, destino, tipo, transaccionId, clienteSeleccionado, mensaje;
+    private boolean mensajeExito;
     private BigDecimal monto;
     private CuentaVista cuentaCreada;
     private PerfilVista perfil;
@@ -27,17 +28,19 @@ public class BancaBean {
     private void actualizarDisponibilidades() throws Exception { Map<String,String> estados = soap.disponibilidades(sesion.getToken()); for (CuentaVista cuenta : cuentas) cuenta.setDisponibilidad(estados.get(cuenta.getId())); }
     public void cargarPerfil() { try { perfil = soap.perfil(sesion.getToken(), sesion.getUsuarioId()); } catch (Exception e) { error(e); } }
 
-    public void cargarClientes() { try { clientes = soap.clientesParaCuenta(sesion.getToken()); mensaje = null; } catch (Exception e) { error(e); } }
-    public void crearCuenta() { try { if (clienteSeleccionado == null || clienteSeleccionado.isBlank()) { mensaje = "Selecciona un cliente antes de crear la cuenta."; return; } cuentaCreada = soap.crearCuentaParaUsuario(sesion.getToken(), clienteSeleccionado); mensaje = "Cuenta " + cuentaCreada.getNumero() + " creada y asignada correctamente."; clienteSeleccionado = null; cargarCuentas(); } catch (Exception e) { error(e); } }
+    public void cargarClientes() { try { clientes = soap.clientesParaCuenta(sesion.getToken()); mensaje = null; mensajeExito = false; } catch (Exception e) { error(e); } }
+    public void crearCuenta() { try { if (clienteSeleccionado == null || clienteSeleccionado.isBlank()) { falloValidacion("Selecciona un cliente antes de crear la cuenta."); return; } cuentaCreada = soap.crearCuentaParaUsuario(sesion.getToken(), clienteSeleccionado); exito("Cuenta " + cuentaCreada.getNumero() + " creada y asignada correctamente."); clienteSeleccionado = null; cargarCuentas(); } catch (Exception e) { error(e); } }
 
     public void consultarMovimientos() { if (!validarCuenta(cuentaId, "Número de cuenta")) return; try { movimientos = soap.movimientos(sesion.getToken(), cuentaId.trim()); } catch (Exception e) { error(e); } }
-    public void transferir() { if (!validarCuenta(origen, "Cuenta origen") || !validarCuenta(destino, "Cuenta destino") || !validarMonto()) return; if (origen.trim().equals(destino.trim())) { mensaje = "Las cuentas de origen y destino deben ser diferentes."; return; } try { soap.transferir(sesion.getToken(), origen.trim(), destino.trim(), monto); mensaje = "Transferencia completada y registrada en auditoría."; origen = destino = null; monto = null; cargarCuentas(); } catch (Exception e) { error(e); } }
-    public void registrar() { if (tipo == null || !(tipo.equals("INGRESO") || tipo.equals("RETIRO"))) { mensaje = "Selecciona Depósito o Retiro."; return; } if (!validarCuenta(cuentaId, "Número de cuenta") || !validarMonto()) return; try { soap.movimiento(sesion.getToken(), tipo, cuentaId.trim(), monto); mensaje = "Operación registrada correctamente."; cuentaId = null; monto = null; tipo = null; cargarCuentas(); } catch (Exception e) { error(e); } }
-    public void reversar() { if (transaccionId == null || !transaccionId.trim().matches("[0-9a-fA-F-]{36}")) { mensaje = "Ingresa un ID de transacción válido."; return; } try { soap.reversar(sesion.getToken(), transaccionId.trim()); mensaje = "Reversa registrada correctamente."; transaccionId = null; cargarCuentas(); } catch (Exception e) { error(e); } }
+    public void transferir() { if (!validarCuenta(origen, "Cuenta origen") || !validarCuenta(destino, "Cuenta destino") || !validarMonto()) return; if (origen.trim().equals(destino.trim())) { falloValidacion("Las cuentas de origen y destino deben ser diferentes."); return; } try { soap.transferir(sesion.getToken(), origen.trim(), destino.trim(), monto); exito("Transferencia completada y registrada en auditoría."); origen = destino = null; monto = null; cargarCuentas(); } catch (Exception e) { error(e); } }
+    public void registrar() { if (tipo == null || !(tipo.equals("INGRESO") || tipo.equals("RETIRO"))) { falloValidacion("Selecciona Depósito o Retiro."); return; } if (!validarCuenta(cuentaId, "Número de cuenta") || !validarMonto()) return; try { soap.movimiento(sesion.getToken(), tipo, cuentaId.trim(), monto); exito("Operación registrada correctamente."); cuentaId = null; monto = null; tipo = null; cargarCuentas(); } catch (Exception e) { error(e); } }
+    public void reversar() { if (transaccionId == null || !transaccionId.trim().matches("[0-9a-fA-F-]{36}")) { falloValidacion("Ingresa un ID de transacción válido."); return; } try { soap.reversar(sesion.getToken(), transaccionId.trim()); exito("Reversa registrada correctamente."); transaccionId = null; cargarCuentas(); } catch (Exception e) { error(e); } }
 
-    private boolean validarCuenta(String valor, String campo) { if (valor == null || !valor.trim().matches("\\d{10}")) { mensaje = campo + " debe tener exactamente 10 dígitos."; return false; } return true; }
-    private boolean validarMonto() { if (monto == null || monto.compareTo(BigDecimal.ZERO) <= 0) { mensaje = "El monto debe ser mayor a cero."; return false; } return true; }
-    private void error(Exception e) { mensaje = e.getMessage() == null ? "No se pudo completar la operación." : e.getMessage().replaceAll("(?s)<[^>]*>", "").trim(); }
+    private boolean validarCuenta(String valor, String campo) { if (valor == null || !valor.trim().matches("\\d{10}")) { falloValidacion(campo + " debe tener exactamente 10 dígitos."); return false; } return true; }
+    private boolean validarMonto() { if (monto == null || monto.compareTo(BigDecimal.ZERO) <= 0) { falloValidacion("El monto debe ser mayor a cero."); return false; } return true; }
+    private void exito(String texto) { mensaje = texto; mensajeExito = true; }
+    private void falloValidacion(String texto) { mensaje = texto; mensajeExito = false; }
+    private void error(Exception e) { mensaje = e.getMessage() == null ? "No se pudo completar la operación." : e.getMessage().replaceAll("(?s)<[^>]*>", "").trim(); mensajeExito = false; }
 
     public List<CuentaVista> getCuentas() { if (cuentas.isEmpty() && sesion.getActiva()) cargarCuentas(); return cuentas; }
     public List<ClienteCuentaVista> getClientes() { return clientes; }
@@ -52,4 +55,5 @@ public class BancaBean {
     public String getTransaccionId() { return transaccionId; } public void setTransaccionId(String v) { transaccionId = v; }
     public BigDecimal getMonto() { return monto; } public void setMonto(BigDecimal v) { monto = v; }
     public String getMensaje() { return mensaje; }
+    public boolean isMensajeExito() { return mensajeExito; }
 }

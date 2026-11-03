@@ -1,3 +1,0 @@
-Copie su logo en formato PNG con este nombre exacto: logo.png
-Ruta: src/main/webapp/resources/img/logo.png
-Se verá en el inicio de sesión y barra superior al compilar/deployar el WAR.
