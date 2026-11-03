@@ -9,6 +9,7 @@ public sealed class RespuestaFacturaDTO
     public DateTime Fecha { get; set; }
     public string TipoPago { get; set; } = string.Empty;
     public decimal Valor { get; set; }
+    public int? NumCredito { get; set; }
     public List<RespuestaItemFacturaDTO> Items { get; set; } = new();
 }
 

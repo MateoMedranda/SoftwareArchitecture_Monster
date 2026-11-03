@@ -10,6 +10,52 @@
     }
   ],
   "paths": {
+    "/api/amortizaciones/{id}": {
+      "get": {
+        "tags": [
+          "AmortizacionControlador"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "pattern": "^-?(?:0|[1-9]\\d*)$",
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/amortizaciones/por-cedula/{cedula}": {
+      "get": {
+        "tags": [
+          "AmortizacionControlador"
+        ],
+        "parameters": [
+          {
+            "name": "cedula",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
     "/api/clientes": {
       "get": {
         "tags": [
@@ -501,7 +547,7 @@
           },
           "precio": {
             "maximum": 99999999,
-            "minimum": 1,
+            "minimum": 0.01,
             "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$",
             "type": [
               "number",
@@ -514,6 +560,9 @@
     }
   },
   "tags": [
+    {
+      "name": "AmortizacionControlador"
+    },
     {
       "name": "ClienteControlador"
     },

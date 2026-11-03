@@ -9,8 +9,21 @@ namespace SISTEMA_FACTURACION.Servicios;
 /// Valida que el cliente exista en facturacion y en BanQuito, y solo
 /// devuelve la tabla si el cliente tiene al menos un credito en BanQuito.
 /// </summary>
-public sealed class AmortizacionProxyServicio(ClienteDAO clienteDao,BanquitoCliente banquito)
+public sealed class AmortizacionProxyServicio(ClienteDAO clienteDao,FacturaDAO facturaDao,BanquitoCliente banquito)
 {
+    public async Task<RespuestaAmortizacionBanquitoDTO> ObtenerPorFacturaAsync(int numFactura,CancellationToken ct)
+    {
+        if(numFactura<=0) throw new ExcepcionNegocio(400,"El número de factura debe ser mayor que cero.");
+
+        var factura=await facturaDao.PorNumeroAsync(numFactura,ct)
+            ?? throw new ExcepcionNegocio(404,$"No existe la factura {numFactura}.");
+
+        var numCredito=factura.NumCredito
+            ?? throw new ExcepcionNegocio(409,$"La factura {numFactura} fue pagada en efectivo y no tiene crédito asociado.");
+
+        return await banquito.TablaPorCreditoAsync(numCredito,ct)
+            ?? throw new ExcepcionNegocio(404,$"El crédito {numCredito} no existe en BanQuito.");
+    }
     public async Task<RespuestaAmortizacionBanquitoDTO> ObtenerPorCedulaAsync(string cedula,CancellationToken ct)
     {
         cedula=(cedula??string.Empty).Trim();

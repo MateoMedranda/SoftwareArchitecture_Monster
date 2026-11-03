@@ -39,4 +39,11 @@ public sealed class BanquitoCliente(HttpClient http)
         if(!response.IsSuccessStatusCode) throw new ExcepcionNegocio(StatusCodes.Status502BadGateway,"BanQuito no pudo consultar la tabla de amortización.");
         return await response.Content.ReadFromJsonAsync<RespuestaAmortizacionBanquitoDTO>(cancellationToken:ct) ?? throw new HttpRequestException("Respuesta vacía de BanQuito.");
     }
+    public async Task<RespuestaAmortizacionBanquitoDTO?> TablaPorCreditoAsync(int numCredito,CancellationToken ct)
+    {
+        using var response=await http.PostAsJsonAsync("api/amortizaciones/tabla",new SolicitudNumeroBanquitoDTO{Valor=numCredito},ct);
+        if(response.StatusCode==HttpStatusCode.NotFound) return null;
+        if(!response.IsSuccessStatusCode) throw new ExcepcionNegocio(StatusCodes.Status502BadGateway,"BanQuito no pudo consultar la tabla de amortización.");
+        return await response.Content.ReadFromJsonAsync<RespuestaAmortizacionBanquitoDTO>(cancellationToken:ct) ?? throw new HttpRequestException("Respuesta vacía de BanQuito.");
+    }
 }

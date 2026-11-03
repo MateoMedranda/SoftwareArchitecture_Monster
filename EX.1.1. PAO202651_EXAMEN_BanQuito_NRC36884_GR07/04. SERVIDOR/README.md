@@ -42,6 +42,7 @@ Proyecto: `Sistema Facturacion/Sistema Facturacion`. URL local por defecto: `htt
 | GET | `/api/facturas?cedula={cedula}` | Consultar facturas del cliente por cédula |
 | GET | `/api/facturas?codigoCliente={codigo}` | Consultar facturas por código local |
 | GET | `/api/amortizaciones/por-cedula/{cedula}` | Proxy: tabla de amortización del crédito más reciente en BanQuito (cliente debe existir en ambos sistemas y tener crédito) |
+| GET | `/api/amortizaciones/{id}` | Proxy: tabla de amortización del crédito asociado a la factura `id` (`NUM_CREDITO`); 409 si la factura fue pagada en efectivo |
 
 En efectivo el total es el 58% del subtotal (42% de descuento). En crédito se conserva el importe íntegro; BanQuito valida elegibilidad/tope y registra el crédito con su amortización. Ejemplos completos están en `Sistema Facturacion/Sistema Facturacion/Sistema Facturacion.http`.
 
@@ -55,6 +56,16 @@ Facturación no accede a la base de datos de BanQuito: valida el cliente local, 
 | Cliente con otro crédito (Carlos) | `GET http://localhost:5226/api/amortizaciones/por-cedula/0405060708` | `200` con `numCredito: 1001` y 6 cuotas |
 | Cliente sin crédito (María) | `GET http://localhost:5226/api/amortizaciones/por-cedula/0304050607` | `409` "no tiene créditos registrados en BanQuito" |
 | Cédula inexistente | `GET http://localhost:5226/api/amortizaciones/por-cedula/9999999999` | `404` "No existe un cliente con la cédula ... en facturación" |
+
+#### Proxy de amortización por factura (facturación → BanQuito)
+
+Toma el `NUM_CREDITO` guardado en la factura y consulta BanQuito en `POST /api/amortizaciones/tabla` con `{ "valor": NUM_CREDITO }`.
+
+| Caso | Método y URI de prueba | Resultado esperado |
+| --- | --- | --- |
+| Factura a crédito (Sofía) | `GET http://localhost:5226/api/amortizaciones/5005` | `200` con `numCredito: 1002` y sus cuotas |
+| Factura en efectivo (Ana) | `GET http://localhost:5226/api/amortizaciones/5001` | `409` "fue pagada en efectivo y no tiene crédito asociado" |
+| Factura inexistente | `GET http://localhost:5226/api/amortizaciones/9999` | `404` "No existe la factura 9999" |
 
 Requisito: BanQuito debe estar disponible en `http://localhost:5173` (`Servicios:Banquito:BaseUrl`).
 

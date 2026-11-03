@@ -133,11 +133,7 @@ namespace CLIESC_Facturacion.Vistas
 
         private void FacturasClick(object sender, EventArgs e)
         {
-            MessageBox.Show(this,
-                "La pantalla de facturas se implementara en la siguiente iteracion.",
-                "Celulares Monster",
-                MessageBoxButtons.OK,
-                MessageBoxIcon.Information);
+            Navegacion.Abrir(this, new FormFacturas());
         }
 
         private void ClientesClick(object sender, EventArgs e)

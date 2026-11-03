@@ -101,6 +101,7 @@ create table FACTURA (
    TIPO_PAGO            varchar(16)          not null,
    VALOR                decimal(10,2)        not null,
    NUM_CREDITO          int                  null,
+   NUM_CREDITO          int                  null,
    constraint PK_FACTURA primary key nonclustered (NUM_FACTURA)
 )
 go
