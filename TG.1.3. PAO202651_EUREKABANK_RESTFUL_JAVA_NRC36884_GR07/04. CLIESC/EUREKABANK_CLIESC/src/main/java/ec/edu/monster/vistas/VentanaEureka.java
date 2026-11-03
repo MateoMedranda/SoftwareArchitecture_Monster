@@ -43,7 +43,7 @@ public final class VentanaEureka extends JFrame {
     };
 
     public VentanaEureka() {
-        super("EUREKABANK · Banca digital");
+        super("EUREKABANK RESTFUL · Banca digital");
         TemaEureka.aplicar();
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setMinimumSize(new Dimension(1040, 700));
@@ -71,11 +71,11 @@ public final class VentanaEureka extends JFrame {
         g.gridy = 0;
         tarjeta.add(logo(), g);
         g.gridy++;
-        JLabel titulo = new JLabel("Tu banca, con claridad.", SwingConstants.CENTER);
+        JLabel titulo = new JLabel("EUREKABANK RESTFUL", SwingConstants.CENTER);
         titulo.setFont(new Font("Segoe UI", Font.BOLD, 27));
         tarjeta.add(titulo, g);
         g.gridy++;
-        JLabel subtitulo = new JLabel("Ingresa para consultar y operar tus cuentas.", SwingConstants.CENTER);
+        JLabel subtitulo = new JLabel("Cliente de escritorio · API RESTful", SwingConstants.CENTER);
         subtitulo.setForeground(TemaEureka.MUTED);
         tarjeta.add(subtitulo, g);
         g.gridy++;
@@ -520,7 +520,7 @@ public final class VentanaEureka extends JFrame {
                     }
                 });
             }
-        }, "eurekabank-soap").start();
+        }, "eurekabank-restful").start();
     }
 
     private boolean sesionInvalida(String mensaje) {

@@ -42,7 +42,7 @@ public final class ConsolaVista {
     private boolean menu() {
         while (true) {
             boolean esCliente = "CLIENTE".equalsIgnoreCase(c.sesion().rol());
-            String opciones = esCliente ? "\n+------------------------ EUREKABANK -------------------------+\n|  1. Mis cuentas       2. Movimientos     3. Transferir      |\n|  6. Mi perfil                                             |\n|  0. Salir                                                    |\n+--------------------------------------------------------------+" : "\n+------------------------ EUREKABANK -------------------------+\n|  1. Mis cuentas       2. Movimientos     3. Transferir      |\n|  4. Ingreso/retiro    5. Reversar        6. Mi perfil       |\n|  7. Crear cuenta (ADMIN/CAJERO)                              |\n|  0. Salir                                                    |\n+--------------------------------------------------------------+";
+            String opciones = esCliente ? "\n+-------------------- EUREKABANK RESTFUL --------------------+\n|  1. Mis cuentas       2. Movimientos     3. Transferir      |\n|  6. Mi perfil                                             |\n|  0. Salir                                                    |\n+--------------------------------------------------------------+" : "\n+-------------------- EUREKABANK RESTFUL --------------------+\n|  1. Mis cuentas       2. Movimientos     3. Transferir      |\n|  4. Ingreso/retiro    5. Reversar        6. Mi perfil       |\n|  7. Crear cuenta (ADMIN/CAJERO)                              |\n|  0. Salir                                                    |\n+--------------------------------------------------------------+";
             System.out.println(opciones);
             System.out.print("  Elige una opción: ");
             try {
@@ -166,7 +166,7 @@ public final class ConsolaVista {
     }
 
     private void cabecera() {
-        System.out.println("\n+--------------------------------------------------------------+\n|              E U R E K A B A N K                             |\n|                    BANCA DIGITAL                              |\n+--------------------------------------------------------------+");
+        System.out.println("\n+--------------------------------------------------------------+\n|          E U R E K A B A N K   R E S T F U L                 |\n|               CLIENTE DE CONSOLA · API RESTFUL                |\n+--------------------------------------------------------------+");
     }
 
     private boolean esErrorSesion(String mensaje) {

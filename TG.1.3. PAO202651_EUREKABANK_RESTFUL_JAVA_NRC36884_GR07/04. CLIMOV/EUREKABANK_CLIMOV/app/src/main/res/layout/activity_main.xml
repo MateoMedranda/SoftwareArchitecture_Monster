@@ -5,11 +5,11 @@
         <LinearLayout android:layout_width="match_parent" android:layout_height="match_parent" android:gravity="center" android:orientation="vertical" android:padding="28dp">
             <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:background="@drawable/bg_panel" android:orientation="vertical" android:padding="26dp">
                 <FrameLayout android:layout_width="match_parent" android:layout_height="96dp">
-                    <ImageView android:id="@+id/logo" android:layout_width="76dp" android:layout_height="76dp" android:layout_gravity="center" android:contentDescription="Logo EUREKABANK"/>
+                    <ImageView android:id="@+id/logo" android:layout_width="76dp" android:layout_height="76dp" android:layout_gravity="center" android:contentDescription="Logo EUREKABANK RESTFUL"/>
                     <TextView android:id="@+id/logoFallback" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_gravity="center" android:text="◆" android:textColor="@color/cyan" android:textSize="58sp"/>
                 </FrameLayout>
-                <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center" android:text="EUREKABANK" android:textColor="@color/text" android:textSize="25sp" android:textStyle="bold"/>
-                <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginBottom="25dp" android:gravity="center" android:text="Tu banca, siempre contigo" android:textColor="@color/muted" android:textSize="14sp"/>
+                <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center" android:text="EUREKABANK RESTFUL" android:textColor="@color/text" android:textSize="25sp" android:textStyle="bold"/>
+                <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginBottom="25dp" android:gravity="center" android:text="Cliente móvil · API RESTful" android:textColor="@color/muted" android:textSize="14sp"/>
                 <EditText android:id="@+id/userInput" android:layout_width="match_parent" android:layout_height="wrap_content" android:background="@drawable/bg_field" android:hint="Usuario" android:inputType="text" android:textColor="@color/text" android:textColorHint="@color/muted"/>
                 <EditText android:id="@+id/passwordInput" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="12dp" android:background="@drawable/bg_field" android:hint="Contraseña" android:inputType="textPassword" android:textColor="@color/text" android:textColorHint="@color/muted"/>
                 <TextView android:id="@+id/loginStatus" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="10dp" android:textColor="@color/danger"/>
