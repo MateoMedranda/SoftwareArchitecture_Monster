@@ -22,6 +22,7 @@ public final class VentanaEureka extends JFrame {
     private final JTextField usuario = new JTextField(24);
     private final JPasswordField contrasenia = new JPasswordField(24);
     private JButton botonIngresar;
+    private JToggleButton operacionesNavegacion, cuentasNavegacion;
     private boolean actualizandoCuentas;
     private final DefaultTableModel modeloCuentas = new DefaultTableModel(
             new String[]{"Número de cuenta", "Saldo", "Estado", "Disponibilidad", "Sucursal"}, 0) {
@@ -100,8 +101,8 @@ public final class VentanaEureka extends JFrame {
         agregarSeccion(navegacion, grupoNavegacion, contenido, "Resumen", "resumen", crearResumen(), true);
         agregarSeccion(navegacion, grupoNavegacion, contenido, "Movimientos", "movimientos", crearMovimientos(), false);
         agregarSeccion(navegacion, grupoNavegacion, contenido, "Transferir", "transferir", crearTransferencia(), false);
-        agregarSeccion(navegacion, grupoNavegacion, contenido, "Operaciones", "operaciones", crearOperaciones(), false);
-        agregarSeccion(navegacion, grupoNavegacion, contenido, "Cuentas", "cuentas", crearAdministracion(), false);
+        operacionesNavegacion = agregarSeccion(navegacion, grupoNavegacion, contenido, "Operaciones", "operaciones", crearOperaciones(), false);
+        cuentasNavegacion = agregarSeccion(navegacion, grupoNavegacion, contenido, "Cuentas", "cuentas", crearAdministracion(), false);
         agregarSeccion(navegacion, grupoNavegacion, contenido, "Perfil", "perfil", crearPerfil(), false);
         cabecera.add(navegacion, BorderLayout.SOUTH);
         principal.add(cabecera, BorderLayout.NORTH);
@@ -109,12 +110,13 @@ public final class VentanaEureka extends JFrame {
         return principal;
     }
 
-    private void agregarSeccion(JPanel navegacion, ButtonGroup grupo, JPanel contenido, String titulo,
+    private JToggleButton agregarSeccion(JPanel navegacion, ButtonGroup grupo, JPanel contenido, String titulo,
             String clave, JPanel vista, boolean seleccionada) {
         JToggleButton boton = TemaEureka.navegacion(titulo);
         boton.addActionListener(e -> secciones.show(contenido, clave));
         grupo.add(boton); navegacion.add(boton); contenido.add(vista, clave);
         if (seleccionada) boton.setSelected(true);
+        return boton;
     }
 
     private JPanel crearResumen() {
@@ -248,6 +250,10 @@ public final class VentanaEureka extends JFrame {
         JButton cargar = TemaEureka.boton("Cargar clientes");
         JButton crear = TemaEureka.boton("Crear y asignar cuenta");
         crear.setEnabled(false);
+        clientes.addActionListener(e -> {
+            Cliente seleccionado = (Cliente) clientes.getSelectedItem();
+            crear.setEnabled(seleccionado != null && !seleccionado.id().isBlank());
+        });
         p.add(cargar); p.add(Box.createVerticalStrut(16));
         p.add(grupoCampo("Cliente titular", clientes)); p.add(Box.createVerticalStrut(14));
         p.add(estado); p.add(crear);
@@ -255,9 +261,10 @@ public final class VentanaEureka extends JFrame {
             List<Cliente> lista = controlador.clientesParaCuenta();
             SwingUtilities.invokeLater(() -> {
                 clientes.removeAllItems();
+                clientes.addItem(new Cliente("", "", ""));
                 for (Cliente cliente : lista) clientes.addItem(cliente);
-                clientes.setSelectedIndex(-1);
-                clientes.setEnabled(!lista.isEmpty()); crear.setEnabled(!lista.isEmpty());
+                clientes.setSelectedIndex(0);
+                clientes.setEnabled(!lista.isEmpty()); crear.setEnabled(false);
                 estado.setText(lista.isEmpty() ? "No existen clientes disponibles." : "Selecciona el titular de la nueva cuenta.");
                 estado.setForeground(TemaEureka.MUTED);
             });
@@ -268,7 +275,7 @@ public final class VentanaEureka extends JFrame {
             ejecutarAsync(() -> {
                 Cuenta cuenta = controlador.crearCuentaParaUsuario(cliente.id());
                 SwingUtilities.invokeLater(() -> {
-                    clientes.setSelectedIndex(-1);
+                    clientes.setSelectedIndex(0);
                     exito(estado, "Cuenta " + cuenta.numero() + " creada y asignada a " + cliente.nombre() + ".");
                 });
             }, estado);
@@ -358,6 +365,9 @@ public final class VentanaEureka extends JFrame {
         ejecutarAsync(() -> {
             Sesion sesion = controlador.login(usuario.getText().trim(), new String(contrasenia.getPassword()));
             SwingUtilities.invokeLater(() -> {
+                boolean esCliente = "CLIENTE".equalsIgnoreCase(sesion.rol());
+                operacionesNavegacion.setVisible(!esCliente);
+                cuentasNavegacion.setVisible(!esCliente);
                 saludo.setText("Hola, " + sesion.nombre());
                 estadoLogin.setText(" ");
                 getRootPane().setDefaultButton(null);

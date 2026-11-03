@@ -86,7 +86,7 @@ public final class TemaEureka {
         selector.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         selector.setUI(new BasicComboBoxUI() {
             @Override protected JButton createArrowButton() {
-                JButton flecha = new JButton("⌄");
+                JButton flecha = new JButton("▼");
                 flecha.setFont(new Font("Segoe UI", Font.BOLD, 19));
                 flecha.setForeground(ACENTO);
                 flecha.setBorder(new EmptyBorder(0, 4, 3, 11));
@@ -103,8 +103,10 @@ public final class TemaEureka {
                         seleccionado, enfocado);
                 etiqueta.setFont(FUENTE);
                 etiqueta.setBorder(new EmptyBorder(9, 12, 9, 12));
+                etiqueta.setOpaque(true);
                 etiqueta.setBackground(seleccionado ? new Color(222, 246, 248) : PANEL);
-                etiqueta.setForeground(seleccionado ? TEXTO : (indice == 0 ? MUTED : TEXTO));
+                boolean guia = valor == null || String.valueOf(valor).startsWith("Selecciona el titular");
+                etiqueta.setForeground(seleccionado ? TEXTO : (guia ? MUTED : TEXTO));
                 return etiqueta;
             }
         });

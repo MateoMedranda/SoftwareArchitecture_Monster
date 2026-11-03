@@ -39,6 +39,7 @@ public class CuentaDAO {
                     cuenta.setCuentaId(java.util.UUID.randomUUID().toString());
                     cuenta.setCuentaNumero(numero);
                     cuenta.setSucursalId(sucursalId);
+                    cuenta.setSucursalNombre(obtenerNombreSucursal(con, sucursalId));
                     cuenta.setCuentaSaldo(BigDecimal.ZERO);
                     cuenta.setCuentaEstado("ACTIVA");
                     insertar(con, cuenta);
@@ -70,6 +71,16 @@ public class CuentaDAO {
         }
     }
 
+    private String obtenerNombreSucursal(Connection con, String sucursalId) throws SQLException {
+        try (PreparedStatement ps = con.prepareStatement(
+                "SELECT SUCURSAL_NOMBRE FROM SUCURSAL WHERE SUCURSAL_ID=?")) {
+            ps.setString(1, sucursalId);
+            try (ResultSet rs = ps.executeQuery()) {
+                return rs.next() ? rs.getString("SUCURSAL_NOMBRE") : null;
+            }
+        }
+    }
+
     private String siguienteNumeroPublico(Connection con) throws SQLException {
         String sql = "SELECT COALESCE(MAX(CAST(CUENTA_NUMERO AS UNSIGNED)), 1000000000) AS ULTIMO FROM CUENTA";
         try (PreparedStatement ps = con.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
@@ -95,7 +106,7 @@ public class CuentaDAO {
     }
 
     public CuentaDTO obtenerPorId(String id) throws SQLException {
-        String sql = "SELECT CUENTA_ID,CUENTA_NUMERO,SUCURSAL_ID,CUENTA_SALDO,CUENTA_ESTADO FROM CUENTA WHERE CUENTA_ID=?";
+        String sql = consultaCuentas() + " WHERE c.CUENTA_ID=?";
         try (Connection con = conexionBDD.getConexion(); PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setString(1, id);
             try (ResultSet rs = ps.executeQuery()) {
@@ -106,7 +117,7 @@ public class CuentaDAO {
     }
 
     public CuentaDTO obtenerPorNumero(String numero) throws SQLException {
-        String sql = "SELECT CUENTA_ID,CUENTA_NUMERO,SUCURSAL_ID,CUENTA_SALDO,CUENTA_ESTADO FROM CUENTA WHERE CUENTA_NUMERO=?";
+        String sql = consultaCuentas() + " WHERE c.CUENTA_NUMERO=?";
         try (Connection con = conexionBDD.getConexion(); PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setString(1, numero);
             try (ResultSet rs = ps.executeQuery()) {
@@ -130,8 +141,7 @@ public class CuentaDAO {
      * hasta que se confirme o revierta dicha transacción.
      */
     public CuentaDTO obtenerPorIdParaActualizar(Connection con, String id) throws SQLException {
-        String sql = "SELECT CUENTA_ID,CUENTA_NUMERO,SUCURSAL_ID,CUENTA_SALDO,CUENTA_ESTADO "
-                   + "FROM CUENTA WHERE CUENTA_ID=? FOR UPDATE";
+        String sql = consultaCuentas() + " WHERE c.CUENTA_ID=? FOR UPDATE";
         try (PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setString(1, id);
             try (ResultSet rs = ps.executeQuery()) {
@@ -143,7 +153,7 @@ public class CuentaDAO {
 
     public List<CuentaDTO> listar() throws SQLException {
         List<CuentaDTO> lista = new ArrayList<>();
-        String sql = "SELECT CUENTA_ID,CUENTA_NUMERO,SUCURSAL_ID,CUENTA_SALDO,CUENTA_ESTADO FROM CUENTA";
+        String sql = consultaCuentas();
         try (Connection con = conexionBDD.getConexion(); Statement st = con.createStatement(); ResultSet rs = st.executeQuery(sql)) {
             while (rs.next()) lista.add(mapear(rs));
         }
@@ -197,8 +207,14 @@ public class CuentaDAO {
         c.setCuentaId(rs.getString("CUENTA_ID"));
         c.setCuentaNumero(rs.getString("CUENTA_NUMERO"));
         c.setSucursalId(rs.getString("SUCURSAL_ID"));
+        c.setSucursalNombre(rs.getString("SUCURSAL_NOMBRE"));
         c.setCuentaSaldo(rs.getBigDecimal("CUENTA_SALDO"));
         c.setCuentaEstado(rs.getString("CUENTA_ESTADO"));
         return c;
+    }
+
+    private String consultaCuentas() {
+        return "SELECT c.CUENTA_ID,c.CUENTA_NUMERO,c.SUCURSAL_ID,c.CUENTA_SALDO,c.CUENTA_ESTADO,"
+                + "s.SUCURSAL_NOMBRE FROM CUENTA c LEFT JOIN SUCURSAL s ON s.SUCURSAL_ID=c.SUCURSAL_ID";
     }
 }

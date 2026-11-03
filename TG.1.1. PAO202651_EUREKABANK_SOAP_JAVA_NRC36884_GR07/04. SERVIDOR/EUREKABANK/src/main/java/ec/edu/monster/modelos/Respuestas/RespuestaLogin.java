@@ -25,6 +25,9 @@ public class RespuestaLogin {
     /** ID del rol del usuario (UUID de la tabla ROL) */
     private String rolId;
 
+    /** Nombre funcional del rol, por ejemplo CLIENTE, CAJERO o ADMIN. */
+    private String rolNombre;
+
     /** Nombre completo del usuario (USUARIO_NOMBRE + USUARIO_APELLIDO) */
     private String usuarioNombre;
 
@@ -62,6 +65,9 @@ public class RespuestaLogin {
 
     public String getRolId() { return rolId; }
     public void setRolId(String rolId) { this.rolId = rolId; }
+
+    public String getRolNombre() { return rolNombre; }
+    public void setRolNombre(String rolNombre) { this.rolNombre = rolNombre; }
 
     public String getUsuarioNombre() { return usuarioNombre; }
     public void setUsuarioNombre(String usuarioNombre) { this.usuarioNombre = usuarioNombre; }

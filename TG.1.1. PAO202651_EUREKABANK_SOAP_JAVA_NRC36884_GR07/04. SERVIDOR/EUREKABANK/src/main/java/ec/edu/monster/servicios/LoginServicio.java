@@ -5,6 +5,8 @@ import ec.edu.monster.modelos.Respuestas.RespuestaError;
 import ec.edu.monster.modelos.Respuestas.RespuestaLogin;
 import ec.edu.monster.configuracion.TokenGenerador;
 import ec.edu.monster.conexion.ConexionBDD;
+import ec.edu.monster.modelos.DAO.RolDAO;
+import ec.edu.monster.modelos.DTO.RolDTO;
 import io.jsonwebtoken.Claims;
 import jakarta.ejb.EJB;
 import jakarta.ejb.Stateless;
@@ -53,6 +55,7 @@ import java.util.logging.Logger;
  */
 @Stateless
 public class LoginServicio {
+    @EJB private RolDAO rolDAO;
 
     private static final Logger LOG = Logger.getLogger(LoginServicio.class.getName());
 
@@ -154,7 +157,7 @@ public class LoginServicio {
 
             LOG.info("[LoginServicio] Login exitoso para usuario: " + usuario + " | ID: " + usuarioId);
 
-            return new RespuestaLogin(
+            RespuestaLogin respuesta = new RespuestaLogin(
                 true,
                 jwtToken,
                 usuarioId,
@@ -162,6 +165,9 @@ public class LoginServicio {
                 nombre + " " + apellido,
                 "Autenticación exitosa. Bienvenido, " + nombre + ". El token expira en 30 minutos."
             );
+            RolDTO rol = rolDAO.obtenerPorId(rolId);
+            respuesta.setRolNombre(rol == null ? "" : rol.getRolNombre());
+            return respuesta;
 
         } catch (LoginExcepcion e) {
             throw e; // relanzar excepciones propias sin modificar
@@ -237,6 +243,10 @@ public class LoginServicio {
         respuesta.setToken(token);
         respuesta.setUsuarioId(claims.getSubject());
         respuesta.setRolId(claims.get("rol", String.class));
+        try {
+            RolDTO rol = rolDAO.obtenerPorId(respuesta.getRolId());
+            respuesta.setRolNombre(rol == null ? "" : rol.getRolNombre());
+        } catch (SQLException ignored) { }
         respuesta.setMensaje("Token válido y activo.");
         return respuesta;
     }

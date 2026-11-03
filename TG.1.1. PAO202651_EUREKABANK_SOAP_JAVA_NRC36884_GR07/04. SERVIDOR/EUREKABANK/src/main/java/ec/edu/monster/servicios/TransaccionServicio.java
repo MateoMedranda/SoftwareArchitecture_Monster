@@ -115,6 +115,9 @@ public class TransaccionServicio {
     public TransaccionDTO generarTransaccion(String token, String tipo, String cuentaId, BigDecimal monto)
             throws TransaccionExcepcion {
         Claims claims = validarToken(token);
+        if (!esAdminOCajero(claims)) {
+            throw error("ACCESO_DENEGADO", "Solo ADMIN o CAJERO pueden registrar depósitos o retiros.", "token");
+        }
         validarTipoYMonto(tipo, cuentaId, monto);
         String cuentaNormalizada = resolverCuentaId(cuentaId);
         String tipoNormalizado = tipo.trim().toUpperCase();
