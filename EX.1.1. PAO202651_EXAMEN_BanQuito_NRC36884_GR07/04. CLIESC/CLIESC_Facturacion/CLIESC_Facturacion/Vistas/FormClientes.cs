@@ -114,9 +114,7 @@ namespace CLIESC_Facturacion.Vistas
 
             var btnFacturas = Estilos.CrearBotonNavegacion("Facturas", false);
             btnFacturas.Location = new Point(42, 7);
-            btnFacturas.Click += (sender, args) => MessageBox.Show(this,
-                "La pantalla de facturas se implementara en la siguiente iteracion.",
-                "Celulares Monster", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            btnFacturas.Click += (sender, args) => Navegacion.Abrir(this, new FormFacturas());
             panel.Controls.Add(btnFacturas);
 
             var btnClientes = Estilos.CrearBotonNavegacion("Clientes", true);

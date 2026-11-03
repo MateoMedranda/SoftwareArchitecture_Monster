@@ -55,18 +55,28 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Config\AppConfig.cs" />
+    <Compile Include="Controladores\AmortizacionControlador.cs" />
     <Compile Include="Controladores\ClienteControlador.cs" />
+    <Compile Include="Controladores\FacturaControlador.cs" />
     <Compile Include="Controladores\ProductoControlador.cs" />
+    <Compile Include="Modelos\Amortizacion.cs" />
     <Compile Include="Modelos\Cliente.cs" />
     <Compile Include="Modelos\ClienteRequest.cs" />
+    <Compile Include="Modelos\Factura.cs" />
+    <Compile Include="Modelos\FacturaRequest.cs" />
     <Compile Include="Modelos\Producto.cs" />
     <Compile Include="Modelos\ProductoRequest.cs" />
     <Compile Include="Modelos\RespuestaApi.cs" />
+    <Compile Include="Servicios\AmortizacionServicio.cs" />
     <Compile Include="Servicios\ApiException.cs" />
     <Compile Include="Servicios\ApiService.cs" />
     <Compile Include="Servicios\ClienteServicio.cs" />
+    <Compile Include="Servicios\FacturaServicio.cs" />
     <Compile Include="Servicios\ProductoServicio.cs" />
     <Compile Include="Vistas\Estilos.cs" />
+    <Compile Include="Vistas\FormAgregarFacturaDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="Vistas\FormCatalogo.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -74,6 +84,18 @@
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Vistas\FormClientes.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Vistas\FormConfirmarCreditoDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Vistas\FormConfirmarEfectivoDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Vistas\FormCreditoExitosoDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Vistas\FormFacturas.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Vistas\FormInicio.cs">
@@ -111,6 +133,9 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="resources\*.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="resources\*.jpg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include=".development.env" Condition="Exists('.env')">
