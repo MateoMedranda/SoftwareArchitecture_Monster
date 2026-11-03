@@ -154,3 +154,8 @@ alter table TRANSACCION add constraint FK_GENERA foreign key (CUENTA_ID)
 
 alter table USUARIO add constraint FK_PUEDE_SER foreign key (ROL_ID)
       references ROL (ROL_ID) on delete restrict on update restrict;
+
+ALTER TABLE CUENTA ADD COLUMN CUENTA_NUMERO VARCHAR(10) NULL AFTER CUENTA_ID;
+
+
+
