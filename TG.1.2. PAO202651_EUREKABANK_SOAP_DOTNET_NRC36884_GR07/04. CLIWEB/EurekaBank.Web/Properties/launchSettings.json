@@ -1,0 +1,15 @@
+{
+  "$schema": "https://json.schemastore.org/launchsettings.json",
+  "profiles": {
+    "EurekaBank.Web": {
+      "commandName": "Project",
+      "dotnetRunMessages": true,
+      "launchBrowser": true,
+      "applicationUrl": "http://localhost:5140",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "EUREKABANK_URL": "http://localhost:51241/EurekaBankSoap.svc"
+      }
+    }
+  }
+}

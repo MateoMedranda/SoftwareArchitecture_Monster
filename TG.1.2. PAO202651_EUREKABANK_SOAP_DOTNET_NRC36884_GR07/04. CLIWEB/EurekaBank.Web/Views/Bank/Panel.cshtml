@@ -1,0 +1,140 @@
+@using System.Globalization
+@model EurekaBank.Web.Controllers.BankPanel
+@{
+    ViewData["Title"] = "EUREKABANK · Panel";
+    var esPersonal = Model.Role is "ADMIN" or "CAJERO";
+    var cultura = CultureInfo.GetCultureInfo("es-EC");
+    var mensaje = TempData["Message"]?.ToString();
+    var mensajeOk = TempData["MessageOk"]?.ToString() == "true";
+}
+<link rel="stylesheet" href="~/css/eureka.css" />
+
+<header class="topbar">
+    <a class="brand" href="#cuentas"><span class="brand-mark">◆</span><span>EUREKABANK</span></a>
+    <nav class="main-nav">
+        <a href="#cuentas">Resumen</a><a href="#historial">Movimientos</a><a href="#transferir">Transferir</a>
+        @if (esPersonal) { <a href="#operar">Operar</a><a href="#administrar">Cuentas</a> }
+        <a href="#perfil">Perfil</a>
+    </nav>
+    <div class="session-area"><span>Hola, <b>@Model.Name</b><small>@Model.Role</small></span><form method="post" action="/Bank/Logout"><button class="ghost" type="submit">Salir</button></form></div>
+</header>
+
+<main class="shell">
+    <section class="hero">
+        <div><p class="eyebrow">PANEL PRINCIPAL</p><h1>Gestión financiera<br />con claridad.</h1><p>Consulta saldos, realiza operaciones y administra movimientos de forma segura.</p></div>
+        <div class="secure"><span>✓</span><b>Operaciones auditables</b><small>Todo cambio se valida y registra en el servidor.</small></div>
+    </section>
+
+    @if (!string.IsNullOrWhiteSpace(mensaje)) { <div class="alert @(mensajeOk ? "success" : "error")">@mensaje</div> }
+    @if (!string.IsNullOrWhiteSpace(Model.Error)) { <div class="alert error">@Model.Error</div> }
+
+    <section id="cuentas">
+        <div class="section-title"><div><p class="eyebrow">PRODUCTOS</p><h2>Mis cuentas</h2></div><button class="ghost" id="refreshAccounts" type="button">↻ Actualizar</button></div>
+        <div class="cards" id="accountsCards">
+            @foreach (var cuenta in Model.Accounts)
+            {
+                var ultimos = cuenta.Number.Length > 4 ? cuenta.Number[^4..] : cuenta.Number;
+                <article class="account-card">
+                    <span>CUENTA @cuenta.Status</span><div class="availability @(cuenta.Availability == "BLOQUEADA" ? "blocked" : "available")">@cuenta.Availability</div>
+                    <div class="number-row"><h3 class="account-number" data-number="@cuenta.Number">••••••@ultimos</h3><button type="button" class="icon-button" title="Mostrar número" onclick="toggleAccount(this)">◉</button><button type="button" class="icon-button" title="Copiar número" onclick="copyAccount(this)">⧉</button></div>
+                    <strong>$ @cuenta.Balance.ToString("N2", cultura)</strong><small>Sucursal @cuenta.Branch</small>
+                </article>
+            }
+            @if (Model.Accounts.Count == 0) { <p class="empty-state">No hay cuentas disponibles para esta sesión.</p> }
+        </div>
+    </section>
+
+    @if (esPersonal)
+    {
+        <section id="administrar" class="admin-surface">
+            <div><p class="eyebrow">ADMINISTRACIÓN</p><h2>Crear cuenta para un cliente</h2><p>Selecciona el titular. El sistema genera un número único, crea una cuenta activa con saldo inicial cero y la asigna automáticamente.</p></div>
+            <form method="post" action="/Bank/CreateAccount" class="form-grid admin-form ajax-form" data-refresh="accounts">
+                <label for="customerId">Cliente titular</label>
+                <select id="customerId" name="customerId" class="field" required><option value="">Selecciona el cliente titular</option>@foreach (var cliente in Model.Customers) { <option value="@cliente.Id">@cliente.Name · @@@cliente.UserName</option> }</select>
+                <button class="primary" type="submit" disabled="@(Model.Customers.Count == 0)">Crear y asignar cuenta</button>
+            </form>
+        </section>
+    }
+
+    <section class="grid transfer-grid">
+        <article id="transferir" class="surface"><p class="eyebrow">TRANSFERENCIA</p><h2>Transferir dinero</h2><p>Utiliza números de cuenta de 10 dígitos.</p><form method="post" action="/Bank/Transfer" class="form-grid ajax-form" data-refresh="accounts"><input class="field" name="origin" placeholder="Número de cuenta origen" required pattern="[0-9]{10}" inputmode="numeric" /><input class="field" name="destination" placeholder="Número de cuenta destino" required pattern="[0-9]{10}" inputmode="numeric" /><input class="field" name="amount" placeholder="Monto (ej. 7,20)" inputmode="decimal" pattern="[0-9]+([,.][0-9]{1,2})?" required /><button class="primary" type="submit">Transferir</button></form></article>
+        <article id="perfil" class="surface"><p class="eyebrow">PERFIL BANCARIO</p><h2>Mi información</h2>@if (Model.Profile is not null) { <div class="profile-details"><b>@Model.Profile.Name</b><span>@@@Model.Profile.UserName</span><span>@Model.Profile.Phone</span><span>@Model.Profile.Accounts.Count cuenta(s) asociada(s)</span></div> } else { <p>La información del perfil no está disponible por el momento.</p> }</article>
+    </section>
+
+    @if (esPersonal)
+    {
+        <section id="operar" class="grid">
+            <article class="surface"><p class="eyebrow">OPERACIÓN DE CAJA</p><h2>Depósito o retiro</h2><p>Selecciona la operación que deseas registrar.</p><form method="post" action="/Bank/Movement" class="form-grid ajax-form" data-refresh="accounts"><select class="field" name="type" required><option value="INGRESO">Depósito</option><option value="RETIRO">Retiro</option></select><input class="field" name="account" placeholder="Número de cuenta" required pattern="[0-9]{10}" inputmode="numeric" /><input class="field" name="amount" placeholder="Monto (ej. 7,20)" inputmode="decimal" pattern="[0-9]+([,.][0-9]{1,2})?" required/><button class="primary" type="submit">Registrar operación</button></form></article>
+            <article class="surface"><p class="eyebrow">CORRECCIÓN AUDITABLE</p><h2>Reversar movimiento</h2><p>La reversa registra un movimiento compensatorio; nunca elimina el original.</p><form method="post" action="/Bank/Reverse" class="form-grid ajax-form" data-refresh="accounts"><input class="field" name="movementId" placeholder="ID de transacción" required /><button class="danger" type="submit">Reversar movimiento</button></form></article>
+        </section>
+    }
+
+    <article id="historial" class="surface history-card"><p class="eyebrow">CONSULTA</p><h2>Movimientos</h2><p>Consulta el historial de una cuenta y copia el identificador si necesitas reversar una operación.</p><form method="post" action="/Bank/Movements" class="history-query ajax-form" data-history="true"><input class="field" name="account" value="@Model.SelectedMovementAccount" placeholder="Número de cuenta" required pattern="[0-9]{10}" inputmode="numeric"/><button class="ghost" type="submit">Consultar historial</button></form><div id="historyFeedback">@if (!string.IsNullOrWhiteSpace(Model.MovementMessage)) { <div class="alert error">@Model.MovementMessage</div> }</div><div class="table-wrap"><table><thead><tr><th>ID de transacción</th><th>Tipo</th><th>Monto</th><th>Fecha</th><th>Registrado por</th></tr></thead><tbody id="movementsBody">@if (Model.Movements.Count > 0) { foreach (var movimiento in Model.Movements) { <tr><td class="transaction-id">@movimiento.Id</td><td>@movimiento.Type</td><td>$ @movimiento.Amount.ToString("N2", cultura)</td><td>@movimiento.CreatedAt.ToLocalTime().ToString("dd/MM/yyyy HH:mm")</td><td>@movimiento.CreatedBy</td></tr> } } else { <tr><td colspan="5" class="empty-table">Ingresa una cuenta y consulta su historial de movimientos.</td></tr> }</tbody></table></div></article>
+</main>
+
+<div id="resultModal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <section class="success-modal"><span id="modalMark" class="success-mark">✓</span><p id="modalEyebrow" class="eyebrow">OPERACIÓN COMPLETADA</p><h2 id="modalTitle">Todo salió bien</h2><p id="modalMessage"></p><button id="modalClose" type="button" class="primary">Entendido</button></section>
+</div>
+
+<script>
+const money = new Intl.NumberFormat('es-EC', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+const esc = value => String(value ?? '').replace(/[&<>'"]/g, char => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', "'":'&#39;', '"':'&quot;' })[char]);
+const modal = document.getElementById('resultModal');
+function showModal(message, ok = true) {
+    document.getElementById('modalMessage').textContent = message;
+    document.getElementById('modalTitle').textContent = ok ? 'Todo salió bien' : 'No se pudo completar';
+    document.getElementById('modalEyebrow').textContent = ok ? 'OPERACIÓN COMPLETADA' : 'REVISA LOS DATOS';
+    document.getElementById('modalMark').textContent = ok ? '✓' : '!';
+    document.getElementById('modalMark').className = ok ? 'success-mark' : 'success-mark error-mark';
+    modal.classList.add('is-open');
+}
+function hideModal() { modal.classList.remove('is-open'); }
+document.getElementById('modalClose').addEventListener('click', hideModal);
+modal.addEventListener('click', event => { if (event.target === modal) hideModal(); });
+
+function accountCard(account) {
+    const last = account.number.slice(-4);
+    const available = account.availability !== 'BLOQUEADA';
+    return `<article class="account-card"><span>CUENTA ${esc(account.status)}</span><div class="availability ${available ? 'available' : 'blocked'}">${esc(account.availability)}</div><div class="number-row"><h3 class="account-number" data-number="${esc(account.number)}">••••••${esc(last)}</h3><button type="button" class="icon-button" title="Mostrar número" onclick="toggleAccount(this)">◉</button><button type="button" class="icon-button" title="Copiar número" onclick="copyAccount(this)">⧉</button></div><strong>$ ${money.format(account.balance)}</strong><small>Sucursal ${esc(account.branch)}</small></article>`;
+}
+async function refreshAccounts(showMessage = false) {
+    const response = await fetch('@Url.Action("AccountsData", "Bank")', { headers: { 'X-Requested-With': 'XMLHttpRequest' } });
+    const data = await response.json();
+    if (!data.ok) { if (showMessage) showModal(data.message, false); return false; }
+    document.getElementById('accountsCards').innerHTML = data.data.length ? data.data.map(accountCard).join('') : '<p class="empty-state">No hay cuentas disponibles para esta sesión.</p>';
+    if (showMessage) showModal(data.message || 'Saldos actualizados correctamente.');
+    return true;
+}
+document.getElementById('refreshAccounts').addEventListener('click', () => refreshAccounts(true));
+
+function renderMovements(items) {
+    const body = document.getElementById('movementsBody');
+    if (!items.length) { body.innerHTML = '<tr><td colspan="5" class="empty-table">La cuenta no registra movimientos todavía.</td></tr>'; return; }
+    body.innerHTML = items.map(item => `<tr><td class="transaction-id">${esc(item.id)}</td><td>${esc(item.type)}</td><td>$ ${money.format(item.amount)}</td><td>${new Date(item.createdAt).toLocaleString('es-EC', { dateStyle:'short', timeStyle:'short' })}</td><td>${esc(item.createdBy)}</td></tr>`).join('');
+}
+
+document.querySelectorAll('.ajax-form').forEach(form => form.addEventListener('submit', async event => {
+    event.preventDefault();
+    const submit = form.querySelector('button[type="submit"]');
+    const initial = submit.textContent; submit.disabled = true; submit.textContent = 'Procesando...';
+    try {
+        const response = await fetch(form.action, { method: 'POST', body: new FormData(form), headers: { 'X-Requested-With': 'XMLHttpRequest', 'Accept':'application/json' } });
+        const result = await response.json();
+        if (!result.ok) { showModal(result.message || 'No se pudo completar la operación.', false); return; }
+        if (form.dataset.history) {
+            renderMovements(result.data || []);
+            document.getElementById('historyFeedback').innerHTML = '';
+            showModal((result.data || []).length ? `${result.data.length} movimiento(s) encontrado(s).` : 'La cuenta no registra movimientos todavía.');
+        } else {
+            form.reset();
+            if (form.dataset.refresh) await refreshAccounts(false);
+            showModal(result.message || 'Operación completada correctamente.');
+        }
+    } catch {
+        showModal('No fue posible comunicarse con el servicio.', false);
+    } finally { submit.disabled = false; submit.textContent = initial; }
+}));
+
+function toggleAccount(button) { const number = button.parentElement.querySelector('.account-number'); const value = number.dataset.number; const shown = number.classList.toggle('visible'); number.textContent = shown ? value : '••••••' + value.slice(-4); }
+function copyAccount(button) { const value = button.parentElement.querySelector('.account-number').dataset.number; navigator.clipboard?.writeText(value); const old = button.textContent; button.textContent = '✓'; setTimeout(() => button.textContent = old, 1100); }
+</script>

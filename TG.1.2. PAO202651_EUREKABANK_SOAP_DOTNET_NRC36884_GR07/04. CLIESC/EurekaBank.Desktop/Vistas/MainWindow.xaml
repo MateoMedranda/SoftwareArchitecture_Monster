@@ -1,0 +1,131 @@
+<Window x:Class="EurekaBank.Desktop.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="EUREKABANK · Banca digital" Width="1180" Height="780" MinWidth="1020" MinHeight="700"
+        WindowStartupLocation="CenterScreen" Background="#F4F8FC" FontFamily="Segoe UI">
+    <Window.Resources>
+        <SolidColorBrush x:Key="Ink" Color="#123A5A"/>
+        <SolidColorBrush x:Key="Muted" Color="#5B7187"/>
+        <SolidColorBrush x:Key="Primary" Color="#23689B"/>
+        <SolidColorBrush x:Key="Teal" Color="#16A7B8"/>
+        <SolidColorBrush x:Key="Line" Color="#CFDEEB"/>
+        <SolidColorBrush x:Key="Surface" Color="#FFFFFF"/>
+        <Style x:Key="Field" TargetType="TextBox">
+            <Setter Property="Height" Value="42"/><Setter Property="Padding" Value="12,0"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/><Setter Property="Foreground" Value="{StaticResource Ink}"/>
+            <Setter Property="BorderBrush" Value="{StaticResource Line}"/><Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Background" Value="White"/>
+        </Style>
+        <Style x:Key="PasswordField" TargetType="PasswordBox">
+            <Setter Property="Height" Value="42"/><Setter Property="Padding" Value="12,0"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/><Setter Property="Foreground" Value="{StaticResource Ink}"/>
+            <Setter Property="BorderBrush" Value="{StaticResource Line}"/><Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Background" Value="White"/>
+        </Style>
+        <Style x:Key="PrimaryButton" TargetType="Button">
+            <Setter Property="Height" Value="42"/><Setter Property="Padding" Value="18,0"/><Setter Property="Foreground" Value="White"/>
+            <Setter Property="FontWeight" Value="SemiBold"/><Setter Property="Cursor" Value="Hand"/><Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Template"><Setter.Value><ControlTemplate TargetType="Button"><Border CornerRadius="7" Background="{StaticResource Primary}"><ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/></Border><ControlTemplate.Triggers><Trigger Property="IsMouseOver" Value="True"><Setter Property="Background" Value="#1D7CAE"/></Trigger><Trigger Property="IsPressed" Value="True"><Setter Property="Background" Value="#174D75"/></Trigger><Trigger Property="IsEnabled" Value="False"><Setter Property="Opacity" Value=".55"/></Trigger></ControlTemplate.Triggers></ControlTemplate></Setter.Value></Setter>
+        </Style>
+        <Style x:Key="OutlineButton" TargetType="Button" BasedOn="{StaticResource PrimaryButton}">
+            <Setter Property="Foreground" Value="{StaticResource Primary}"/><Setter Property="Background" Value="Transparent"/><Setter Property="BorderBrush" Value="{StaticResource Line}"/><Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Template"><Setter.Value><ControlTemplate TargetType="Button"><Border CornerRadius="7" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}"><ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/></Border><ControlTemplate.Triggers><Trigger Property="IsMouseOver" Value="True"><Setter Property="Background" Value="#E8F3FA"/></Trigger></ControlTemplate.Triggers></ControlTemplate></Setter.Value></Setter>
+        </Style>
+        <Style x:Key="NavItem" TargetType="RadioButton">
+            <Setter Property="Foreground" Value="#CFE8F5"/><Setter Property="FontWeight" Value="SemiBold"/><Setter Property="FontSize" Value="14"/><Setter Property="Padding" Value="17,13"/><Setter Property="Margin" Value="10,3"/><Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template"><Setter.Value><ControlTemplate TargetType="RadioButton"><Border Padding="{TemplateBinding Padding}" Margin="{TemplateBinding Margin}" CornerRadius="7" Background="Transparent"><ContentPresenter/></Border><ControlTemplate.Triggers><Trigger Property="IsChecked" Value="True"><Setter Property="Foreground" Value="White"/><Setter Property="Background" Value="#23729F"/></Trigger><Trigger Property="IsMouseOver" Value="True"><Setter Property="Background" Value="#1A537A"/></Trigger></ControlTemplate.Triggers></ControlTemplate></Setter.Value></Setter>
+        </Style>
+        <Style TargetType="DataGrid">
+            <Setter Property="Background" Value="White"/><Setter Property="BorderThickness" Value="0"/><Setter Property="RowHeight" Value="40"/>
+            <Setter Property="HeadersVisibility" Value="Column"/><Setter Property="GridLinesVisibility" Value="Horizontal"/>
+            <Setter Property="HorizontalGridLinesBrush" Value="#E7EEF5"/><Setter Property="CanUserAddRows" Value="False"/><Setter Property="IsReadOnly" Value="True"/>
+            <Setter Property="AutoGenerateColumns" Value="False"/><Setter Property="SelectionMode" Value="Single"/>
+        </Style>
+        <Style TargetType="DataGridColumnHeader"><Setter Property="Background" Value="#E8F3FA"/><Setter Property="Foreground" Value="{StaticResource Ink}"/><Setter Property="FontWeight" Value="SemiBold"/><Setter Property="Height" Value="40"/><Setter Property="Padding" Value="10,0"/></Style>
+    </Window.Resources>
+
+    <Grid>
+        <!-- Inicio de sesión -->
+        <Grid x:Name="LoginView" Background="#F4F8FC">
+            <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="500"/></Grid.ColumnDefinitions>
+            <Border Background="#123A5A">
+                <StackPanel VerticalAlignment="Center" Margin="70">
+                    <TextBlock Text="◆  EUREKABANK" FontSize="28" FontWeight="Bold" Foreground="White"/>
+                    <TextBlock Text="Tu banca,&#x0a;con claridad." FontSize="48" FontWeight="Bold" Foreground="White" Margin="0,34,0,18"/>
+                    <TextBlock Text="Consulta, transfiere y administra tus cuentas desde un solo lugar." FontSize="17" Foreground="#CFE8F5" TextWrapping="Wrap" Width="400"/>
+                    <Border Background="#1C527C" CornerRadius="12" Padding="18" Margin="0,48,0,0" Width="390">
+                        <TextBlock Text="Protegemos cada operación con un acceso seguro y trazable." Foreground="#E5F6FA" TextWrapping="Wrap"/>
+                    </Border>
+                </StackPanel>
+            </Border>
+            <Grid Grid.Column="1"><Border Width="380" Background="White" CornerRadius="16" Padding="36" VerticalAlignment="Center" HorizontalAlignment="Center"><Border.Effect><DropShadowEffect BlurRadius="22" ShadowDepth="3" Opacity=".13"/></Border.Effect><StackPanel>
+                <TextBlock Text="Bienvenido" FontSize="30" FontWeight="Bold" Foreground="{StaticResource Ink}"/>
+                <TextBlock Text="Ingresa para administrar tus cuentas." Foreground="{StaticResource Muted}" Margin="0,8,0,30"/>
+                <TextBlock Text="Usuario" FontWeight="SemiBold" Foreground="{StaticResource Ink}"/><TextBox x:Name="UserName" Style="{StaticResource Field}" Margin="0,7,0,18"/>
+                <TextBlock Text="Contraseña" FontWeight="SemiBold" Foreground="{StaticResource Ink}"/><PasswordBox x:Name="Password" Style="{StaticResource PasswordField}" Margin="0,7,0,13" KeyDown="Password_KeyDown"/>
+                <TextBlock x:Name="LoginMessage" Foreground="#B84152" TextWrapping="Wrap" MinHeight="22" Margin="0,0,0,12"/>
+                <Button x:Name="LoginButton" Content="Ingresar a mi banca" Style="{StaticResource PrimaryButton}" Click="SignIn"/>
+            </StackPanel></Border></Grid>
+        </Grid>
+
+        <!-- Aplicación bancaria -->
+        <Grid x:Name="ApplicationView" Visibility="Collapsed">
+            <Grid.RowDefinitions><RowDefinition Height="76"/><RowDefinition Height="*"/><RowDefinition Height="34"/></Grid.RowDefinitions>
+            <Border Background="White" BorderBrush="#E3EDF5" BorderThickness="0,0,0,1" Padding="32,0"><DockPanel LastChildFill="False">
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Center" DockPanel.Dock="Left"><TextBlock Text="◆" FontSize="22" Foreground="{StaticResource Teal}" VerticalAlignment="Center"/><TextBlock Text=" EUREKABANK" FontSize="21" FontWeight="Bold" Foreground="{StaticResource Ink}" VerticalAlignment="Center"/></StackPanel>
+                <Button DockPanel.Dock="Right" Content="Cerrar sesión" Style="{StaticResource OutlineButton}" Height="34" Margin="18,0,0,0" Click="SignOut" VerticalAlignment="Center"/>
+                <StackPanel DockPanel.Dock="Right" VerticalAlignment="Center"><TextBlock x:Name="WelcomeText" Foreground="{StaticResource Ink}" FontWeight="SemiBold" TextAlignment="Right"/><TextBlock x:Name="RoleText" Foreground="{StaticResource Muted}" FontSize="12" TextAlignment="Right"/></StackPanel>
+            </DockPanel></Border>
+            <Grid Grid.Row="1">
+                <Grid.ColumnDefinitions><ColumnDefinition Width="238"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
+                <Border Grid.Column="0" Background="#123A5A" BorderBrush="#0F2E48" BorderThickness="0,0,1,0">
+                    <DockPanel>
+                        <StackPanel DockPanel.Dock="Top" Margin="12,22,12,0">
+                            <TextBlock Text="NAVEGACIÓN" Foreground="#8EB9D3" FontSize="11" FontWeight="Bold" Margin="16,0,0,10"/>
+                            <RadioButton x:Name="SummaryNav" Content="▣   Resumen" Tag="Summary" GroupName="Views" Style="{StaticResource NavItem}" Checked="Navigate"/>
+                            <RadioButton Content="≡   Movimientos" Tag="Movements" GroupName="Views" Style="{StaticResource NavItem}" Checked="Navigate"/>
+                            <RadioButton Content="↗   Transferir" Tag="Transfer" GroupName="Views" Style="{StaticResource NavItem}" Checked="Navigate"/>
+                            <RadioButton x:Name="StaffOperationsNav" Content="⊕   Operaciones" Tag="Operations" GroupName="Views" Style="{StaticResource NavItem}" Checked="Navigate"/>
+                            <RadioButton x:Name="StaffAccountsNav" Content="▣   Cuentas" Tag="Accounts" GroupName="Views" Style="{StaticResource NavItem}" Checked="Navigate"/>
+                            <RadioButton Content="●   Perfil" Tag="Profile" GroupName="Views" Style="{StaticResource NavItem}" Checked="Navigate"/>
+                        </StackPanel>
+                        <Border DockPanel.Dock="Bottom" Background="#0E304D" Padding="20,16"><StackPanel><TextBlock Text="EUREKABANK" Foreground="White" FontWeight="Bold"/><TextBlock Text="Banca digital segura" Foreground="#8EB9D3" FontSize="11" Margin="0,4,0,0"/></StackPanel></Border>
+                    </DockPanel>
+                </Border>
+
+                <Grid Grid.Column="1" Margin="32,26">
+                <!-- Resumen -->
+                <Grid x:Name="SummaryPage"><Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="145"/><RowDefinition Height="*"/></Grid.RowDefinitions>
+                    <StackPanel><TextBlock Text="Resumen de cuentas" FontSize="27" FontWeight="Bold" Foreground="{StaticResource Ink}"/><TextBlock Text="Visualiza tus saldos y el estado de cada cuenta." Foreground="{StaticResource Muted}" Margin="0,5,0,0"/></StackPanel>
+                    <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="0,16,0,16"><Border Width="270" Background="#123A5A" CornerRadius="12" Padding="22" Margin="0,0,18,0"><StackPanel><TextBlock Text="SALDO TOTAL" Foreground="#CFE8F5" FontSize="12" FontWeight="SemiBold"/><TextBlock x:Name="TotalBalanceText" Text="USD 0.00" Foreground="White" FontSize="27" FontWeight="Bold" Margin="0,8,0,0"/></StackPanel></Border><Border Width="220" Background="White" BorderBrush="{StaticResource Line}" BorderThickness="1" CornerRadius="12" Padding="22"><StackPanel><TextBlock Text="CUENTAS ACTIVAS" Foreground="{StaticResource Muted}" FontSize="12" FontWeight="SemiBold"/><TextBlock x:Name="AccountCountText" Text="0 cuentas" Foreground="{StaticResource Ink}" FontSize="27" FontWeight="Bold" Margin="0,8,0,0"/></StackPanel></Border><Button Content="↻  Actualizar saldos" Style="{StaticResource OutlineButton}" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="26,0,0,0" Click="RefreshAccounts"/></StackPanel>
+                    <Border Grid.Row="2" Background="White" CornerRadius="12" BorderBrush="{StaticResource Line}" BorderThickness="1" Padding="1"><DataGrid x:Name="AccountsGrid" SelectionChanged="AccountSelected"><DataGrid.Columns><DataGridTextColumn Header="Número de cuenta" Binding="{Binding Number}" Width="*"/><DataGridTextColumn Header="Saldo" Binding="{Binding Balance, StringFormat=USD {0:N2}}" Width="*"/><DataGridTextColumn Header="Estado" Binding="{Binding Status}" Width="*"/><DataGridTextColumn Header="Disponibilidad" Binding="{Binding Availability}" Width="*"/><DataGridTextColumn Header="Sucursal" Binding="{Binding Branch}" Width="*"/></DataGrid.Columns></DataGrid></Border>
+                </Grid>
+                <!-- Movimientos -->
+                <Grid x:Name="MovementsPage" Visibility="Collapsed"><Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="76"/><RowDefinition Height="*"/></Grid.RowDefinitions>
+                    <StackPanel><TextBlock Text="Movimientos" FontSize="27" FontWeight="Bold" Foreground="{StaticResource Ink}"/><TextBlock Text="Consulta el historial de una cuenta y usa el ID para reversar una operación." Foreground="{StaticResource Muted}" Margin="0,5,0,0"/></StackPanel>
+                    <StackPanel Grid.Row="1" Orientation="Horizontal" VerticalAlignment="Center"><TextBox x:Name="MovementAccountBox" Style="{StaticResource Field}" Width="300"/><Button Content="Consultar historial" Style="{StaticResource PrimaryButton}" Margin="12,0,0,0" Click="LoadMovements"/><TextBlock x:Name="MovementStatus" Foreground="{StaticResource Muted}" Margin="18,0,0,0" VerticalAlignment="Center"/></StackPanel>
+                    <Border Grid.Row="2" Background="White" CornerRadius="12" BorderBrush="{StaticResource Line}" BorderThickness="1" Padding="1"><DataGrid x:Name="MovementsGrid"><DataGrid.Columns><DataGridTextColumn Header="ID" Binding="{Binding Id}" Width="2*"/><DataGridTextColumn Header="Tipo" Binding="{Binding Type}" Width="*"/><DataGridTextColumn Header="Monto" Binding="{Binding Amount, StringFormat=USD {0:N2}}" Width="*"/><DataGridTextColumn Header="Fecha" Binding="{Binding CreatedAt, StringFormat={}{0:dd/MM/yyyy HH:mm}}" Width="*"/><DataGridTextColumn Header="Usuario" Binding="{Binding CreatedBy}" Width="*"/></DataGrid.Columns></DataGrid></Border>
+                </Grid>
+                <!-- Transferencias -->
+                <Grid x:Name="TransferPage" Visibility="Collapsed"><Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="1.1*"/></Grid.ColumnDefinitions>
+                    <StackPanel VerticalAlignment="Center" Margin="20"><TextBlock Text="Transferir dinero" FontSize="29" FontWeight="Bold" Foreground="{StaticResource Ink}"/><TextBlock Text="Envía dinero entre cuentas activas. Cada transferencia queda registrada en el historial." Foreground="{StaticResource Muted}" FontSize="16" TextWrapping="Wrap" Margin="0,12,0,0"/><Border Background="#E5F6F8" CornerRadius="10" Padding="16" Margin="0,30,0,0"><TextBlock Text="Tip: selecciona una cuenta en Resumen para usarla como cuenta de origen." Foreground="#12616B" TextWrapping="Wrap"/></Border></StackPanel>
+                    <Border Grid.Column="1" Background="White" CornerRadius="14" BorderBrush="{StaticResource Line}" BorderThickness="1" Padding="32" VerticalAlignment="Center"><StackPanel><TextBlock Text="Nueva transferencia" FontSize="22" FontWeight="Bold" Foreground="{StaticResource Ink}"/><TextBlock Text="Completa los datos de la operación." Foreground="{StaticResource Muted}" Margin="0,5,0,25"/><TextBlock Text="Cuenta de origen" FontWeight="SemiBold"/><TextBox x:Name="TransferOriginBox" Style="{StaticResource Field}" Margin="0,6,0,15"/><TextBlock Text="Cuenta de destino" FontWeight="SemiBold"/><TextBox x:Name="TransferDestinationBox" Style="{StaticResource Field}" Margin="0,6,0,15"/><TextBlock Text="Monto" FontWeight="SemiBold"/><TextBox x:Name="TransferAmountBox" Style="{StaticResource Field}" Margin="0,6,0,15"/><TextBlock x:Name="TransferStatus" TextWrapping="Wrap" MinHeight="24" Margin="0,0,0,10"/><Button Content="Confirmar transferencia" Style="{StaticResource PrimaryButton}" Click="Transfer"/></StackPanel></Border>
+                </Grid>
+                <!-- Operaciones de caja -->
+                <Grid x:Name="OperationsPage" Visibility="Collapsed"><Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
+                    <Border Background="White" CornerRadius="14" BorderBrush="{StaticResource Line}" BorderThickness="1" Padding="30" Margin="0,0,12,0"><StackPanel><TextBlock Text="Operaciones de caja" FontSize="23" FontWeight="Bold" Foreground="{StaticResource Ink}"/><TextBlock Text="Registra un depósito o retiro." Foreground="{StaticResource Muted}" Margin="0,5,0,23"/><TextBlock Text="Tipo de operación" FontWeight="SemiBold"/><ComboBox x:Name="CashTypeBox" Height="42" SelectedIndex="0" Margin="0,6,0,15"><ComboBoxItem Content="INGRESO"/><ComboBoxItem Content="RETIRO"/></ComboBox><TextBlock Text="Número de cuenta" FontWeight="SemiBold"/><TextBox x:Name="CashAccountBox" Style="{StaticResource Field}" Margin="0,6,0,15"/><TextBlock Text="Monto" FontWeight="SemiBold"/><TextBox x:Name="CashAmountBox" Style="{StaticResource Field}" Margin="0,6,0,15"/><TextBlock x:Name="CashStatus" TextWrapping="Wrap" MinHeight="25"/><Button Content="Registrar operación" Style="{StaticResource PrimaryButton}" Margin="0,12,0,0" Click="RegisterCashOperation"/></StackPanel></Border>
+                    <Border Grid.Column="1" Background="White" CornerRadius="14" BorderBrush="{StaticResource Line}" BorderThickness="1" Padding="30" Margin="12,0,0,0"><StackPanel><TextBlock Text="Reversar movimiento" FontSize="23" FontWeight="Bold" Foreground="{StaticResource Ink}"/><TextBlock Text="Ingresa el ID completo de un movimiento para crear su reversa auditada." Foreground="{StaticResource Muted}" TextWrapping="Wrap" Margin="0,5,0,23"/><TextBlock Text="ID del movimiento" FontWeight="SemiBold"/><TextBox x:Name="ReverseIdBox" Style="{StaticResource Field}" Margin="0,6,0,15"/><TextBlock x:Name="ReverseStatus" TextWrapping="Wrap" MinHeight="25"/><Button Content="Registrar reversa" Style="{StaticResource OutlineButton}" Margin="0,12,0,0" Click="ReverseMovement"/></StackPanel></Border>
+                </Grid>
+                <!-- Administración -->
+                <Grid x:Name="AccountsPage" Visibility="Collapsed"><Grid.ColumnDefinitions><ColumnDefinition Width="1.1*"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
+                    <StackPanel VerticalAlignment="Center" Margin="20"><TextBlock Text="Crear una cuenta" FontSize="29" FontWeight="Bold" Foreground="{StaticResource Ink}"/><TextBlock Text="Asigna una nueva cuenta activa a uno de los clientes registrados. El número se genera automáticamente." Foreground="{StaticResource Muted}" FontSize="16" TextWrapping="Wrap" Margin="0,12,0,0"/></StackPanel>
+                    <Border Grid.Column="1" Background="White" CornerRadius="14" BorderBrush="{StaticResource Line}" BorderThickness="1" Padding="32" VerticalAlignment="Center"><StackPanel><TextBlock Text="Titular de la cuenta" FontSize="22" FontWeight="Bold" Foreground="{StaticResource Ink}"/><TextBlock Text="Selecciona el cliente para continuar." Foreground="{StaticResource Muted}" Margin="0,5,0,22"/><ComboBox x:Name="CustomerBox" DisplayMemberPath="Name" Height="42"/><TextBlock x:Name="CreateAccountStatus" TextWrapping="Wrap" MinHeight="25" Margin="0,16,0,0"/><Button Content="Crear y asignar cuenta" Style="{StaticResource PrimaryButton}" Margin="0,12,0,0" Click="CreateAccount"/></StackPanel></Border>
+                </Grid>
+                <!-- Perfil -->
+                <Grid x:Name="ProfilePage" Visibility="Collapsed"><Border Width="620" Background="White" CornerRadius="14" BorderBrush="{StaticResource Line}" BorderThickness="1" Padding="36" VerticalAlignment="Center" HorizontalAlignment="Center"><StackPanel><TextBlock Text="Perfil bancario" FontSize="27" FontWeight="Bold" Foreground="{StaticResource Ink}"/><TextBlock Text="Información de tu sesión y productos asociados." Foreground="{StaticResource Muted}" Margin="0,5,0,26"/><Border Background="#E8F3FA" CornerRadius="10" Padding="20"><StackPanel><TextBlock x:Name="ProfileNameText" FontSize="21" FontWeight="Bold" Foreground="{StaticResource Ink}"/><TextBlock x:Name="ProfileUserText" Foreground="{StaticResource Muted}" Margin="0,4,0,0"/></StackPanel></Border><TextBlock Text="TELÉFONO" FontSize="12" FontWeight="SemiBold" Foreground="{StaticResource Muted}" Margin="0,25,0,4"/><TextBlock x:Name="ProfilePhoneText" FontSize="16" Foreground="{StaticResource Ink}"/><TextBlock Text="CUENTAS ASOCIADAS" FontSize="12" FontWeight="SemiBold" Foreground="{StaticResource Muted}" Margin="0,20,0,4"/><TextBlock x:Name="ProfileAccountsText" FontSize="16" Foreground="{StaticResource Ink}"/></StackPanel></Border></Grid>
+                </Grid>
+            </Grid>
+            <Border Grid.Row="2" Background="White" BorderBrush="#E3EDF5" BorderThickness="0,1,0,0" Padding="270,0,32,0"><TextBlock x:Name="GlobalStatus" Foreground="{StaticResource Muted}" VerticalAlignment="Center"/></Border>
+        </Grid>
+    </Grid>
+</Window>

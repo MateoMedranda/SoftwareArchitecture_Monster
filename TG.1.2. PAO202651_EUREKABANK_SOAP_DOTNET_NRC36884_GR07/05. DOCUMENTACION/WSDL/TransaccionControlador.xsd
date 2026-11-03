@@ -1,0 +1,151 @@
+<?xml version='1.0' encoding='UTF-8'?><!-- Published by XML-WS Runtime (https://github.com/eclipse-ee4j/metro-jax-ws). Runtime's version is Eclipse Metro/4.0.4.payara-p1 (FISH-10142-Metro-4.0.4-fa01c0b; 2025-07-11T17:44:37+0100) XMLWS-Impl/4.0.3 XMLWS-API/4.0.2 XMLB-Impl/4.0.5 XMLB-API/4.0.2 git-revision#fa01c0b. --><xs:schema xmlns:tns="http://servicios.monster.edu.ec/" xmlns:xs="http://www.w3.org/2001/XMLSchema" version="1.0" targetNamespace="http://servicios.monster.edu.ec/">
+
+<xs:element name="TransaccionFault" nillable="true" type="tns:respuestaError"/>
+
+<xs:element name="eliminarTransaccion" type="tns:eliminarTransaccion"/>
+
+<xs:element name="eliminarTransaccionResponse" type="tns:eliminarTransaccionResponse"/>
+
+<xs:element name="generarTransaccion" type="tns:generarTransaccion"/>
+
+<xs:element name="generarTransaccionResponse" type="tns:generarTransaccionResponse"/>
+
+<xs:element name="listarPorCuenta" type="tns:listarPorCuenta"/>
+
+<xs:element name="listarPorCuentaResponse" type="tns:listarPorCuentaResponse"/>
+
+<xs:element name="listarPorUsuario" type="tns:listarPorUsuario"/>
+
+<xs:element name="listarPorUsuarioResponse" type="tns:listarPorUsuarioResponse"/>
+
+<xs:element name="listarTransacciones" type="tns:listarTransacciones"/>
+
+<xs:element name="listarTransaccionesResponse" type="tns:listarTransaccionesResponse"/>
+
+<xs:element name="obtenerTransaccion" type="tns:obtenerTransaccion"/>
+
+<xs:element name="obtenerTransaccionResponse" type="tns:obtenerTransaccionResponse"/>
+
+<xs:element name="respuestaError" type="tns:respuestaError"/>
+
+<xs:element name="token" nillable="true" type="xs:string"/>
+
+<xs:complexType name="generarTransaccion">
+<xs:sequence>
+<xs:element name="tipo" type="xs:string" minOccurs="0"/>
+<xs:element name="cuentaId" type="xs:string" minOccurs="0"/>
+<xs:element name="monto" type="xs:decimal" minOccurs="0"/>
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="generarTransaccionResponse">
+<xs:sequence>
+<xs:element name="transaccion" type="tns:transaccionDTO" minOccurs="0"/>
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="transaccionDTO">
+<xs:sequence>
+<xs:element name="cuentaId" type="xs:string" minOccurs="0"/>
+<xs:element name="transaccionCreadoEn" type="tns:localDateTime" minOccurs="0"/>
+<xs:element name="transaccionCreadoPor" type="xs:string" minOccurs="0"/>
+<xs:element name="transaccionId" type="xs:string" minOccurs="0"/>
+<xs:element name="transaccionSaldo" type="xs:decimal" minOccurs="0"/>
+<xs:element name="transaccionSaldoAnterior" type="xs:decimal" minOccurs="0"/>
+<xs:element name="transaccionSaldoPosterior" type="xs:decimal" minOccurs="0"/>
+<xs:element name="transaccionTipo" type="xs:string" minOccurs="0"/>
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="localDateTime" final="extension restriction">
+<xs:sequence/>
+</xs:complexType>
+
+<xs:complexType name="respuestaError">
+<xs:complexContent>
+<xs:extension base="tns:exception">
+<xs:sequence>
+<xs:element name="codigo" type="xs:string" minOccurs="0"/>
+<xs:element name="mensaje" type="xs:string" minOccurs="0"/>
+<xs:element name="detalle" type="xs:string" minOccurs="0"/>
+</xs:sequence>
+</xs:extension>
+</xs:complexContent>
+</xs:complexType>
+
+<xs:complexType name="exception">
+<xs:complexContent>
+<xs:extension base="tns:throwable">
+<xs:sequence/>
+</xs:extension>
+</xs:complexContent>
+</xs:complexType>
+
+<xs:complexType name="throwable">
+<xs:sequence>
+<xs:element name="stackTrace" type="tns:stackTraceElement" nillable="true" minOccurs="0" maxOccurs="unbounded"/>
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="stackTraceElement" final="extension restriction">
+<xs:sequence/>
+</xs:complexType>
+
+<xs:complexType name="listarPorCuenta">
+<xs:sequence>
+<xs:element name="cuentaId" type="xs:string" minOccurs="0"/>
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="listarPorCuentaResponse">
+<xs:sequence>
+<xs:element name="transacciones" type="tns:transaccionDTO" minOccurs="0" maxOccurs="unbounded"/>
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="listarPorUsuario">
+<xs:sequence>
+<xs:element name="usuarioId" type="xs:string" minOccurs="0"/>
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="listarPorUsuarioResponse">
+<xs:sequence>
+<xs:element name="transacciones" type="tns:transaccionDTO" minOccurs="0" maxOccurs="unbounded"/>
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="eliminarTransaccion">
+<xs:sequence>
+<xs:element name="transaccionId" type="xs:string" minOccurs="0"/>
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="eliminarTransaccionResponse">
+<xs:sequence>
+<xs:element name="exitoso" type="xs:boolean"/>
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="listarTransacciones">
+<xs:sequence/>
+</xs:complexType>
+
+<xs:complexType name="listarTransaccionesResponse">
+<xs:sequence>
+<xs:element name="transacciones" type="tns:transaccionDTO" minOccurs="0" maxOccurs="unbounded"/>
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="obtenerTransaccion">
+<xs:sequence>
+<xs:element name="transaccionId" type="xs:string" minOccurs="0"/>
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="obtenerTransaccionResponse">
+<xs:sequence>
+<xs:element name="transaccion" type="tns:transaccionDTO" minOccurs="0"/>
+</xs:sequence>
+</xs:complexType>
+</xs:schema>
