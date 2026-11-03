@@ -86,8 +86,8 @@ public sealed class MovimientoDAO
         DateTime? desde = null,
         CancellationToken cancelacion = default)
     {
-        const string consulta = $"""
-            SELECT {Columnas}
+        const string consulta = """
+            SELECT M.COD_MOVIMIENTO, M.NUM_CUENTA, M.TIPO, M.VALOR, M.FECHA
             FROM MOVIMIENTO M
             INNER JOIN CUENTA C ON C.NUM_CUENTA = M.NUM_CUENTA
             WHERE C.COD_CLIENTE = @codCliente
