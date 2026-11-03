@@ -83,7 +83,8 @@ void Ejecutar(string accion)
         case "OPERAR":
             PresentacionConsola.MostrarTitulo("Depósito o retiro");
             var cuenta = PresentacionConsola.PedirTexto("Número de cuenta");
-            var tipo = PresentacionConsola.PedirTexto("Tipo (INGRESO / RETIRO)").ToUpperInvariant();
+            var tipoIngresado = PresentacionConsola.PedirTexto("Tipo (DEPÓSITO / RETIRO)").ToUpperInvariant();
+            var tipo = tipoIngresado == "DEPÓSITO" || tipoIngresado == "DEPOSITO" ? "INGRESO" : tipoIngresado;
             if (PresentacionConsola.PedirMonto("Monto", out var montoOperacion)) MostrarMovimiento(controlador.Operar(cuenta, tipo, montoOperacion));
             break;
         case "REVERSAR":
@@ -124,13 +125,15 @@ static void MostrarMovimientos(ServiceResult<List<MovementDto>> resultado)
 {
     if (!PresentacionConsola.Resultado(resultado) || resultado.Data is null) return;
     if (resultado.Data.Count == 0) { PresentacionConsola.Info("La cuenta no registra movimientos todavía."); return; }
-    PresentacionConsola.Tabla(["ID", "Fecha", "Tipo", "Monto", "Cuenta", "Usuario"], resultado.Data.Select(x => new[] { x.Id, x.CreatedAt.ToLocalTime().ToString("dd/MM/yyyy HH:mm"), x.Type, PresentacionConsola.Dinero(x.Amount), x.AccountNumber, x.CreatedBy }));
+    PresentacionConsola.Tabla(["ID", "Fecha", "Tipo", "Monto", "Cuenta", "Usuario"], resultado.Data.Select(x => new[] { x.Id, x.CreatedAt.ToLocalTime().ToString("dd/MM/yyyy HH:mm"), TipoVisible(x.Type), PresentacionConsola.Dinero(x.Amount), x.AccountNumber, x.CreatedBy }));
 }
 
 static void MostrarMovimiento(ServiceResult<MovementDto> resultado)
 {
-    if (PresentacionConsola.Resultado(resultado) && resultado.Data is not null) PresentacionConsola.Tabla(["ID", "Fecha", "Tipo", "Monto", "Cuenta", "Usuario"], [[resultado.Data.Id, resultado.Data.CreatedAt.ToLocalTime().ToString("dd/MM/yyyy HH:mm"), resultado.Data.Type, PresentacionConsola.Dinero(resultado.Data.Amount), resultado.Data.AccountNumber, resultado.Data.CreatedBy]]);
+    if (PresentacionConsola.Resultado(resultado) && resultado.Data is not null) PresentacionConsola.Tabla(["ID", "Fecha", "Tipo", "Monto", "Cuenta", "Usuario"], [[resultado.Data.Id, resultado.Data.CreatedAt.ToLocalTime().ToString("dd/MM/yyyy HH:mm"), TipoVisible(resultado.Data.Type), PresentacionConsola.Dinero(resultado.Data.Amount), resultado.Data.AccountNumber, resultado.Data.CreatedBy]]);
 }
+
+static string TipoVisible(string tipo) => tipo == "INGRESO" ? "DEPÓSITO" : tipo;
 
 static void MostrarPerfil(ServiceResult<ProfileDto> resultado)
 {

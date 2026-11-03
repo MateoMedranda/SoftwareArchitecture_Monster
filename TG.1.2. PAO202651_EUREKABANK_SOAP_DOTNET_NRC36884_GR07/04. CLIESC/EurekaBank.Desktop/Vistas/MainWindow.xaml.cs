@@ -153,7 +153,8 @@ public partial class MainWindow : Window
         var cuenta = CashAccountBox.Text.Trim();
         if (!ValidarCuenta(cuenta, CashStatus, "El número de cuenta")) return;
         if (!TryMonto(CashAmountBox.Text, out var monto)) { Mensaje(CashStatus, "Ingresa un monto mayor que cero.", false); return; }
-        var tipo = (CashTypeBox.SelectedItem as ComboBoxItem)?.Content?.ToString() ?? "INGRESO";
+        var tipoVisible = (CashTypeBox.SelectedItem as ComboBoxItem)?.Content?.ToString() ?? "DEPÓSITO";
+        var tipo = tipoVisible == "DEPÓSITO" ? "INGRESO" : tipoVisible;
         try
         {
             Mensaje(CashStatus, "Registrando operación...", true);

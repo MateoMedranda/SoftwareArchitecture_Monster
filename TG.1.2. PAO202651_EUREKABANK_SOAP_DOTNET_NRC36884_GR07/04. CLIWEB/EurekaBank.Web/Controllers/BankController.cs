@@ -63,7 +63,7 @@ public sealed class BankController : Controller
             if (!string.IsNullOrWhiteSpace(movementAccount))
             {
                 var movimientos = cliente.Movements(Token, movementAccount);
-                panel.Movements = movimientos.Data ?? [];
+                panel.Movements = MovimientosParaVista(movimientos.Data);
                 panel.MovementMessage = movimientos.Ok ? null : movimientos.Message;
             }
         }
@@ -199,7 +199,7 @@ public sealed class BankController : Controller
         {
             using var cliente = new EurekaBankSoapClient();
             var resultado = cliente.Movements(Token, account?.Trim() ?? "");
-            if (IsAjax) return Json(new { ok = resultado.Ok, message = resultado.Message, data = resultado.Data ?? [] });
+            if (IsAjax) return Json(new { ok = resultado.Ok, message = resultado.Message, data = MovimientosParaVista(resultado.Data) });
             return RedirectToAction(nameof(Panel), new { movementAccount = account?.Trim() ?? "" });
         }
         catch (Exception ex)
@@ -217,6 +217,14 @@ public sealed class BankController : Controller
     }
 
     private static string Limpiar(string? message) => string.IsNullOrWhiteSpace(message) ? "No se pudo completar la operación." : message;
+
+    // El código técnico se conserva en SOAP/BDD; esta traducción es solo para la interfaz web.
+    private static List<MovementDto> MovimientosParaVista(IEnumerable<MovementDto>? movimientos) =>
+        (movimientos ?? []).Select(m =>
+        {
+            m.Type = m.Type == "INGRESO" ? "DEPÓSITO" : m.Type;
+            return m;
+        }).ToList();
 }
 
 public sealed class BankPanel
