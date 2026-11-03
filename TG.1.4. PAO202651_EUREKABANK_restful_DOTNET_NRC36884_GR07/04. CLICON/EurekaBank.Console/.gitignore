@@ -1,0 +1,4 @@
+# Console client
+bin/
+obj/
+*.runtimeconfig.dev.json

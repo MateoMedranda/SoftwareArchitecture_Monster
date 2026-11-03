@@ -1,0 +1,9 @@
+# ASP.NET Core MVC client
+bin/
+obj/
+wwwroot/lib/
+wwwroot/css/*.min.css.map
+
+# Per-developer launch and user settings
+Properties/launchSettings.local.json
+appsettings.Development.json
