@@ -1,3 +1,4 @@
+using System.Net;
 using System.Net.Http.Json;
 using SISTEMA_FACTURACION.Comun;
 using SISTEMA_FACTURACION.Modelos.DTO;
@@ -23,5 +24,19 @@ public sealed class BanquitoCliente(HttpClient http)
         using var response=await http.PostAsJsonAsync("api/credito/otorgar",new SolicitudOtorgarBanquitoDTO{CodCliente=codigo,PrecioTelefono=valor,NumCuotas=cuotas},ct);
         if(!response.IsSuccessStatusCode) throw new ExcepcionNegocio(StatusCodes.Status502BadGateway,"BanQuito no pudo procesar el crédito.");
         return await response.Content.ReadFromJsonAsync<RespuestaOtorgarBanquitoDTO>(cancellationToken:ct) ?? throw new HttpRequestException("Respuesta vacía de BanQuito.");
+    }
+    public async Task<RespuestaClienteBanquitoDTO?> ClientePorCedulaAsync(string cedula,CancellationToken ct)
+    {
+        using var response=await http.PostAsJsonAsync("api/clientes/buscar-cedula",new SolicitudTextoBanquitoDTO{Valor=cedula},ct);
+        if(response.StatusCode==HttpStatusCode.NotFound) return null;
+        if(!response.IsSuccessStatusCode) throw new ExcepcionNegocio(StatusCodes.Status502BadGateway,"BanQuito no pudo consultar el cliente.");
+        return await response.Content.ReadFromJsonAsync<RespuestaClienteBanquitoDTO>(cancellationToken:ct) ?? throw new HttpRequestException("Respuesta vacía de BanQuito.");
+    }
+    public async Task<RespuestaAmortizacionBanquitoDTO?> TablaPorClienteAsync(int codCliente,CancellationToken ct)
+    {
+        using var response=await http.PostAsJsonAsync("api/amortizaciones/tabla-por-cliente",new SolicitudNumeroBanquitoDTO{Valor=codCliente},ct);
+        if(response.StatusCode==HttpStatusCode.NotFound) return null;
+        if(!response.IsSuccessStatusCode) throw new ExcepcionNegocio(StatusCodes.Status502BadGateway,"BanQuito no pudo consultar la tabla de amortización.");
+        return await response.Content.ReadFromJsonAsync<RespuestaAmortizacionBanquitoDTO>(cancellationToken:ct) ?? throw new HttpRequestException("Respuesta vacía de BanQuito.");
     }
 }

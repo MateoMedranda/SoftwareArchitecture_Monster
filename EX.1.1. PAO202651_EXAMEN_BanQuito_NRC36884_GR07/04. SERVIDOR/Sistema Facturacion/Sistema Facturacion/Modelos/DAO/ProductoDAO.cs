@@ -30,12 +30,20 @@ public sealed class ProductoDAO(Conexion conexion)
     }
     public async Task<bool> ActualizarAsync(Producto p, CancellationToken ct = default)
     {
-        await using var cn=conexion.CrearConexion(); await cn.OpenAsync(ct); await using var cmd=new SqlCommand("UPDATE ITEM_INVENTARIO SET NOMBRE=@nombre,PRECIO=@precio WHERE NUM_INVENTARIO=@id",cn);
-        cmd.Parameters.AddWithValue("@nombre",p.Nombre); cmd.Parameters.AddWithValue("@precio",p.Precio); cmd.Parameters.AddWithValue("@id",p.NumInventario); return await cmd.ExecuteNonQueryAsync(ct)==1;
+        await using var cn=conexion.CrearConexion(); 
+        await cn.OpenAsync(ct); 
+        await using var cmd=new SqlCommand("UPDATE ITEM_INVENTARIO SET NOMBRE=@nombre,PRECIO=@precio WHERE NUM_INVENTARIO=@id",cn);
+        cmd.Parameters.AddWithValue("@nombre",p.Nombre); cmd.Parameters.AddWithValue("@precio",p.Precio); 
+        cmd.Parameters.AddWithValue("@id",p.NumInventario); 
+        return await cmd.ExecuteNonQueryAsync(ct)==1;
     }
     public async Task<bool> EliminarAsync(int id, CancellationToken ct = default)
     {
-        await using var cn=conexion.CrearConexion(); await cn.OpenAsync(ct); await using var cmd=new SqlCommand("DELETE FROM ITEM_INVENTARIO WHERE NUM_INVENTARIO=@id",cn); cmd.Parameters.AddWithValue("@id",id); return await cmd.ExecuteNonQueryAsync(ct)==1;
+        await using var cn=conexion.CrearConexion(); 
+        await cn.OpenAsync(ct); 
+        await using var cmd=new SqlCommand("DELETE FROM ITEM_INVENTARIO WHERE NUM_INVENTARIO=@id",cn); 
+        cmd.Parameters.AddWithValue("@id",id); 
+        return await cmd.ExecuteNonQueryAsync(ct)==1;
     }
     private static Producto Mapear(SqlDataReader r)=>new(){NumInventario=r.GetInt32(0),Nombre=r.GetString(1),Precio=r.GetDecimal(2)};
 }

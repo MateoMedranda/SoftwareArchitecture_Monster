@@ -41,11 +41,24 @@ Proyecto: `Sistema Facturacion/Sistema Facturacion`. URL local por defecto: `htt
 | GET | `/api/facturas/{numero}/items` | Consultar los ítems de una factura |
 | GET | `/api/facturas?cedula={cedula}` | Consultar facturas del cliente por cédula |
 | GET | `/api/facturas?codigoCliente={codigo}` | Consultar facturas por código local |
+| GET | `/api/amortizaciones/por-cedula/{cedula}` | Proxy: tabla de amortización del crédito más reciente en BanQuito (cliente debe existir en ambos sistemas y tener crédito) |
 
 En efectivo el total es el 58% del subtotal (42% de descuento). En crédito se conserva el importe íntegro; BanQuito valida elegibilidad/tope y registra el crédito con su amortización. Ejemplos completos están en `Sistema Facturacion/Sistema Facturacion/Sistema Facturacion.http`.
 
-Los dos proyectos leen las cadenas `ConnectionStrings__Facturacion` y `ConnectionStrings__Banquito` desde `.development.env` al ejecutar en ambiente Development. Para pruebas locales, ambas bases se sirven desde SQL Server en `localhost,1433`; BanQuito usa `http://localhost:5173/`.
+#### Proxy de amortización por cédula (facturación → BanQuito)
 
+Facturación no accede a la base de datos de BanQuito: valida el cliente local, resuelve el cliente en BanQuito por cédula y devuelve la tabla de amortización del crédito más reciente. La respuesta es el JSON de BanQuito tal cual.
+
+| Caso | Método y URI de prueba | Resultado esperado |
+| --- | --- | --- |
+| Cliente con crédito (Sofía) | `GET http://localhost:5226/api/amortizaciones/por-cedula/0506070809` | `200` con `numCredito: 1002` y 12 cuotas |
+| Cliente con otro crédito (Carlos) | `GET http://localhost:5226/api/amortizaciones/por-cedula/0405060708` | `200` con `numCredito: 1001` y 6 cuotas |
+| Cliente sin crédito (María) | `GET http://localhost:5226/api/amortizaciones/por-cedula/0304050607` | `409` "no tiene créditos registrados en BanQuito" |
+| Cédula inexistente | `GET http://localhost:5226/api/amortizaciones/por-cedula/9999999999` | `404` "No existe un cliente con la cédula ... en facturación" |
+
+Requisito: BanQuito debe estar disponible en `http://localhost:5173` (`Servicios:Banquito:BaseUrl`).
+
+# Banquito
 ### Servicios específicos
 
 | Método | Ruta | Descripción |

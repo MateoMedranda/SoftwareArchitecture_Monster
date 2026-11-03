@@ -91,6 +91,7 @@ builder.Services.AddScoped<FacturaDAO>();
 builder.Services.AddScoped<ClienteServicio>();
 builder.Services.AddScoped<ProductoServicio>();
 builder.Services.AddScoped<FacturaServicio>();
+builder.Services.AddScoped<AmortizacionProxyServicio>();
 var banquitoBaseUrl = builder.Configuration["Servicios:Banquito:BaseUrl"] ?? "http://localhost:5173/";
 var banquitoTimeout = int.TryParse(builder.Configuration["Servicios:Banquito:TimeoutSegundos"], out var timeout) ? timeout : 10;
 builder.Services.AddHttpClient<BanquitoCliente>(http =>
