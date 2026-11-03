@@ -95,6 +95,9 @@
     <Compile Include="Vistas\FormCreditoExitosoDialog.cs">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="Vistas\FormDetalleFacturaDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="Vistas\FormFacturas.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -102,6 +105,9 @@
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Vistas\FormProductoDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Vistas\FormTablaAmortizacionDialog.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Vistas\Navegacion.cs" />

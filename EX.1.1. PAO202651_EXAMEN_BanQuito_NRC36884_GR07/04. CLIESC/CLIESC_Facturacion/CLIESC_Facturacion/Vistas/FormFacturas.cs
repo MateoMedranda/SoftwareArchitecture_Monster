@@ -11,8 +11,6 @@ namespace CLIESC_Facturacion.Vistas
 {
     public sealed class FormFacturas : Form
     {
-        private static readonly Color GrisDeshabilitado = Color.FromArgb(156, 163, 175);
-
         private readonly FacturaControlador _controlador;
         private readonly DataGridView _grid;
         private readonly TextBox _txtBusqueda;
@@ -129,7 +127,6 @@ namespace CLIESC_Facturacion.Vistas
 
             var colDetalle = Estilos.ColumnaBoton("Detalle", "Ver detalle", 110);
             colDetalle.FillWeight = 14;
-            colDetalle.DefaultCellStyle.ForeColor = GrisDeshabilitado;
             _grid.Columns.Add(colDetalle);
 
             _grid.CellContentClick += GridCellContentClick;
@@ -310,20 +307,45 @@ namespace CLIESC_Facturacion.Vistas
             return tipoPago ?? string.Empty;
         }
 
-        private void GridCellContentClick(object sender, DataGridViewCellEventArgs e)
+        private async void GridCellContentClick(object sender, DataGridViewCellEventArgs e)
         {
             if (e.RowIndex < 0 || e.ColumnIndex < 0)
             {
                 return;
             }
 
-            if (_grid.Columns[e.ColumnIndex].Name == "Detalle")
+            if (_grid.Columns[e.ColumnIndex].Name != "Detalle")
             {
-                MessageBox.Show(this,
-                    "La opcion de ver detalle estara disponible en una siguiente iteracion.",
-                    "Celulares Monster",
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Information);
+                return;
+            }
+
+            var factura = _grid.Rows[e.RowIndex].Tag as Factura;
+            if (factura == null)
+            {
+                return;
+            }
+
+            try
+            {
+                UseWaitCursor = true;
+                var detalle = await _controlador.BuscarAsync(factura.NumFactura);
+                if (detalle == null)
+                {
+                    throw new InvalidOperationException("El API no devolvio el detalle de la factura.");
+                }
+
+                using (var dialogo = new FormDetalleFacturaDialog(detalle))
+                {
+                    dialogo.ShowDialog(this);
+                }
+            }
+            catch (Exception ex)
+            {
+                Estilos.MostrarError(this, ex);
+            }
+            finally
+            {
+                UseWaitCursor = false;
             }
         }
     }
