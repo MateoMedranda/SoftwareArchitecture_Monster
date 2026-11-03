@@ -7,6 +7,7 @@ public sealed class Factura
     public DateTime Fecha { get; set; }
     public string TipoPago { get; set; } = string.Empty;
     public decimal Valor { get; set; }
+    public int? NumCredito { get; set; }
     public Cliente? Cliente { get; set; }
     public List<ItemFactura> Items { get; set; } = new();
 }

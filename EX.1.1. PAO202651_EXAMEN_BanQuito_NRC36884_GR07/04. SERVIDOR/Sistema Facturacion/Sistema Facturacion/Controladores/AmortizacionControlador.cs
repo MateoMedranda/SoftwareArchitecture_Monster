@@ -10,6 +10,9 @@ namespace SISTEMA_FACTURACION.Controladores;
 [ApiController, Route("api/amortizaciones")]
 public sealed class AmortizacionControlador(AmortizacionProxyServicio servicio):ControllerBase
 {
+    [HttpGet("{id:int}")]
+    public async Task<IActionResult> PorFactura(int id,CancellationToken ct)=>
+        Ok(await servicio.ObtenerPorFacturaAsync(id,ct));
     [HttpGet("por-cedula/{cedula}")]
     public async Task<IActionResult> PorCedula(string cedula,CancellationToken ct)=>
         Ok(await servicio.ObtenerPorCedulaAsync(cedula,ct));

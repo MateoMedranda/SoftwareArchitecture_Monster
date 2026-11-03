@@ -38,7 +38,7 @@ public sealed class FacturaServicio(FacturaDAO facturaDao,ClienteDAO clienteDao,
             creditoBanquito=otorgamiento.IdCredito;
         }
 
-        var factura=new Factura{CodCliente=cliente.CodCliente,Fecha=DateTime.Now,TipoPago=pago,Valor=total,Cliente=cliente,Items=lineas};
+        var factura=new Factura{CodCliente=cliente.CodCliente,Fecha=DateTime.Now,TipoPago=pago,Valor=total,NumCredito=creditoBanquito,Cliente=cliente,Items=lineas};
         int id;
         try { id=await facturaDao.CrearAsync(factura,ct); }
         catch(Exception) when(creditoBanquito.HasValue)

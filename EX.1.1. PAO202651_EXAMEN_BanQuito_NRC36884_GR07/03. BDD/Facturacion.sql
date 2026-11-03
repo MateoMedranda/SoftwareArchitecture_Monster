@@ -1,6 +1,6 @@
 /*==============================================================*/
 /* DBMS name:      Microsoft SQL Server 2008                    */
-/* Created on:     31/10/2026 22:06:08                          */
+/* Created on:     3/11/2026 15:50:36                           */
 /*==============================================================*/
 
 
@@ -100,6 +100,7 @@ create table FACTURA (
    FECHA                datetime             not null,
    TIPO_PAGO            varchar(16)          not null,
    VALOR                decimal(10,2)        not null,
+   NUM_CREDITO          int                  null,
    constraint PK_FACTURA primary key nonclustered (NUM_FACTURA)
 )
 go

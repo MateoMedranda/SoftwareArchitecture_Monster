@@ -21,9 +21,9 @@ INSERT INTO ITEM_INVENTARIO (NUM_INVENTARIO, NOMBRE, PRECIO) VALUES
 -- ============================================================
 -- FACTURAS (ligadas a los mismos clientes)
 -- ============================================================
-INSERT INTO FACTURA (NUM_FACTURA, COD_CLIENTE, FECHA, TIPO_PAGO, VALOR) VALUES
-(5001, 106, '2026-10-28', 'EFECTIVO', 348.00),  -- Ana: 600 - 42%
-(5005, 110, '2026-11-01', 'CREDITO',  900.00);  -- Sofia: aprobado por el banco
+INSERT INTO FACTURA (NUM_FACTURA, COD_CLIENTE, FECHA, TIPO_PAGO, VALOR, NUM_CREDITO) VALUES
+(5001, 106, '2026-10-28', 'EFECTIVO', 348.00, NULL),  -- Ana: 600 - 42%
+(5005, 110, '2026-11-01', 'CREDITO',  900.00, 1002);  -- Sofia: aprobado por el banco
 
 -- ============================================================
 -- ITEM_FACTURA (detalle; ligado a FACTURA e ITEM_INVENTARIO)
