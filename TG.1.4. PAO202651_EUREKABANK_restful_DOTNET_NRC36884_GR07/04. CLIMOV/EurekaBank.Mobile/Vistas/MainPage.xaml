@@ -3,6 +3,17 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              BackgroundColor="#F1F7FB"
              Title="EUREKABANK RESTful">
+    <ContentPage.Resources>
+        <!-- Colores explícitos: algunos temas Android heredan texto blanco en los Entry. -->
+        <Style TargetType="Entry">
+            <Setter Property="TextColor" Value="#123A5A" />
+            <Setter Property="PlaceholderColor" Value="#597083" />
+            <Setter Property="BackgroundColor" Value="#FFFFFF" />
+            <Setter Property="FontSize" Value="16" />
+            <Setter Property="HeightRequest" Value="50" />
+            <Setter Property="Margin" Value="0,2" />
+        </Style>
+    </ContentPage.Resources>
     <ScrollView>
         <VerticalStackLayout Padding="20,24" Spacing="14">
 
@@ -22,8 +33,23 @@
                     <Label Text="Tu banca RESTful, siempre contigo"
                            HorizontalOptions="Center"
                            TextColor="#597083" />
-                    <Entry x:Name="UserName" Placeholder="Usuario" />
-                    <Entry x:Name="Password" Placeholder="Contraseña" IsPassword="True" />
+                    <Border Stroke="#B9CFDE"
+                            StrokeThickness="1"
+                            StrokeShape="RoundRectangle 10"
+                            BackgroundColor="White">
+                        <Entry x:Name="UserName"
+                               Placeholder="Usuario"
+                               Margin="12,0" />
+                    </Border>
+                    <Border Stroke="#B9CFDE"
+                            StrokeThickness="1"
+                            StrokeShape="RoundRectangle 10"
+                            BackgroundColor="White">
+                        <Entry x:Name="Password"
+                               Placeholder="Contraseña"
+                               IsPassword="True"
+                               Margin="12,0" />
+                    </Border>
                     <ActivityIndicator x:Name="LoginBusy"
                                        IsVisible="False"
                                        IsRunning="False"
@@ -55,10 +81,16 @@
                             <Label Text="Emulador local: http://10.0.2.2:62558/api/v1"
                                    FontSize="11"
                                    TextColor="#597083" />
-                            <Entry x:Name="EndpointEntry"
-                                   Placeholder="http://10.0.2.2:62558/api/v1"
-                                   Keyboard="Url"
-                                   ClearButtonVisibility="WhileEditing" />
+                            <Border Stroke="#8EACBF"
+                                    StrokeThickness="1"
+                                    StrokeShape="RoundRectangle 10"
+                                    BackgroundColor="White">
+                                <Entry x:Name="EndpointEntry"
+                                       Placeholder="http://10.0.2.2:62558/api/v1"
+                                       Keyboard="Url"
+                                       ClearButtonVisibility="WhileEditing"
+                                       Margin="12,0" />
+                            </Border>
                             <Label x:Name="ServerStatus" FontSize="12" TextColor="#087D55" />
                             <Grid ColumnDefinitions="*,*" ColumnSpacing="8">
                                 <Button Grid.Column="0"
