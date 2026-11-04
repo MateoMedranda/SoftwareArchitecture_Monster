@@ -1,0 +1,88 @@
+@page "/"
+
+<PageTitle>Inicio - Celulares Monster Móvil</PageTitle>
+
+<section class="pagina pagina-movil">
+    <div class="portada-movil">
+        <img src="img/logo.png" alt="Celulares Monster" class="logo-portada-movil" />
+        <span class="etiqueta etiqueta-morada">Facturación</span>
+        <h1>Celulares Monster</h1>
+        <p>Registre compras, consulte facturas y revise la amortización real de BanQuito desde su teléfono.</p>
+        <a class="boton boton-morado boton-bloque boton-grande" href="/compra">+ Registrar compra</a>
+        <div class="acciones-portada-movil">
+            <a class="boton boton-secundario" href="/facturas">Facturas</a>
+            <a class="boton boton-secundario" href="/creditos">Créditos</a>
+            <a class="boton boton-secundario" href="/clientes">Clientes</a>
+        </div>
+    </div>
+
+    <h2 class="titulo-seccion-movil">Accesos rápidos</h2>
+
+    <a class="tarjeta-movil tarjeta-borde-verde" href="/facturas">
+        <div class="tarjeta-movil-icono fondo-verde">
+            <img src="img/bill.png" alt="" />
+        </div>
+        <div class="tarjeta-movil-texto">
+            <strong>Facturas</strong>
+            <span>Historial, detalle y amortizaciones</span>
+        </div>
+        <span class="flecha" aria-hidden="true">&rsaquo;</span>
+    </a>
+
+    <a class="tarjeta-movil tarjeta-borde-morada" href="/creditos">
+        <div class="tarjeta-movil-icono fondo-morado">
+            <img src="img/logo_banquito.jpg" alt="" />
+        </div>
+        <div class="tarjeta-movil-texto">
+            <strong>Créditos</strong>
+            <span>Selector de créditos y estado de cuotas</span>
+        </div>
+        <span class="flecha" aria-hidden="true">&rsaquo;</span>
+    </a>
+
+    <a class="tarjeta-movil tarjeta-borde-amarilla" href="/clientes">
+        <div class="tarjeta-movil-icono fondo-amarillo">
+            <img src="img/person.png" alt="" />
+        </div>
+        <div class="tarjeta-movil-texto">
+            <strong>Clientes</strong>
+            <span>Consultar, agregar y editar</span>
+        </div>
+        <span class="flecha" aria-hidden="true">&rsaquo;</span>
+    </a>
+
+    <a class="tarjeta-movil tarjeta-borde-azul" href="/catalogo">
+        <div class="tarjeta-movil-icono fondo-azul">
+            <img src="img/phone.png" alt="" />
+        </div>
+        <div class="tarjeta-movil-texto">
+            <strong>Catálogo</strong>
+            <span>Productos y precios disponibles</span>
+        </div>
+        <span class="flecha" aria-hidden="true">&rsaquo;</span>
+    </a>
+
+    <div class="panel-movil panel-informativo-movil">
+        <div class="fila-informativa">
+            <span class="punto-verde"></span>
+            <div>
+                <strong>Efectivo con 42 % de descuento</strong>
+                <p>El total definitivo siempre lo calcula el servidor.</p>
+            </div>
+        </div>
+        <div class="fila-informativa">
+            <span class="punto-azul"></span>
+            <div>
+                <strong>Crédito directo con BanQuito</strong>
+                <p>El API valida elegibilidad, monto máximo y cuotas de 3 a 18 meses.</p>
+            </div>
+        </div>
+        <div class="fila-informativa">
+            <span class="punto-morado"></span>
+            <div>
+                <strong>API de facturación</strong>
+                <p>@AppConfig.ApiBaseUrl</p>
+            </div>
+        </div>
+    </div>
+</section>

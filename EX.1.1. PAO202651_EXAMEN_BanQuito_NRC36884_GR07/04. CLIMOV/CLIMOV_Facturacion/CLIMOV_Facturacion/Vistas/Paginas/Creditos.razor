@@ -1,0 +1,180 @@
+@page "/creditos"
+@inject CreditosControlador Controlador
+
+<PageTitle>Créditos - Celulares Monster Móvil</PageTitle>
+
+<section class="pagina pagina-movil">
+    <header class="cabecera-movil">
+        <div>
+            <span class="etiqueta etiqueta-azul">Créditos</span>
+            <h1>Créditos</h1>
+            <p>@Controlador.Creditos.Count crédito(s) disponible(s).</p>
+        </div>
+        <a class="boton-circular boton-morado" href="/compra" aria-label="Registrar compra">+</a>
+    </header>
+
+    @if (!string.IsNullOrWhiteSpace(Controlador.Error))
+    {
+        <div class="alerta alerta-error">@Controlador.Error</div>
+    }
+
+    @if (!string.IsNullOrWhiteSpace(Controlador.Mensaje))
+    {
+        <div class="alerta alerta-info">@Controlador.Mensaje</div>
+    }
+
+    <div class="panel-movil panel-consulta-credito">
+        <strong>Buscar créditos</strong>
+        <p>Filtre por cédula o elija un crédito de la lista.</p>
+        <div class="buscador-movil">
+            <span aria-hidden="true">&#128179;</span>
+            <input placeholder="Cédula del cliente" maxlength="10" inputmode="numeric"
+                   @bind="Controlador.FiltroCedula" />
+            <button type="button" class="boton-mini boton-mini-azul"
+                    @onclick="BuscarAsync" disabled="@Controlador.Cargando">
+                Ir
+            </button>
+        </div>
+        <button type="button" class="boton boton-secundario boton-bloque" @onclick="LimpiarAsync"
+                disabled="@Controlador.Cargando">
+            Limpiar búsqueda
+        </button>
+    </div>
+
+    @if (Controlador.Cargando)
+    {
+        <div class="cargando">
+            <span class="cargador"></span>
+            <span>Cargando créditos...</span>
+        </div>
+    }
+    else if (Controlador.Creditos.Count == 0)
+    {
+        <div class="estado-vacio">
+            <h2>No hay créditos</h2>
+            <p>Registre una compra a crédito o busque el crédito de un cliente por cédula.</p>
+            <a class="boton boton-morado boton-bloque" href="/compra">+ Registrar compra</a>
+        </div>
+    }
+    else
+    {
+        <h2 class="titulo-seccion-movil">Seleccione un crédito</h2>
+
+        <div class="selector-credito-movil">
+            @foreach (var credito in Controlador.Creditos)
+            {
+                <button type="button"
+                        class="opcion-credito-movil @(Controlador.CreditoSeleccionado == credito.NumCredito ? "opcion-credito-activa" : string.Empty)"
+                        @onclick="() => SeleccionarAsync(credito.NumCredito)"
+                        disabled="@Controlador.CargandoAmortizacion">
+                    <span class="opcion-credito-cabecera">
+                        <strong>Crédito N° @credito.NumCredito</strong>
+                        <span class="etiqueta @(credito.Origen == "Tienda" ? "etiqueta-morada" : "etiqueta-azul")">
+                            @credito.Origen
+                        </span>
+                    </span>
+                    <span class="opcion-credito-detalle">
+                        @credito.NombreCliente
+                        @if (!string.IsNullOrWhiteSpace(credito.Cedula))
+                        {
+                            <text>· @credito.Cedula</text>
+                        }
+                    </span>
+                    @if (credito.NumFactura is not null || credito.Valor is not null)
+                    {
+                        <span class="opcion-credito-pie">
+                            @if (credito.NumFactura is not null)
+                            {
+                                <span>Factura N° @credito.NumFactura</span>
+                            }
+                            @if (credito.Valor is not null)
+                            {
+                                <span>$ @credito.Valor.Value.ToString("N2")</span>
+                            }
+                        </span>
+                    }
+                </button>
+            }
+        </div>
+
+        @if (!string.IsNullOrWhiteSpace(Controlador.ErrorAmortizacion))
+        {
+            <div class="alerta alerta-error">@Controlador.ErrorAmortizacion</div>
+        }
+        else if (Controlador.CargandoAmortizacion)
+        {
+            <div class="cargando">
+                <span class="cargador"></span>
+                <span>Consultando la tabla de amortización...</span>
+            </div>
+        }
+        else if (Controlador.Amortizacion is { } amortizacion)
+        {
+            <h2 class="titulo-seccion-movil">Resumen del crédito</h2>
+
+            <div class="resumen-credito-movil">
+                <div class="dato-resumen-movil">
+                    <span>Cuotas</span>
+                    <strong>@amortizacion.Cuotas.Count</strong>
+                </div>
+                <div class="dato-resumen-movil dato-resumen-verde">
+                    <span>Pagadas</span>
+                    <strong>@Controlador.CuotasPagadas</strong>
+                </div>
+                <div class="dato-resumen-movil dato-resumen-amarillo">
+                    <span>Pendientes</span>
+                    <strong>@Controlador.CuotasPendientes</strong>
+                </div>
+                <div class="dato-resumen-movil">
+                    <span>Total pagado</span>
+                    <strong>$ @Controlador.TotalPagado.ToString("N2")</strong>
+                </div>
+                <div class="dato-resumen-movil">
+                    <span>Total por pagar</span>
+                    <strong>$ @Controlador.TotalPendiente.ToString("N2")</strong>
+                </div>
+                <div class="dato-resumen-movil">
+                    <span>Origen</span>
+                    <strong>@(Controlador.OpcionSeleccionada?.Origen ?? "—")</strong>
+                </div>
+            </div>
+
+            @if (Controlador.ProximaCuota is { } proxima)
+            {
+                <div class="alerta alerta-info">
+                    Próxima cuota: N° @proxima.NumCuota por
+                    <strong>$ @proxima.ValorCuota.ToString("N2")</strong>,
+                    con vencimiento @proxima.FechaPago.ToString("dd/MM/yyyy").
+                </div>
+            }
+            else if (amortizacion.Cuotas.Count > 0)
+            {
+                <div class="alerta alerta-exito">Todas las cuotas del crédito están pagadas.</div>
+            }
+
+            <h2 class="titulo-seccion-movil">Tabla de amortización</h2>
+
+            <TablaAmortizacion Amortizacion="amortizacion" />
+        }
+        else
+        {
+            <div class="estado-vacio estado-vacio-compacto">
+                <p>Seleccione un crédito para ver su tabla de amortización.</p>
+            </div>
+        }
+    }
+</section>
+
+@code {
+    protected override async Task OnInitializedAsync()
+    {
+        await Controlador.CargarAsync();
+    }
+
+    private async Task BuscarAsync() => await Controlador.BuscarAsync();
+
+    private async Task LimpiarAsync() => await Controlador.LimpiarAsync();
+
+    private async Task SeleccionarAsync(int numCredito) =>
+        await Controlador.SeleccionarAsync(numCredito);
+}

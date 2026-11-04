@@ -1,0 +1,174 @@
+@page "/clientes"
+@inject ClientesControlador Controlador
+
+<PageTitle>Clientes - Celulares Monster</PageTitle>
+
+<section class="pagina">
+    <header class="cabecera-pagina">
+        <div>
+            <span class="etiqueta etiqueta-amarilla">Mantenimiento</span>
+            <h1>Clientes</h1>
+            <p>Consulte, registre, edite y elimine los clientes de la facturación.</p>
+        </div>
+        <button type="button" class="boton boton-morado" @onclick="Controlador.AbrirCrear">
+            + Agregar cliente
+        </button>
+    </header>
+
+    @if (!string.IsNullOrWhiteSpace(Controlador.Mensaje))
+    {
+        <div class="alerta alerta-exito">@Controlador.Mensaje</div>
+    }
+
+    @if (!string.IsNullOrWhiteSpace(Controlador.Error))
+    {
+        <div class="alerta alerta-error">@Controlador.Error</div>
+    }
+
+    <div class="barra-herramientas">
+        <div class="buscador">
+            <span class="buscador-icono" aria-hidden="true">&#128269;</span>
+            <input class="campo" placeholder="Filtrar por nombre o cédula..." @bind="Controlador.Filtro" @bind:event="oninput" />
+        </div>
+
+        <div class="busqueda-cedula">
+            <input class="campo" maxlength="10" inputmode="numeric" placeholder="Cédula exacta"
+                   @bind="Controlador.CedulaBusqueda" />
+            <button type="button" class="boton boton-secundario" @onclick="BuscarPorCedulaAsync">
+                Buscar cédula
+            </button>
+        </div>
+    </div>
+
+    @if (Controlador.Cargando)
+    {
+        <div class="cargando">
+            <span class="cargador"></span>
+            <span>Cargando clientes...</span>
+        </div>
+    }
+    else if (!Controlador.ClientesFiltrados.Any())
+    {
+        <div class="estado-vacio">
+            <h2>No hay clientes para mostrar</h2>
+            <p>Registre un cliente nuevo o cambie el filtro de búsqueda.</p>
+            <button type="button" class="boton boton-morado" @onclick="Controlador.AbrirCrear">
+                + Agregar cliente
+            </button>
+        </div>
+    }
+    else
+    {
+        <div class="tabla-contenedor">
+            <table class="tabla">
+                <thead>
+                    <tr>
+                        <th class="columna-codigo">Código</th>
+                        <th>Nombre</th>
+                        <th>Cédula</th>
+                        <th class="columna-acciones">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var cliente in Controlador.ClientesFiltrados)
+                    {
+                        <tr>
+                            <td class="columna-codigo">@cliente.CodCliente</td>
+                            <td><strong>@cliente.Nombre</strong></td>
+                            <td>@cliente.Cedula</td>
+                            <td class="columna-acciones">
+                                <div class="acciones-tabla">
+                                    <button type="button" class="boton-tabla" @onclick="() => Controlador.AbrirEditar(cliente)">
+                                        Editar
+                                    </button>
+                                    <button type="button" class="boton-tabla boton-tabla-peligro" @onclick="() => Controlador.PedirEliminar(cliente)">
+                                        Eliminar
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        <p class="pie-tabla">@Controlador.ClientesFiltrados.Count() cliente(s) mostrado(s).</p>
+    }
+</section>
+
+@if (Controlador.ModalAbierto)
+{
+    <Modal Visible="Controlador.ModalAbierto"
+           Titulo="@(Controlador.Editando is null ? "Agregar cliente" : "Editar cliente")"
+           Clase="modal-mediano"
+           OnCerrar="CerrarModal">
+        <div class="formulario">
+            <div class="grupo-campo">
+                <label for="cliente-cedula">Cédula</label>
+                <input id="cliente-cedula" class="campo" maxlength="10" inputmode="numeric"
+                       placeholder="10 dígitos" @bind="Controlador.Cedula" />
+            </div>
+
+            <div class="grupo-campo">
+                <label for="cliente-nombre">Nombre completo</label>
+                <input id="cliente-nombre" class="campo" maxlength="100"
+                       placeholder="Nombre del cliente" @bind="Controlador.Nombre" />
+            </div>
+
+            @if (!string.IsNullOrWhiteSpace(Controlador.ErrorModal))
+            {
+                <div class="alerta alerta-error">@Controlador.ErrorModal</div>
+            }
+
+            <div class="modal-acciones">
+                <button type="button" class="boton boton-secundario" @onclick="CerrarModal" disabled="@Controlador.Guardando">
+                    Cancelar
+                </button>
+                <button type="button" class="boton boton-morado" @onclick="GuardarAsync" disabled="@Controlador.Guardando">
+                    @if (Controlador.Guardando)
+                    {
+                        <span class="cargador-boton"></span>
+                        <span>Guardando...</span>
+                    }
+                    else
+                    {
+                        <span>@(Controlador.Editando is null ? "Crear cliente" : "Guardar cambios")</span>
+                    }
+                </button>
+            </div>
+        </div>
+    </Modal>
+}
+
+@if (Controlador.ClienteAEliminar is not null)
+{
+    <ModalConfirmacion Visible="true"
+                       Titulo="Eliminar cliente"
+                       Mensaje="@MensajeEliminar"
+                       Procesando="Controlador.Eliminando"
+                       Error="Controlador.ErrorEliminar"
+                       OnCancelar="CerrarEliminar"
+                       OnConfirmar="ConfirmarEliminarAsync" />
+}
+
+@code {
+    protected override async Task OnInitializedAsync()
+    {
+        await Controlador.CargarAsync();
+    }
+
+    private async Task BuscarPorCedulaAsync() => await Controlador.BuscarPorCedulaAsync();
+
+    private void CerrarModal() => Controlador.CerrarModal();
+
+    private async Task GuardarAsync() => await Controlador.GuardarAsync();
+
+    private string MensajeEliminar =>
+        Controlador.ClienteAEliminar is null
+            ? string.Empty
+            : $"¿Eliminar al cliente {Controlador.ClienteAEliminar.Nombre}? Esta acción no se puede deshacer.";
+
+    private void CerrarEliminar() => Controlador.CancelarEliminar();
+
+    private async Task ConfirmarEliminarAsync() => await Controlador.ConfirmarEliminarAsync();
+}

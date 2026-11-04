@@ -1,0 +1,19 @@
+@using CLIWEB_Facturacion.Vistas.Layout
+
+<Router AppAssembly="typeof(Program).Assembly">
+    <Found Context="routeData">
+        <RouteView RouteData="routeData" DefaultLayout="typeof(MainLayout)" />
+        <FocusOnNavigate RouteData="routeData" Selector="h1" />
+    </Found>
+    <NotFound>
+        <LayoutView Layout="typeof(MainLayout)">
+            <section class="pagina">
+                <div class="estado-vacio">
+                    <h1>Página no encontrada</h1>
+                    <p>La ruta que intentó abrir no existe en este cliente.</p>
+                    <a class="boton boton-morado" href="/">Volver al inicio</a>
+                </div>
+            </section>
+        </LayoutView>
+    </NotFound>
+</Router>

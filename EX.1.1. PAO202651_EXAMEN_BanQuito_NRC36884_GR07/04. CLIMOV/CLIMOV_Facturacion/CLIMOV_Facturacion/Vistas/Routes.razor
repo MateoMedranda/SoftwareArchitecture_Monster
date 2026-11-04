@@ -1,0 +1,19 @@
+@using CLIMOV_Facturacion.Vistas.Layout
+
+<Router AppAssembly="typeof(MauiProgram).Assembly">
+    <Found Context="routeData">
+        <RouteView RouteData="routeData" DefaultLayout="typeof(LayoutMovil)" />
+        <FocusOnNavigate RouteData="routeData" Selector="h1" />
+    </Found>
+    <NotFound>
+        <LayoutView Layout="typeof(LayoutMovil)">
+            <section class="pagina">
+                <div class="estado-vacio">
+                    <h1>Página no encontrada</h1>
+                    <p>La ruta que intentó abrir no existe en este cliente móvil.</p>
+                    <a class="boton boton-morado boton-bloque" href="/">Volver al inicio</a>
+                </div>
+            </section>
+        </LayoutView>
+    </NotFound>
+</Router>

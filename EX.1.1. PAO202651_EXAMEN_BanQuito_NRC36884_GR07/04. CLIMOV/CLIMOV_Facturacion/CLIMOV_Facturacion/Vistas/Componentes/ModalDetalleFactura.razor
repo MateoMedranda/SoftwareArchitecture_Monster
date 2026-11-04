@@ -1,0 +1,89 @@
+<Modal Visible="Visible" Titulo="Detalle de factura" Clase="modal-ancho" OnCerrar="OnCerrar">
+    @if (Factura is null)
+    {
+        <div class="estado-vacio estado-vacio-compacto">
+            <p>No hay una factura seleccionada.</p>
+        </div>
+    }
+    else
+    {
+        <div class="detalle-factura">
+            <div class="dato-detalle">
+                <span>Factura</span>
+                <strong>N° @Factura.NumFactura</strong>
+            </div>
+            <div class="dato-detalle">
+                <span>Fecha</span>
+                <strong>@Factura.Fecha.ToString("dd/MM/yyyy HH:mm")</strong>
+            </div>
+            <div class="dato-detalle">
+                <span>Cliente</span>
+                <strong>@Factura.NombreCliente</strong>
+            </div>
+            <div class="dato-detalle">
+                <span>Cédula</span>
+                <strong>@Factura.Cedula</strong>
+            </div>
+            <div class="dato-detalle">
+                <span>Tipo de pago</span>
+                <strong>@Factura.TipoPago</strong>
+            </div>
+            <div class="dato-detalle">
+                <span>Crédito</span>
+                <strong>@(Factura.NumCredito?.ToString() ?? "No aplica")</strong>
+            </div>
+        </div>
+
+        <div class="tabla-scroll">
+            <table class="tabla">
+                <thead>
+                    <tr>
+                        <th>Código</th>
+                        <th>Producto</th>
+                        <th>Precio</th>
+                        <th>Cantidad</th>
+                        <th>Subtotal</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Factura.Items.Count == 0)
+                    {
+                        <tr>
+                            <td colspan="5" class="celda-vacia">La factura no tiene ítems registrados.</td>
+                        </tr>
+                    }
+                    else
+                    {
+                        @foreach (var item in Factura.Items)
+                        {
+                            <tr>
+                                <td>@item.NumInventario</td>
+                                <td>@item.NombreProducto</td>
+                                <td>$ @item.Valor.ToString("N2")</td>
+                                <td>@item.Cantidad</td>
+                                <td>$ @((item.Valor * item.Cantidad).ToString("N2"))</td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        <div class="total-factura">
+            <span>Total</span>
+            <strong>$ @Factura.Valor.ToString("N2")</strong>
+        </div>
+    }
+
+    <div class="modal-acciones">
+        <button type="button" class="boton boton-secundario" @onclick="OnCerrar">Cerrar</button>
+    </div>
+</Modal>
+
+@code {
+    [Parameter] public bool Visible { get; set; }
+
+    [Parameter] public FacturaDTO? Factura { get; set; }
+
+    [Parameter] public EventCallback OnCerrar { get; set; }
+}
