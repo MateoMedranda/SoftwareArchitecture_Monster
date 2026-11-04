@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using CLICON_Facturacion.Config;
+using CLICON_Facturacion.Vistas;
 
 namespace CLICON_Facturacion
 {
@@ -10,6 +8,21 @@ namespace CLICON_Facturacion
     {
         static void Main(string[] args)
         {
+            Consola.Inicializar();
+            try
+            {
+                AppConfig.Load();
+                new MenuPrincipalVista().MostrarAsync().GetAwaiter().GetResult();
+            }
+            catch (Exception ex)
+            {
+                Consola.Error("Ocurrió un error inesperado: " + ex.Message);
+                Consola.Pausa();
+            }
+            finally
+            {
+                Consola.Restaurar();
+            }
         }
     }
 }

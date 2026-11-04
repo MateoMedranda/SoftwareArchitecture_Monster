@@ -40,14 +40,53 @@
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
     <Reference Include="System.Net.Http" />
+    <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Program.cs" />
+    <Compile Include="Config\AppConfig.cs" />
+    <Compile Include="Controladores\AmortizacionControlador.cs" />
+    <Compile Include="Controladores\ClienteControlador.cs" />
+    <Compile Include="Controladores\FacturaControlador.cs" />
+    <Compile Include="Controladores\ProductoControlador.cs" />
+    <Compile Include="Modelos\Amortizacion.cs" />
+    <Compile Include="Modelos\Cliente.cs" />
+    <Compile Include="Modelos\ClienteRequest.cs" />
+    <Compile Include="Modelos\Factura.cs" />
+    <Compile Include="Modelos\FacturaRequest.cs" />
+    <Compile Include="Modelos\Producto.cs" />
+    <Compile Include="Modelos\ProductoRequest.cs" />
+    <Compile Include="Modelos\RespuestaApi.cs" />
+    <Compile Include="Servicios\AmortizacionServicio.cs" />
+    <Compile Include="Servicios\ApiException.cs" />
+    <Compile Include="Servicios\ApiService.cs" />
+    <Compile Include="Servicios\ClienteServicio.cs" />
+    <Compile Include="Servicios\FacturaServicio.cs" />
+    <Compile Include="Servicios\ProductoServicio.cs" />
+    <Compile Include="Vistas\Consola.cs" />
+    <Compile Include="Vistas\LogoPixelArt.cs" />
+    <Compile Include="Vistas\TablaConsola.cs" />
+    <Compile Include="Vistas\MenuPrincipalVista.cs" />
+    <Compile Include="Vistas\FacturasVista.cs" />
+    <Compile Include="Vistas\ClientesVista.cs" />
+    <Compile Include="Vistas\CatalogoVista.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+    <None Include="Plantillas\**\*" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include=".development.env">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="resources\*.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="resources\*.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
