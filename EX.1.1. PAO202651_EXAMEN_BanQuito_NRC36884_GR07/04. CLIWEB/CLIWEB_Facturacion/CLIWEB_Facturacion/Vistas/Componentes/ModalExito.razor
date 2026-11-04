@@ -1,0 +1,74 @@
+<Modal Visible="Visible" Titulo="Factura registrada" Clase="modal-mediano" OnCerrar="OnCerrar">
+    @if (Factura is not null)
+    {
+        <div class="exito">
+            <div class="exito-icono" aria-hidden="true">&#10003;</div>
+            <h3>¡Factura N° @Factura.NumFactura creada correctamente!</h3>
+            <p>
+                Cliente: <strong>@Factura.NombreCliente</strong><br />
+                Total: <strong>$ @Factura.Valor.ToString("N2")</strong><br />
+                Pago: <strong>@Factura.TipoPago</strong>
+            </p>
+
+            @if (Factura.NumCredito is not null)
+            {
+                <div class="alerta alerta-info">
+                    Crédito de BanQuito N° <strong>@Factura.NumCredito</strong>.
+                    Puede consultar la tabla de amortización real desde este cliente.
+                </div>
+            }
+        </div>
+    }
+
+    @if (!string.IsNullOrWhiteSpace(Error))
+    {
+        <div class="alerta alerta-error">@Error</div>
+    }
+
+    <div class="modal-acciones modal-acciones-centradas">
+        <button type="button" class="boton boton-secundario" @onclick="VerDetalle" disabled="@Procesando">
+            Ver detalle
+        </button>
+        @if (Factura?.NumCredito is not null)
+        {
+            <button type="button" class="boton boton-azul" @onclick="VerAmortizacion" disabled="@Procesando">
+                Ver tabla de amortización
+            </button>
+        }
+        <button type="button" class="boton boton-morado" @onclick="OnCerrar" disabled="@Procesando">
+            Finalizar
+        </button>
+    </div>
+</Modal>
+
+@code {
+    [Parameter] public bool Visible { get; set; }
+
+    [Parameter] public FacturaDTO? Factura { get; set; }
+
+    [Parameter] public bool Procesando { get; set; }
+
+    [Parameter] public string? Error { get; set; }
+
+    [Parameter] public EventCallback OnCerrar { get; set; }
+
+    [Parameter] public EventCallback OnVerDetalle { get; set; }
+
+    [Parameter] public EventCallback OnVerAmortizacion { get; set; }
+
+    private async Task VerDetalle()
+    {
+        if (OnVerDetalle.HasDelegate)
+        {
+            await OnVerDetalle.InvokeAsync();
+        }
+    }
+
+    private async Task VerAmortizacion()
+    {
+        if (OnVerAmortizacion.HasDelegate)
+        {
+            await OnVerAmortizacion.InvokeAsync();
+        }
+    }
+}

@@ -1,0 +1,35 @@
+@inherits LayoutComponentBase
+
+<div class="aplicacion">
+    <header class="barra-superior">
+        <div class="contenedor barra-superior-contenido">
+            <a class="marca" href="/" aria-label="Ir al inicio">
+                <img src="img/logo.png" alt="Celulares Monster" class="marca-logo" />
+                <span class="marca-texto">
+                    <strong>Celulares Monster</strong>
+                    <small>Sistema de facturación</small>
+                </span>
+            </a>
+
+            <nav class="navegacion-principal" aria-label="Navegación principal">
+                <NavLink href="/" Match="NavLinkMatch.All">Inicio</NavLink>
+                <NavLink href="/facturas">Facturas</NavLink>
+                <NavLink href="/creditos">Créditos</NavLink>
+                <NavLink href="/clientes">Clientes</NavLink>
+                <NavLink href="/catalogo">Catálogo</NavLink>
+                <NavLink href="/compra" class="enlace-compra">+ Registrar compra</NavLink>
+            </nav>
+        </div>
+    </header>
+
+    <main class="contenido-principal">
+        @Body
+    </main>
+
+    <footer class="pie-pagina">
+        <div class="contenedor pie-pagina-contenido">
+            <span>Celulares Monster · Facturación</span>
+            <span>API: @AppConfig.ApiBaseUrl</span>
+        </div>
+    </footer>
+</div>

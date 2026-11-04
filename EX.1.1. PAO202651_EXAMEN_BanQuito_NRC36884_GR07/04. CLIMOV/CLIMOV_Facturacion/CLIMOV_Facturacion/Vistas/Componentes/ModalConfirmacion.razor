@@ -1,0 +1,49 @@
+<Modal Visible="Visible" Titulo="@Titulo" Clase="modal-angosto" OnCerrar="OnCancelar">
+    <p class="mensaje-confirmacion">@Mensaje</p>
+
+    @if (!string.IsNullOrWhiteSpace(Error))
+    {
+        <div class="alerta alerta-error">@Error</div>
+    }
+
+    <div class="modal-acciones">
+        <button type="button" class="boton boton-secundario" @onclick="OnCancelar" disabled="@Procesando">
+            Cancelar
+        </button>
+        <button type="button" class="boton boton-rojo" @onclick="Confirmar" disabled="@Procesando">
+            @if (Procesando)
+            {
+                <span class="cargador-boton"></span>
+                <span>Eliminando...</span>
+            }
+            else
+            {
+                <span>Eliminar</span>
+            }
+        </button>
+    </div>
+</Modal>
+
+@code {
+    [Parameter] public bool Visible { get; set; }
+
+    [Parameter] public string Titulo { get; set; } = "Confirmar eliminación";
+
+    [Parameter] public string Mensaje { get; set; } = string.Empty;
+
+    [Parameter] public bool Procesando { get; set; }
+
+    [Parameter] public string? Error { get; set; }
+
+    [Parameter] public EventCallback OnCancelar { get; set; }
+
+    [Parameter] public EventCallback OnConfirmar { get; set; }
+
+    private async Task Confirmar()
+    {
+        if (OnConfirmar.HasDelegate)
+        {
+            await OnConfirmar.InvokeAsync();
+        }
+    }
+}

@@ -1,0 +1,66 @@
+<Modal Visible="Visible" Titulo="Pago en efectivo" Clase="modal-mediano" OnCerrar="OnCerrar">
+    <div class="resumen-pago">
+        <div class="fila-resumen">
+            <span>Subtotal</span>
+            <strong>$ @Subtotal.ToString("N2")</strong>
+        </div>
+        <div class="fila-resumen fila-descuento">
+            <span>Descuento por efectivo (42 %)</span>
+            <strong>- $ @((Subtotal - Total).ToString("N2"))</strong>
+        </div>
+        <div class="fila-resumen fila-total">
+            <span>Total a pagar</span>
+            <strong>$ @Total.ToString("N2")</strong>
+        </div>
+    </div>
+
+    <p class="nota">
+        Este valor es una vista previa. El servidor recalcula el total definitivo al registrar la factura.
+    </p>
+
+    @if (!string.IsNullOrWhiteSpace(Error))
+    {
+        <div class="alerta alerta-error">@Error</div>
+    }
+
+    <div class="modal-acciones">
+        <button type="button" class="boton boton-secundario" @onclick="OnCerrar" disabled="@Procesando">
+            Cancelar
+        </button>
+        <button type="button" class="boton boton-verde" @onclick="Confirmar" disabled="@Procesando">
+            @if (Procesando)
+            {
+                <span class="cargador-boton"></span>
+                <span>Procesando...</span>
+            }
+            else
+            {
+                <span>Confirmar pago</span>
+            }
+        </button>
+    </div>
+</Modal>
+
+@code {
+    [Parameter] public bool Visible { get; set; }
+
+    [Parameter] public decimal Subtotal { get; set; }
+
+    [Parameter] public decimal Total { get; set; }
+
+    [Parameter] public bool Procesando { get; set; }
+
+    [Parameter] public string? Error { get; set; }
+
+    [Parameter] public EventCallback OnCerrar { get; set; }
+
+    [Parameter] public EventCallback OnConfirmar { get; set; }
+
+    private async Task Confirmar()
+    {
+        if (OnConfirmar.HasDelegate)
+        {
+            await OnConfirmar.InvokeAsync();
+        }
+    }
+}

@@ -1,0 +1,149 @@
+@page "/catalogo"
+@inject CatalogoControlador Controlador
+
+<PageTitle>Catálogo - Celulares Monster Móvil</PageTitle>
+
+<section class="pagina pagina-movil">
+    <header class="cabecera-movil">
+        <div>
+            <span class="etiqueta etiqueta-azul">Mantenimiento</span>
+            <h1>Catálogo</h1>
+            <p>@Controlador.Productos.Count producto(s) disponible(s).</p>
+        </div>
+        <button type="button" class="boton-circular boton-azul" aria-label="Agregar producto" @onclick="Controlador.AbrirCrear">
+            +
+        </button>
+    </header>
+
+    @if (!string.IsNullOrWhiteSpace(Controlador.Mensaje))
+    {
+        <div class="alerta alerta-exito">@Controlador.Mensaje</div>
+    }
+
+    @if (!string.IsNullOrWhiteSpace(Controlador.Error))
+    {
+        <div class="alerta alerta-error">@Controlador.Error</div>
+    }
+
+    <div class="buscador-movil">
+        <span aria-hidden="true">&#128269;</span>
+        <input placeholder="Buscar producto o código" @bind="Controlador.Filtro" @bind:event="oninput" />
+    </div>
+
+    @if (Controlador.Cargando)
+    {
+        <div class="cargando">
+            <span class="cargador"></span>
+            <span>Cargando catálogo...</span>
+        </div>
+    }
+    else if (!Controlador.ProductosFiltrados.Any())
+    {
+        <div class="estado-vacio">
+            <h2>No hay productos</h2>
+            <p>Registre un producto o cambie el filtro.</p>
+            <button type="button" class="boton boton-azul boton-bloque" @onclick="Controlador.AbrirCrear">
+                + Agregar producto
+            </button>
+        </div>
+    }
+    else
+    {
+        <div class="lista-tarjetas">
+            @foreach (var producto in Controlador.ProductosFiltrados)
+            {
+                <article class="tarjeta-entidad">
+                    <div class="avatar-entidad avatar-azul">@producto.NumInventario</div>
+                    <div class="contenido-entidad">
+                        <strong>@producto.Nombre</strong>
+                        <span class="dato-linea texto-secundario">Código: @producto.NumInventario</span>
+                        <span class="precio-entidad">$ @producto.Precio.ToString("N2")</span>
+                    </div>
+                    <div class="acciones-entidad">
+                        <button type="button" class="boton-icono" title="Editar" @onclick="() => Controlador.AbrirEditar(producto)">
+                            &#9998;
+                        </button>
+                        <button type="button" class="boton-icono boton-icono-peligro" title="Eliminar" @onclick="() => Controlador.PedirEliminar(producto)">
+                            &#128465;
+                        </button>
+                    </div>
+                </article>
+            }
+        </div>
+    }
+</section>
+
+@if (Controlador.ModalAbierto)
+{
+    <Modal Visible="Controlador.ModalAbierto"
+           Titulo="@(Controlador.Editando is null ? "Agregar producto" : "Editar producto")"
+           OnCerrar="CerrarModal">
+        <div class="formulario">
+            <div class="grupo-campo">
+                <label for="movil-producto-nombre">Nombre del producto</label>
+                <input id="movil-producto-nombre" class="campo" maxlength="100"
+                       placeholder="Ej. Celular Monster X" @bind="Controlador.Nombre" />
+            </div>
+
+            <div class="grupo-campo">
+                <label for="movil-producto-precio">Precio</label>
+                <input id="movil-producto-precio" class="campo" type="text"
+                       inputmode="decimal" placeholder="Ej. 600,00" @bind="Controlador.PrecioTexto" />
+                <small>El precio debe ser mayor que cero. Puede usar coma o punto decimal.</small>
+            </div>
+
+            @if (!string.IsNullOrWhiteSpace(Controlador.ErrorModal))
+            {
+                <div class="alerta alerta-error">@Controlador.ErrorModal</div>
+            }
+
+            <div class="modal-acciones">
+                <button type="button" class="boton boton-secundario" @onclick="CerrarModal" disabled="@Controlador.Guardando">
+                    Cancelar
+                </button>
+                <button type="button" class="boton boton-azul" @onclick="GuardarAsync" disabled="@Controlador.Guardando">
+                    @if (Controlador.Guardando)
+                    {
+                        <span class="cargador-boton"></span>
+                        <span>Guardando...</span>
+                    }
+                    else
+                    {
+                        <span>@(Controlador.Editando is null ? "Crear producto" : "Guardar cambios")</span>
+                    }
+                </button>
+            </div>
+        </div>
+    </Modal>
+}
+
+@if (Controlador.ProductoAEliminar is not null)
+{
+    <ModalConfirmacion Visible="true"
+                       Titulo="Eliminar producto"
+                       Mensaje="@MensajeEliminar"
+                       Procesando="Controlador.Eliminando"
+                       Error="Controlador.ErrorEliminar"
+                       OnCancelar="CerrarEliminar"
+                       OnConfirmar="ConfirmarEliminarAsync" />
+}
+
+@code {
+    protected override async Task OnInitializedAsync()
+    {
+        await Controlador.CargarAsync();
+    }
+
+    private void CerrarModal() => Controlador.CerrarModal();
+
+    private async Task GuardarAsync() => await Controlador.GuardarAsync();
+
+    private string MensajeEliminar =>
+        Controlador.ProductoAEliminar is null
+            ? string.Empty
+            : $"¿Eliminar el producto {Controlador.ProductoAEliminar.Nombre}? Si aparece en facturas, el servidor rechazará la operación.";
+
+    private void CerrarEliminar() => Controlador.CancelarEliminar();
+
+    private async Task ConfirmarEliminarAsync() => await Controlador.ConfirmarEliminarAsync();
+}

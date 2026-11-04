@@ -2,6 +2,7 @@
 bin/
 obj/
 artifacts/Facturacion/
+/.climov-obj/
 
 # Archivos de usuario de Visual Studio
 *.user

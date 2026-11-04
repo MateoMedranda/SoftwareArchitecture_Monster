@@ -1,0 +1,173 @@
+@page "/creditos"
+@inject CreditosControlador Controlador
+
+<PageTitle>Créditos - Celulares Monster</PageTitle>
+
+<section class="pagina">
+    <header class="cabecera-pagina">
+        <div>
+            <span class="etiqueta etiqueta-azul">Créditos</span>
+            <h1>Créditos de la tienda</h1>
+            <p>Seleccione un crédito y consulte su tabla de amortización con el estado de pago de cada cuota.</p>
+        </div>
+        <div class="acciones-cabecera">
+            <a class="boton boton-secundario" href="/facturas">Ver facturas</a>
+            <a class="boton boton-morado" href="/compra">+ Registrar compra</a>
+        </div>
+    </header>
+
+    @if (!string.IsNullOrWhiteSpace(Controlador.Error))
+    {
+        <div class="alerta alerta-error">@Controlador.Error</div>
+    }
+
+    @if (!string.IsNullOrWhiteSpace(Controlador.Mensaje))
+    {
+        <div class="alerta alerta-info">@Controlador.Mensaje</div>
+    }
+
+    <div class="panel panel-creditos">
+        <div class="panel-cabecera">
+            <div>
+                <h2>Buscar créditos</h2>
+                <p class="texto-secundario">Filtre por cédula o elija un crédito de la lista.</p>
+            </div>
+        </div>
+
+        <div class="fila-creditos">
+            <div class="busqueda-cedula">
+                <input class="campo" maxlength="10" inputmode="numeric" placeholder="Cédula del cliente"
+                       @bind="Controlador.FiltroCedula" />
+                <button type="button" class="boton boton-azul"
+                        @onclick="BuscarAsync" disabled="@Controlador.Cargando">
+                    Buscar
+                </button>
+                <button type="button" class="boton boton-secundario"
+                        @onclick="LimpiarAsync" disabled="@Controlador.Cargando">
+                    Limpiar
+                </button>
+            </div>
+
+            <div class="selector-credito">
+                <label for="credito-seleccionado">Crédito</label>
+                <select id="credito-seleccionado" class="campo"
+                        @bind="NumeroSeleccionado" @bind:after="SeleccionarAsync"
+                        disabled="@(Controlador.Creditos.Count == 0 || Controlador.CargandoAmortizacion)">
+                    <option value="0">Seleccione un crédito...</option>
+                    @foreach (var credito in Controlador.Creditos)
+                    {
+                        <option value="@credito.NumCredito">@credito.Etiqueta</option>
+                    }
+                </select>
+            </div>
+        </div>
+    </div>
+
+    @if (!string.IsNullOrWhiteSpace(Controlador.ErrorAmortizacion))
+    {
+        <div class="alerta alerta-error">@Controlador.ErrorAmortizacion</div>
+    }
+
+    @if (Controlador.Cargando)
+    {
+        <div class="cargando">
+            <span class="cargador"></span>
+            <span>Cargando créditos...</span>
+        </div>
+    }
+    else if (Controlador.Creditos.Count == 0)
+    {
+        <div class="estado-vacio">
+            <h2>No hay créditos para mostrar</h2>
+            <p>Registre una compra a crédito o busque el crédito de un cliente por cédula.</p>
+            <a class="boton boton-morado" href="/compra">+ Registrar compra</a>
+        </div>
+    }
+    else if (Controlador.CargandoAmortizacion)
+    {
+        <div class="cargando">
+            <span class="cargador"></span>
+            <span>Consultando la tabla de amortización...</span>
+        </div>
+    }
+    else if (Controlador.Amortizacion is { } amortizacion)
+    {
+        <div class="resumen-credito">
+            <div class="dato-resumen">
+                <span>Crédito</span>
+                <strong>N° @amortizacion.NumCredito</strong>
+            </div>
+            <div class="dato-resumen">
+                <span>Origen</span>
+                <strong>@(Controlador.OpcionSeleccionada?.Origen ?? "—")</strong>
+            </div>
+            <div class="dato-resumen">
+                <span>Cuotas</span>
+                <strong>@amortizacion.Cuotas.Count</strong>
+            </div>
+            <div class="dato-resumen dato-resumen-verde">
+                <span>Pagadas</span>
+                <strong>@Controlador.CuotasPagadas</strong>
+            </div>
+            <div class="dato-resumen dato-resumen-amarillo">
+                <span>Pendientes</span>
+                <strong>@Controlador.CuotasPendientes</strong>
+            </div>
+            <div class="dato-resumen">
+                <span>Total pagado</span>
+                <strong>$ @Controlador.TotalPagado.ToString("N2")</strong>
+            </div>
+            <div class="dato-resumen">
+                <span>Total por pagar</span>
+                <strong>$ @Controlador.TotalPendiente.ToString("N2")</strong>
+            </div>
+        </div>
+
+        @if (Controlador.ProximaCuota is { } proxima)
+        {
+            <div class="alerta alerta-info">
+                Próxima cuota: N° @proxima.NumCuota por
+                <strong>$ @proxima.ValorCuota.ToString("N2")</strong>,
+                con vencimiento @proxima.FechaPago.ToString("dd/MM/yyyy").
+            </div>
+        }
+        else if (amortizacion.Cuotas.Count > 0)
+        {
+            <div class="alerta alerta-exito">Todas las cuotas del crédito están pagadas.</div>
+        }
+
+        <div class="panel panel-tabla-credito">
+            <TablaAmortizacion Amortizacion="amortizacion" />
+        </div>
+    }
+    else if (string.IsNullOrWhiteSpace(Controlador.ErrorAmortizacion))
+    {
+        <div class="estado-vacio estado-vacio-compacto">
+            <p>Seleccione un crédito para ver su tabla de amortización.</p>
+        </div>
+    }
+</section>
+
+@code {
+    private int NumeroSeleccionado { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await Controlador.CargarAsync();
+        NumeroSeleccionado = Controlador.CreditoSeleccionado;
+    }
+
+    private async Task BuscarAsync()
+    {
+        await Controlador.BuscarAsync();
+        NumeroSeleccionado = Controlador.CreditoSeleccionado;
+    }
+
+    private async Task LimpiarAsync()
+    {
+        await Controlador.LimpiarAsync();
+        NumeroSeleccionado = 0;
+    }
+
+    private async Task SeleccionarAsync() => await Controlador.SeleccionarAsync(NumeroSeleccionado);
+}

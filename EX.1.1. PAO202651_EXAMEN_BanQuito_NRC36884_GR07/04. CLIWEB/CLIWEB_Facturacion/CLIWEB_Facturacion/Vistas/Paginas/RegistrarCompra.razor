@@ -1,0 +1,284 @@
+@page "/compra"
+@inject CompraControlador Controlador
+
+<PageTitle>Registrar compra - Celulares Monster</PageTitle>
+
+<section class="pagina">
+    <header class="cabecera-pagina">
+        <div>
+            <span class="etiqueta etiqueta-morada">Facturación</span>
+            <h1>Registrar compra</h1>
+            <p>Verifique al cliente, agregue productos y elija el método de pago.</p>
+        </div>
+        <a class="boton boton-secundario" href="/facturas">Ver facturas</a>
+    </header>
+
+    @if (!string.IsNullOrWhiteSpace(Controlador.Mensaje))
+    {
+        <div class="alerta alerta-exito">@Controlador.Mensaje</div>
+    }
+
+    @if (!string.IsNullOrWhiteSpace(Controlador.Error) &&
+         !Controlador.ModalEfectivo && !Controlador.ModalCredito &&
+         !Controlador.ModalAmortizacion && !Controlador.ModalExito)
+    {
+        <div class="alerta alerta-error">@Controlador.Error</div>
+    }
+
+    <div class="rejilla-compra">
+        <div class="columna-compra">
+            <div class="panel">
+                <div class="panel-cabecera">
+                    <h2>1. Cliente</h2>
+                    <span class="etiqueta etiqueta-gris">Obligatorio</span>
+                </div>
+
+                <div class="fila-cliente">
+                    <div class="grupo-campo grupo-crece">
+                        <label for="compra-cedula">Cédula del cliente</label>
+                        <input id="compra-cedula" class="campo" maxlength="10" inputmode="numeric"
+                               placeholder="Ej. 0102030405"
+                               @bind="Controlador.Cedula"
+                               @bind:event="oninput"
+                               @onblur="VerificarClienteSiCompleta"
+                               @onkeydown="AlPresionarEnter" />
+                    </div>
+                    <button type="button" class="boton boton-azul boton-verificar"
+                            @onclick="BuscarClienteAsync">
+                        Verificar
+                    </button>
+                </div>
+
+                @if (Controlador.Facturacion.Cliente is not null)
+                {
+                    <div class="cliente-seleccionado">
+                        <span class="cliente-icono" aria-hidden="true">&#10003;</span>
+                        <div>
+                            <strong>@Controlador.Facturacion.Cliente.Nombre</strong>
+                            <small>Cédula @Controlador.Facturacion.Cliente.Cedula · Cliente verificado</small>
+                        </div>
+                    </div>
+                }
+                else
+                {
+                    <p class="texto-ayuda">La cédula debe existir en el sistema antes de agregar productos.</p>
+                }
+            </div>
+
+            <div class="panel">
+                <div class="panel-cabecera">
+                    <h2>2. Productos</h2>
+                    <span class="etiqueta etiqueta-gris">@Controlador.Facturacion.Carrito.Count ítem(s)</span>
+                </div>
+
+                @if (Controlador.Cargando)
+                {
+                    <div class="cargando">
+                        <span class="cargador"></span>
+                        <span>Cargando catálogo...</span>
+                    </div>
+                }
+                else if (Controlador.Productos.Count == 0)
+                {
+                    <div class="estado-vacio estado-vacio-compacto">
+                        <p>No hay productos en el catálogo. Registre uno antes de facturar.</p>
+                        <a class="boton boton-azul" href="/catalogo">Ir al catálogo</a>
+                    </div>
+                }
+                else
+                {
+                    <div class="fila-producto">
+                        <div class="grupo-campo grupo-crece">
+                            <label for="compra-producto">Producto</label>
+                            <select id="compra-producto" class="campo" @bind="Controlador.NumInventario">
+                                @foreach (var producto in Controlador.Productos)
+                                {
+                                    <option value="@producto.NumInventario">
+                                        @producto.Nombre — $ @producto.Precio.ToString("N2")
+                                    </option>
+                                }
+                            </select>
+                        </div>
+
+                        <div class="grupo-campo grupo-cantidad">
+                            <label for="compra-cantidad">Cantidad</label>
+                            <input id="compra-cantidad" class="campo" type="number" min="1" max="999"
+                                   inputmode="numeric" @bind="Controlador.Cantidad" />
+                        </div>
+
+                        <button type="button" class="boton boton-morado boton-agregar"
+                                @onclick="Controlador.AgregarProducto">
+                            + Agregar
+                        </button>
+                    </div>
+                }
+
+                <div class="tabla-contenedor tabla-carrito">
+                    <table class="tabla">
+                        <thead>
+                            <tr>
+                                <th class="columna-codigo">Código</th>
+                                <th>Producto</th>
+                                <th class="columna-numero">Precio</th>
+                                <th class="columna-numero">Cantidad</th>
+                                <th class="columna-numero">Subtotal</th>
+                                <th class="columna-acciones"></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (Controlador.Facturacion.Carrito.Count == 0)
+                            {
+                                <tr>
+                                    <td colspan="6" class="celda-vacia">
+                                        El carrito está vacío. Agregue al menos un producto.
+                                    </td>
+                                </tr>
+                            }
+                            else
+                            {
+                                @foreach (var item in Controlador.Facturacion.Carrito)
+                                {
+                                    <tr>
+                                        <td class="columna-codigo">@item.Producto.NumInventario</td>
+                                        <td><strong>@item.Producto.Nombre</strong></td>
+                                        <td class="columna-numero">$ @item.Producto.Precio.ToString("N2")</td>
+                                        <td class="columna-numero">@item.Cantidad</td>
+                                        <td class="columna-numero"><strong>$ @item.Subtotal.ToString("N2")</strong></td>
+                                        <td class="columna-acciones">
+                                            <button type="button" class="boton-tabla boton-tabla-peligro"
+                                                    @onclick="() => Controlador.QuitarProducto(item.Producto.NumInventario)">
+                                                Quitar
+                                            </button>
+                                        </td>
+                                    </tr>
+                                }
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <aside class="columna-resumen">
+            <div class="panel panel-resumen">
+                <div class="panel-cabecera">
+                    <h2>3. Resumen y pago</h2>
+                </div>
+
+                <div class="fila-resumen">
+                    <span>Subtotal</span>
+                    <strong>$ @Controlador.Facturacion.Subtotal.ToString("N2")</strong>
+                </div>
+
+                <div class="fila-resumen fila-descuento">
+                    <span>Efectivo (42 % desc.)</span>
+                    <strong>$ @Controlador.Facturacion.TotalEfectivo.ToString("N2")</strong>
+                </div>
+
+                <div class="fila-resumen fila-total">
+                    <span>Crédito directo</span>
+                    <strong>$ @Controlador.Facturacion.Subtotal.ToString("N2")</strong>
+                </div>
+
+                <div class="sello-banquito sello-banquito-compra">
+                    <img src="img/logo_banquito.jpg" alt="BanQuito" />
+                    <span>El crédito se valida en línea con BanQuito.</span>
+                </div>
+
+                @if (!PuedePagar)
+                {
+                    <p class="texto-ayuda">
+                        Para habilitar los pagos debe verificar un cliente y agregar al menos un producto.
+                    </p>
+                }
+
+                <div class="acciones-pago">
+                    <button type="button" class="boton boton-verde boton-pago"
+                            @onclick="Controlador.AbrirEfectivo"
+                            disabled="@(!PuedePagar || Controlador.Procesando)">
+                        <span aria-hidden="true">$</span>
+                        <span>Pago en efectivo</span>
+                    </button>
+                    <button type="button" class="boton boton-azul boton-pago"
+                            @onclick="Controlador.AbrirCredito"
+                            disabled="@(!PuedePagar || Controlador.Procesando)">
+                        <span aria-hidden="true">&#128179;</span>
+                        <span>Crédito directo</span>
+                    </button>
+                </div>
+
+                <a class="enlace-secundario" href="/facturas">Consultar facturas registradas</a>
+            </div>
+        </aside>
+    </div>
+</section>
+
+<ModalPagoEfectivo Visible="Controlador.ModalEfectivo"
+                    Subtotal="Controlador.Facturacion.Subtotal"
+                    Total="Controlador.Facturacion.TotalEfectivo"
+                    Procesando="Controlador.Procesando"
+                    Error="Controlador.Error"
+                    OnCerrar="Controlador.CerrarEfectivo"
+                    OnConfirmar="ConfirmarEfectivoAsync" />
+
+<ModalCredito Visible="Controlador.ModalCredito"
+              Total="Controlador.Facturacion.Subtotal"
+              Procesando="Controlador.Procesando"
+              Error="Controlador.Error"
+              OnCerrar="Controlador.CerrarCredito"
+              OnConfirmar="ConfirmarCreditoAsync" />
+
+<ModalExito Visible="Controlador.ModalExito"
+            Factura="Controlador.FacturaCreada"
+            Procesando="Controlador.Procesando"
+            Error="Controlador.Error"
+            OnCerrar="Controlador.CerrarExito"
+            OnVerDetalle="Controlador.VerDetalleFactura"
+            OnVerAmortizacion="VerAmortizacionAsync" />
+
+<ModalDetalleFactura Visible="Controlador.ModalDetalleFactura"
+                     Factura="Controlador.FacturaCreada"
+                     OnCerrar="Controlador.CerrarDetalleFactura" />
+
+<ModalAmortizacion Visible="Controlador.ModalAmortizacion"
+                   Cargando="Controlador.Procesando"
+                   Error="Controlador.Error"
+                   Amortizacion="Controlador.Amortizacion"
+                   OnCerrar="Controlador.CerrarAmortizacion" />
+
+@code {
+    private bool PuedePagar =>
+        Controlador.Facturacion.Cliente is not null &&
+        Controlador.Facturacion.Carrito.Count > 0;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await Controlador.CargarAsync();
+    }
+
+    private async Task BuscarClienteAsync() => await Controlador.BuscarClienteAsync();
+
+    private async Task VerificarClienteSiCompleta()
+    {
+        if (Controlador.Cedula.Trim().Length == 10 &&
+            Controlador.Facturacion.Cliente is null &&
+            !Controlador.Cargando)
+        {
+            await Controlador.BuscarClienteAsync();
+        }
+    }
+
+    private async Task AlPresionarEnter(KeyboardEventArgs args)
+    {
+        if (args.Key == "Enter")
+        {
+            await Controlador.BuscarClienteAsync();
+        }
+    }
+
+    private async Task ConfirmarEfectivoAsync() => await Controlador.ConfirmarEfectivoAsync();
+
+    private async Task ConfirmarCreditoAsync(int cuotas) => await Controlador.ConfirmarCreditoAsync(cuotas);
+
+    private async Task VerAmortizacionAsync() => await Controlador.VerAmortizacionAsync();
+}

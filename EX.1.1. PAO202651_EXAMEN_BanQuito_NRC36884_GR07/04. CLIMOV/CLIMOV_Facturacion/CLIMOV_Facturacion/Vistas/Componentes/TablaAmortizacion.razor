@@ -1,0 +1,48 @@
+@if (Amortizacion is { } amortizacion)
+{
+    <div class="encabezado-tabla">
+        <span>Crédito N° <strong>@amortizacion.NumCredito</strong></span>
+        <span>@amortizacion.Cuotas.Count cuota(s)</span>
+    </div>
+
+    <div class="lista-cuotas-movil">
+        @foreach (var cuota in amortizacion.Cuotas)
+        {
+            <article class="cuota-movil @(cuota.Pagada ? "cuota-movil-pagada" : "cuota-movil-pendiente")">
+                <div class="cabecera-cuota-movil">
+                    <strong>Cuota @cuota.NumCuota</strong>
+                    <span class="etiqueta @(cuota.Pagada ? "etiqueta-verde" : "etiqueta-amarilla")">
+                        @(cuota.Pagada ? "Pagada" : "Pendiente")
+                    </span>
+                </div>
+
+                <div class="datos-cuota-movil">
+                    <div>
+                        <span>Valor cuota</span>
+                        <strong>$ @cuota.ValorCuota.ToString("N2")</strong>
+                    </div>
+                    <div>
+                        <span>Interés pagado</span>
+                        <strong>$ @cuota.InteresPagado.ToString("N2")</strong>
+                    </div>
+                    <div>
+                        <span>Capital pagado</span>
+                        <strong>$ @cuota.CapitalPagado.ToString("N2")</strong>
+                    </div>
+                    <div>
+                        <span>Saldo</span>
+                        <strong>$ @cuota.Saldo.ToString("N2")</strong>
+                    </div>
+                    <div class="dato-cuota-ancho">
+                        <span>Fecha de pago</span>
+                        <strong>@cuota.FechaPago.ToString("dd/MM/yyyy")</strong>
+                    </div>
+                </div>
+            </article>
+        }
+    </div>
+}
+
+@code {
+    [Parameter] public AmortizacionDTO? Amortizacion { get; set; }
+}

@@ -1,0 +1,7 @@
+<Project>
+  <PropertyGroup>
+    <!-- Keep Android's generated resource paths short on Windows. -->
+    <BaseIntermediateOutputPath>$([System.IO.Path]::GetFullPath('$(TEMP)\climov-obj\'))</BaseIntermediateOutputPath>
+    <DefaultItemExcludes>$(DefaultItemExcludes);obj\**</DefaultItemExcludes>
+  </PropertyGroup>
+</Project>

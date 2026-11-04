@@ -1,0 +1,84 @@
+@page "/"
+
+<PageTitle>Inicio - Celulares Monster</PageTitle>
+
+<section class="pagina pagina-inicio">
+    <div class="portada">
+        <div class="portada-texto">
+            <span class="etiqueta etiqueta-morada">Facturación</span>
+            <h1>Bienvenido a Celulares Monster</h1>
+            <p>
+                Administre clientes y catálogo, registre compras en efectivo o a crédito y consulte
+                la tabla de amortización real otorgada por BanQuito.
+            </p>
+            <div class="portada-acciones">
+                <a class="boton boton-morado boton-grande" href="/compra">+ Registrar compra</a>
+                <a class="boton boton-secundario boton-grande" href="/facturas">Ver facturas</a>
+            </div>
+        </div>
+        <img src="img/logo.png" alt="Celulares Monster" class="portada-logo" />
+    </div>
+
+    <h2 class="titulo-seccion">Módulos del sistema</h2>
+
+    <div class="tarjetas-inicio">
+        <a class="tarjeta-inicio tarjeta-verde" href="/facturas">
+            <div class="tarjeta-icono">
+                <img src="img/bill.png" alt="" />
+            </div>
+            <div class="tarjeta-contenido">
+                <h3>Facturas</h3>
+                <p>Consulte el historial, el detalle de cada compra y las tablas de amortización.</p>
+                <span class="tarjeta-enlace">Abrir módulo &rarr;</span>
+            </div>
+        </a>
+
+        <a class="tarjeta-inicio tarjeta-morada" href="/creditos">
+            <div class="tarjeta-icono">
+                <img src="img/logo_banquito.jpg" alt="" />
+            </div>
+            <div class="tarjeta-contenido">
+                <h3>Créditos</h3>
+                <p>Elija un crédito de la tienda y revise su tabla de amortización con el estado de pago.</p>
+                <span class="tarjeta-enlace">Abrir módulo &rarr;</span>
+            </div>
+        </a>
+
+        <a class="tarjeta-inicio tarjeta-amarilla" href="/clientes">
+            <div class="tarjeta-icono">
+                <img src="img/person.png" alt="" />
+            </div>
+            <div class="tarjeta-contenido">
+                <h3>Clientes</h3>
+                <p>Registre, edite, busque y elimine los clientes de la facturación.</p>
+                <span class="tarjeta-enlace">Abrir módulo &rarr;</span>
+            </div>
+        </a>
+
+        <a class="tarjeta-inicio tarjeta-azul" href="/catalogo">
+            <div class="tarjeta-icono">
+                <img src="img/phone.png" alt="" />
+            </div>
+            <div class="tarjeta-contenido">
+                <h3>Catálogo</h3>
+                <p>Gestione los productos disponibles, sus precios y referencias.</p>
+                <span class="tarjeta-enlace">Abrir módulo &rarr;</span>
+            </div>
+        </a>
+    </div>
+
+    <div class="panel-informativo">
+        <div>
+            <h3>Compra en efectivo</h3>
+            <p>El cliente recibe un descuento del 42 % sobre el subtotal. El total definitivo lo calcula el servidor.</p>
+        </div>
+        <div>
+            <h3>Crédito directo</h3>
+            <p>El API valida la elegibilidad y el monto máximo con BanQuito. Si se aprueba, se muestra la tabla real.</p>
+        </div>
+        <div>
+            <h3>API de facturación</h3>
+            <p>Ambos clientes consumen únicamente <strong>@AppConfig.ApiBaseUrl</strong>.</p>
+        </div>
+    </div>
+</section>

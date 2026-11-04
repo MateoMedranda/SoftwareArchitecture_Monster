@@ -1,0 +1,85 @@
+<Modal Visible="Visible" Titulo="Crédito directo" Clase="modal-mediano" OnCerrar="OnCerrar">
+    <div class="monto-credito">
+        <span>Monto de la factura</span>
+        <strong>$ @Total.ToString("N2")</strong>
+    </div>
+
+    <div class="grupo-campo">
+        <label for="cuotas-credito">Número de cuotas</label>
+        <select id="cuotas-credito" class="campo" @bind="Cuotas">
+            @for (var cuota = 3; cuota <= 18; cuota++)
+            {
+                <option value="@cuota">@cuota meses</option>
+            }
+        </select>
+        <small>El plazo permitido por BanQuito es de 3 a 18 meses.</small>
+    </div>
+
+    <div class="sello-banquito">
+        <img src="img/logo_banquito.jpg" alt="BanQuito" />
+        <span>El crédito es evaluado y otorgado por BanQuito a través del API de facturación.</span>
+    </div>
+
+    @if (!string.IsNullOrWhiteSpace(Error))
+    {
+        <div class="alerta alerta-error">@Error</div>
+    }
+
+    <div class="modal-acciones">
+        <button type="button" class="boton boton-secundario" @onclick="OnCerrar" disabled="@Procesando">
+            Cancelar
+        </button>
+        <button type="button" class="boton boton-azul" @onclick="Confirmar" disabled="@Procesando">
+            @if (Procesando)
+            {
+                <span class="cargador-boton"></span>
+                <span>Solicitando crédito...</span>
+            }
+            else
+            {
+                <span>Solicitar crédito</span>
+            }
+        </button>
+    </div>
+</Modal>
+
+@code {
+    [Parameter] public bool Visible { get; set; }
+
+    [Parameter] public decimal Total { get; set; }
+
+    [Parameter] public bool Procesando { get; set; }
+
+    [Parameter] public string? Error { get; set; }
+
+    [Parameter] public EventCallback OnCerrar { get; set; }
+
+    [Parameter] public EventCallback<int> OnConfirmar { get; set; }
+
+    private int _cuotas = 12;
+    private bool _visibleAnterior;
+
+    public int Cuotas
+    {
+        get => _cuotas;
+        set => _cuotas = value is >= 3 and <= 18 ? value : 12;
+    }
+
+    protected override void OnParametersSet()
+    {
+        if (Visible && !_visibleAnterior)
+        {
+            Cuotas = 12;
+        }
+
+        _visibleAnterior = Visible;
+    }
+
+    private async Task Confirmar()
+    {
+        if (OnConfirmar.HasDelegate)
+        {
+            await OnConfirmar.InvokeAsync(Cuotas);
+        }
+    }
+}

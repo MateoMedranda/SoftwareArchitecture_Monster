@@ -1,0 +1,45 @@
+@if (Amortizacion is { } amortizacion)
+{
+    <div class="encabezado-tabla">
+        <span>Crédito N° <strong>@amortizacion.NumCredito</strong></span>
+        <span>@amortizacion.Cuotas.Count cuota(s)</span>
+    </div>
+
+    <div class="tabla-scroll">
+        <table class="tabla tabla-amortizacion">
+            <thead>
+                <tr>
+                    <th># Cuota</th>
+                    <th>Valor cuota</th>
+                    <th>Interés pagado</th>
+                    <th>Capital pagado</th>
+                    <th>Saldo</th>
+                    <th>Fecha de pago</th>
+                    <th>Estado</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var cuota in amortizacion.Cuotas)
+                {
+                    <tr class="@(cuota.Pagada ? "fila-cuota-pagada" : "fila-cuota-pendiente")">
+                        <td>@cuota.NumCuota</td>
+                        <td>$ @cuota.ValorCuota.ToString("N2")</td>
+                        <td>$ @cuota.InteresPagado.ToString("N2")</td>
+                        <td>$ @cuota.CapitalPagado.ToString("N2")</td>
+                        <td>$ @cuota.Saldo.ToString("N2")</td>
+                        <td>@cuota.FechaPago.ToString("dd/MM/yyyy")</td>
+                        <td>
+                            <span class="etiqueta @(cuota.Pagada ? "etiqueta-verde" : "etiqueta-amarilla")">
+                                @(cuota.Pagada ? "Pagada" : "Pendiente")
+                            </span>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}
+
+@code {
+    [Parameter] public AmortizacionDTO? Amortizacion { get; set; }
+}

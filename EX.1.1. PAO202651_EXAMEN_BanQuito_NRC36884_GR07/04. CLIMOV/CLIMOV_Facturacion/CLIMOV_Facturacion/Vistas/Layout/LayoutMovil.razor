@@ -1,0 +1,45 @@
+@inherits LayoutComponentBase
+
+<div class="aplicacion-movil">
+    <header class="barra-movil">
+        <a class="marca-movil" href="/">
+            <img src="img/logo.png" alt="Celulares Monster" />
+            <span>
+                <strong>Celulares Monster</strong>
+                <small>Facturación móvil</small>
+            </span>
+        </a>
+        <span class="conexion-api" title="@AppConfig.ApiBaseUrl">API</span>
+    </header>
+
+    <main class="contenido-movil">
+        @Body
+    </main>
+
+    <nav class="navegacion-inferior" aria-label="Navegación principal">
+        <NavLink href="/" Match="NavLinkMatch.All">
+            <span class="nav-icono" aria-hidden="true">&#8962;</span>
+            <span>Inicio</span>
+        </NavLink>
+        <NavLink href="/facturas">
+            <span class="nav-icono" aria-hidden="true">&#128196;</span>
+            <span>Facturas</span>
+        </NavLink>
+        <NavLink href="/creditos">
+            <span class="nav-icono" aria-hidden="true">&#128179;</span>
+            <span>Créditos</span>
+        </NavLink>
+        <NavLink href="/compra" class="nav-central">
+            <span class="nav-icono" aria-hidden="true">+</span>
+            <span>Compra</span>
+        </NavLink>
+        <NavLink href="/clientes">
+            <span class="nav-icono" aria-hidden="true">&#128100;</span>
+            <span>Clientes</span>
+        </NavLink>
+        <NavLink href="/catalogo">
+            <span class="nav-icono" aria-hidden="true">&#128241;</span>
+            <span>Catálogo</span>
+        </NavLink>
+    </nav>
+</div>

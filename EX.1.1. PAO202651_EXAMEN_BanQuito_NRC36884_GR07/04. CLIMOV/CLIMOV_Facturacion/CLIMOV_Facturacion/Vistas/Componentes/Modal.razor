@@ -1,0 +1,36 @@
+@if (Visible)
+{
+    <div class="modal-fondo" @onclick="CerrarAsync">
+        <div class="modal @Clase" role="dialog" aria-modal="true" aria-labelledby="modal-titulo" @onclick:stopPropagation="true">
+            <div class="modal-cabecera">
+                <h2 id="modal-titulo">@Titulo</h2>
+                <button type="button" class="boton-cerrar" aria-label="Cerrar" @onclick="CerrarAsync">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-cuerpo">
+                @ChildContent
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter] public bool Visible { get; set; }
+
+    [Parameter] public string Titulo { get; set; } = string.Empty;
+
+    [Parameter] public string Clase { get; set; } = string.Empty;
+
+    [Parameter] public EventCallback OnCerrar { get; set; }
+
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+
+    private async Task CerrarAsync()
+    {
+        if (OnCerrar.HasDelegate)
+        {
+            await OnCerrar.InvokeAsync();
+        }
+    }
+}

@@ -1,0 +1,141 @@
+@page "/facturas"
+@inject FacturasControlador Controlador
+
+<PageTitle>Facturas - Celulares Monster Móvil</PageTitle>
+
+<section class="pagina pagina-movil">
+    <header class="cabecera-movil">
+        <div>
+            <span class="etiqueta etiqueta-verde">Historial</span>
+            <h1>Facturas</h1>
+            <p>@Controlador.Facturas.Count factura(s) visible(s).</p>
+        </div>
+        <a class="boton-circular boton-morado" href="/compra" aria-label="Registrar compra">+</a>
+    </header>
+
+    @if (!string.IsNullOrWhiteSpace(Controlador.Error))
+    {
+        <div class="alerta alerta-error">@Controlador.Error</div>
+    }
+
+    <div class="panel-filtros-movil">
+        <div class="buscador-movil">
+            <span aria-hidden="true">&#128100;</span>
+            <input placeholder="Cédula del cliente" maxlength="10" inputmode="numeric"
+                   @bind="Controlador.FiltroCedula" />
+            <button type="button" class="boton-mini" @onclick="BuscarAsync">Ir</button>
+        </div>
+
+        <div class="buscador-movil">
+            <span aria-hidden="true">#</span>
+            <input placeholder="Número de factura" type="number" min="1" inputmode="numeric"
+                   @bind="Controlador.NumeroBusqueda" />
+            <button type="button" class="boton-mini" @onclick="BuscarAsync">Ir</button>
+        </div>
+
+        <button type="button" class="boton boton-secundario boton-bloque" @onclick="LimpiarFiltrosAsync">
+            Limpiar filtros
+        </button>
+    </div>
+
+    <div class="panel-movil panel-consulta-credito">
+        <strong>Créditos de la tienda</strong>
+        <p>Elija un crédito y revise la tabla de amortización con el estado de cada cuota.</p>
+        <a class="boton boton-azul boton-bloque" href="/creditos">Ver créditos</a>
+    </div>
+
+    @if (Controlador.Cargando)
+    {
+        <div class="cargando">
+            <span class="cargador"></span>
+            <span>Cargando facturas...</span>
+        </div>
+    }
+    else if (Controlador.Facturas.Count == 0)
+    {
+        <div class="estado-vacio">
+            <h2>No hay facturas</h2>
+            <p>Registre una compra o ajuste los filtros.</p>
+            <a class="boton boton-morado boton-bloque" href="/compra">+ Registrar compra</a>
+        </div>
+    }
+    else
+    {
+        <div class="lista-tarjetas">
+            @foreach (var factura in Controlador.Facturas)
+            {
+                <article class="tarjeta-factura-movil">
+                    <div class="cabecera-factura-movil">
+                        <div>
+                            <span class="numero-factura">Factura N° @factura.NumFactura</span>
+                            <span class="fecha-factura">@factura.Fecha.ToString("dd/MM/yyyy HH:mm")</span>
+                        </div>
+                        <span class="etiqueta @(EsCredito(factura) ? "etiqueta-azul" : "etiqueta-verde")">
+                            @factura.TipoPago
+                        </span>
+                    </div>
+
+                    <div class="datos-factura-movil">
+                        <div>
+                            <span>Cliente</span>
+                            <strong>@factura.NombreCliente</strong>
+                        </div>
+                        <div>
+                            <span>Cédula</span>
+                            <strong>@factura.Cedula</strong>
+                        </div>
+                        <div>
+                            <span>Valor</span>
+                            <strong>$ @factura.Valor.ToString("N2")</strong>
+                        </div>
+                        <div>
+                            <span>Crédito</span>
+                            <strong>@(factura.NumCredito?.ToString() ?? "No aplica")</strong>
+                        </div>
+                    </div>
+
+                    <div class="acciones-factura-movil">
+                        <button type="button" class="boton boton-secundario" @onclick="() => Controlador.VerDetalle(factura)">
+                            Ver detalle
+                        </button>
+                        @if (EsCredito(factura))
+                        {
+                            <button type="button" class="boton boton-azul"
+                                    @onclick="() => VerAmortizacionAsync(factura)"
+                                    disabled="@Controlador.CargandoAmortizacion">
+                                Amortización
+                            </button>
+                        }
+                    </div>
+                </article>
+            }
+        </div>
+    }
+</section>
+
+<ModalDetalleFactura Visible="Controlador.ModalDetalle"
+                     Factura="Controlador.Seleccionada"
+                     OnCerrar="Controlador.CerrarDetalle" />
+
+<ModalAmortizacion Visible="Controlador.ModalAmortizacion"
+                   Cargando="Controlador.CargandoAmortizacion"
+                   Error="Controlador.Error"
+                   Amortizacion="Controlador.Amortizacion"
+                   OnCerrar="Controlador.CerrarAmortizacion" />
+
+@code {
+    protected override async Task OnInitializedAsync()
+    {
+        await Controlador.CargarAsync();
+    }
+
+    private static bool EsCredito(FacturaDTO factura) =>
+        string.Equals(factura.TipoPago, "CREDITO", StringComparison.OrdinalIgnoreCase);
+
+    private async Task BuscarAsync() => await Controlador.BuscarAsync();
+
+    private async Task LimpiarFiltrosAsync() => await Controlador.LimpiarFiltrosAsync();
+
+    private async Task VerAmortizacionAsync(FacturaDTO factura) =>
+        await Controlador.VerAmortizacionAsync(factura);
+}
