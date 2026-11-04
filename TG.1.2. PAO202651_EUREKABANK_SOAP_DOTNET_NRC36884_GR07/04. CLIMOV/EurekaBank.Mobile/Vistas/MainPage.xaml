@@ -3,6 +3,31 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              BackgroundColor="#F1F7FB"
              Title="EUREKABANK">
+    <ContentPage.Resources>
+        <Style TargetType="Entry">
+            <Setter Property="TextColor" Value="#123A5A" />
+            <Setter Property="PlaceholderColor" Value="#5B7187" />
+            <Setter Property="BackgroundColor" Value="#F7FBFE" />
+            <Setter Property="FontSize" Value="15" />
+            <Setter Property="HeightRequest" Value="50" />
+            <Setter Property="Margin" Value="0,3" />
+        </Style>
+        <Style TargetType="Picker">
+            <Setter Property="TextColor" Value="#123A5A" />
+            <Setter Property="TitleColor" Value="#5B7187" />
+            <Setter Property="BackgroundColor" Value="#F7FBFE" />
+            <Setter Property="HeightRequest" Value="50" />
+        </Style>
+        <Style x:Key="FieldBorder" TargetType="Border">
+            <Setter Property="Stroke" Value="#AFC9DA" />
+            <Setter Property="StrokeThickness" Value="1" />
+            <Setter Property="StrokeShape">
+                <Setter.Value><RoundRectangle CornerRadius="10" /></Setter.Value>
+            </Setter>
+            <Setter Property="BackgroundColor" Value="#F7FBFE" />
+            <Setter Property="Padding" Value="10,0" />
+        </Style>
+    </ContentPage.Resources>
     <ScrollView>
         <VerticalStackLayout Padding="20,24" Spacing="14">
 
@@ -22,8 +47,14 @@
                     <Label Text="Tu banca, siempre contigo"
                            HorizontalOptions="Center"
                            TextColor="#597083" />
-                    <Entry x:Name="UserName" Placeholder="Usuario" />
-                    <Entry x:Name="Password" Placeholder="Contraseña" IsPassword="True" />
+                    <Label Text="Usuario" FontSize="12" TextColor="#5B7187" Margin="2,6,0,0" />
+                    <Border Style="{StaticResource FieldBorder}">
+                        <Entry x:Name="UserName" Placeholder="Escribe tu usuario" BackgroundColor="Transparent" />
+                    </Border>
+                    <Label Text="Contraseña" FontSize="12" TextColor="#5B7187" Margin="2,6,0,0" />
+                    <Border Style="{StaticResource FieldBorder}">
+                        <Entry x:Name="Password" Placeholder="Escribe tu contraseña" IsPassword="True" BackgroundColor="Transparent" />
+                    </Border>
                     <ActivityIndicator x:Name="LoginBusy"
                                        IsVisible="False"
                                        IsRunning="False"
@@ -55,10 +86,14 @@
                             <Label Text="Emulador local: http://10.0.2.2:62556"
                                    FontSize="11"
                                    TextColor="#597083" />
-                            <Entry x:Name="EndpointEntry"
-                                   Placeholder="http://10.0.2.2:62556/EurekaBankSoap.svc"
-                                   Keyboard="Url"
-                                   ClearButtonVisibility="WhileEditing" />
+                            <Border Style="{StaticResource FieldBorder}">
+                                <Entry x:Name="EndpointEntry"
+                                       Placeholder="http://10.0.2.2:62556/EurekaBankSoap.svc"
+                                       Keyboard="Url"
+                                       ClearButtonVisibility="WhileEditing"
+                                       BackgroundColor="Transparent"
+                                       FontSize="13" />
+                            </Border>
                             <Label x:Name="ServerStatus" FontSize="12" TextColor="#087D55" />
                             <Grid ColumnDefinitions="*,*" ColumnSpacing="8">
                                 <Button Grid.Column="0"
