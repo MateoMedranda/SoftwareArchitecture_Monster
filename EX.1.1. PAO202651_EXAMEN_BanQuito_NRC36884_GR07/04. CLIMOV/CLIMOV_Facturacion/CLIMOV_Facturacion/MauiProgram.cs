@@ -16,9 +16,13 @@ public static class MauiProgram
 
         builder.Services.AddMauiBlazorWebView();
 
-        builder.Services.AddScoped(_ => new HttpClient
+        builder.Services.AddScoped(_ => new HttpClient(new DireccionServidorHandler
         {
-            BaseAddress = new Uri(AppConfig.ApiBaseUrl),
+            InnerHandler = new HttpClientHandler()
+        })
+        {
+            // El handler reemplaza esta base por la dirección guardada antes de cada envío.
+            BaseAddress = new Uri("http://localhost/"),
             Timeout = TimeSpan.FromSeconds(AppConfig.TimeoutSegundos)
         });
 

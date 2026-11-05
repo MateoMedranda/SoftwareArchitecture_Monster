@@ -9,7 +9,10 @@
                 <small>Facturación móvil</small>
             </span>
         </a>
-        <span class="conexion-api" title="@AppConfig.ApiBaseUrl">API</span>
+        <div class="herramientas-servidor">
+            <span class="conexion-api" title="@AppConfig.ApiBaseUrl">API</span>
+            <button type="button" class="boton-servidor" title="Cambiar dirección del servidor" @onclick="AbrirServidor">Servidor</button>
+        </div>
     </header>
 
     <main class="contenido-movil">
@@ -43,3 +46,67 @@
         </NavLink>
     </nav>
 </div>
+
+@if (mostrarServidor)
+{
+    <div class="modal-fondo" role="presentation">
+        <section class="modal modal-servidor" role="dialog" aria-modal="true" aria-labelledby="titulo-servidor">
+            <header class="modal-cabecera">
+                <h2 id="titulo-servidor">Servidor</h2>
+                <button type="button" class="boton-cerrar" aria-label="Cerrar" @onclick="CerrarServidor">×</button>
+            </header>
+            <div class="modal-cuerpo">
+                <p class="nota">Escriba la URL del API de Facturación. El cambio se guarda en este dispositivo.</p>
+                <div class="grupo-campo">
+                    <label for="url-servidor">URL del servidor</label>
+                    <input id="url-servidor" class="campo" type="url" inputmode="url" autocomplete="url"
+                           placeholder="http://192.168.1.20:5226/" @bind="urlServidor" />
+                    <small>En emulador Android use: http://10.0.2.2:5226/</small>
+                </div>
+                @if (!string.IsNullOrWhiteSpace(errorServidor))
+                {
+                    <div class="alerta alerta-error">@errorServidor</div>
+                }
+                @if (!string.IsNullOrWhiteSpace(exitoServidor))
+                {
+                    <div class="alerta alerta-exito">@exitoServidor</div>
+                }
+                <div class="modal-acciones">
+                    <button type="button" class="boton boton-morado" @onclick="GuardarServidor">Guardar</button>
+                    <button type="button" class="boton boton-secundario" @onclick="CerrarServidor">Cancelar</button>
+                </div>
+            </div>
+        </section>
+    </div>
+}
+
+@code {
+    private bool mostrarServidor;
+    private string urlServidor = string.Empty;
+    private string? errorServidor;
+    private string? exitoServidor;
+
+    private void AbrirServidor()
+    {
+        urlServidor = AppConfig.ApiBaseUrl;
+        errorServidor = null;
+        exitoServidor = null;
+        mostrarServidor = true;
+    }
+
+    private void CerrarServidor() => mostrarServidor = false;
+
+    private void GuardarServidor()
+    {
+        if (!AppConfig.IntentarActualizarUrl(urlServidor, out var error))
+        {
+            errorServidor = error;
+            exitoServidor = null;
+            return;
+        }
+
+        urlServidor = AppConfig.ApiBaseUrl;
+        errorServidor = null;
+        exitoServidor = "Servidor actualizado. Las próximas consultas usarán esta dirección.";
+    }
+}

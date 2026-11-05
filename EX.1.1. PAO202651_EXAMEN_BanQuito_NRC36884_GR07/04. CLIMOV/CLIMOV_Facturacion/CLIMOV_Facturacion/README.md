@@ -37,10 +37,12 @@ Para instalarlo con un dispositivo conectado por ADB, ejecute
 
 En el emulador Android, el API usa por defecto
 `http://10.0.2.2:5226/` (`10.0.2.2` representa el equipo anfitrión). Para usar
-un teléfono físico, edite `UrlPorDefecto` en `Config/AppConfig.cs` y recompile
-con la dirección LAN del equipo que ejecuta el API, por ejemplo
-`http://192.168.1.20:5226/`. El teléfono y el equipo deben estar en la misma
-red y el API debe aceptar conexiones desde esa red.
+un teléfono físico, toque el botón discreto **Servidor** en la cabecera e
+ingrese la dirección LAN del equipo que ejecuta el API, por ejemplo
+`http://192.168.1.20:5226/`. La selección queda guardada en el dispositivo y
+se aplica a las siguientes solicitudes sin reinstalar la aplicación. El teléfono
+y el equipo deben estar en la misma red y el API debe aceptar conexiones desde
+esa red.
 
 Android permite HTTP sin TLS para esta configuración de desarrollo; para
 publicar la aplicación se recomienda configurar HTTPS.
