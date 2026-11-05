@@ -15,8 +15,9 @@ public static class MauiProgram
             .UseMauiApp<App>();
 
         builder.Services.AddMauiBlazorWebView();
+        builder.Services.AddSingleton<SesionMock>();
 
-        builder.Services.AddScoped(_ => new HttpClient(new DireccionServidorHandler
+        builder.Services.AddScoped(servicios => new HttpClient(new DireccionServidorHandler(servicios.GetRequiredService<SesionMock>())
         {
             InnerHandler = new HttpClientHandler()
         })

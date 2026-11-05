@@ -1,5 +1,12 @@
 @using CLIWEB_Facturacion.Vistas.Layout
+@inject SesionMock Sesion
 
+@if (!Sesion.Autenticado)
+{
+    <LoginDemo AlAutenticar="Actualizar" />
+}
+else
+{
 <Router AppAssembly="typeof(Program).Assembly">
     <Found Context="routeData">
         <RouteView RouteData="routeData" DefaultLayout="typeof(MainLayout)" />
@@ -17,3 +24,8 @@
         </LayoutView>
     </NotFound>
 </Router>
+}
+
+@code {
+    private void Actualizar() => StateHasChanged();
+}

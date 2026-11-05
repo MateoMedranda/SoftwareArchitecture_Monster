@@ -46,6 +46,7 @@
   <ItemGroup>
     <Compile Include="Program.cs" />
     <Compile Include="Config\AppConfig.cs" />
+    <Compile Include="Config\AutenticacionMock.cs" />
     <Compile Include="Controladores\AmortizacionControlador.cs" />
     <Compile Include="Controladores\ClienteControlador.cs" />
     <Compile Include="Controladores\FacturaControlador.cs" />

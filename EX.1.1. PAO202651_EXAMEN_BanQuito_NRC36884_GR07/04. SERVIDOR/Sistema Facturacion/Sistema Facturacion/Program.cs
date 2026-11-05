@@ -2,6 +2,7 @@ using SISTEMA_FACTURACION.Modelos;
 using SISTEMA_FACTURACION.Modelos.DAO;
 using SISTEMA_FACTURACION.Servicios;
 using SISTEMA_FACTURACION.Comun;
+using System.Net.Http.Headers;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,7 +12,7 @@ if (builder.Environment.IsDevelopment())
 {
     var archivoEnv = Path.GetFullPath(Path.Combine(
         builder.Environment.ContentRootPath,
-        "..", "..", "..", ".development.env"));
+        "..", "..", ".development.env"));
 
     if (File.Exists(archivoEnv))
     {
@@ -98,6 +99,7 @@ builder.Services.AddHttpClient<BanquitoCliente>(http =>
 {
     http.BaseAddress = new Uri(banquitoBaseUrl);
     http.Timeout = TimeSpan.FromSeconds(banquitoTimeout);
+    http.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", AutenticacionDemo.Token);
 });
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
@@ -105,6 +107,23 @@ builder.Services.AddOpenApi();
 var app = builder.Build();
 
 app.UseMiddleware<ManejadorErrores>();
+
+app.Use(async (contexto, siguiente) =>
+{
+    var ruta = contexto.Request.Path;
+    var esPublica = HttpMethods.IsOptions(contexto.Request.Method) ||
+                    ruta.StartsWithSegments("/api/autenticacion/login") ||
+                    ruta.StartsWithSegments("/openapi");
+
+    if (!esPublica && !AutenticacionDemo.TokenEsValido(contexto.Request.Headers.Authorization.ToString()))
+    {
+        contexto.Response.StatusCode = StatusCodes.Status401Unauthorized;
+        await contexto.Response.WriteAsJsonAsync(new { mensaje = "Debe iniciar sesión para usar el sistema." });
+        return;
+    }
+
+    await siguiente();
+});
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
@@ -114,6 +133,27 @@ if (app.Environment.IsDevelopment())
 
 app.UseAuthorization();
 
+app.MapPost("/api/autenticacion/login", (SolicitudLogin solicitud) =>
+    AutenticacionDemo.CredencialesValidas(solicitud.Usuario, solicitud.Contrasena)
+        ? Results.Ok(new { token = AutenticacionDemo.Token, usuario = AutenticacionDemo.Usuario })
+        : Results.Unauthorized());
+
 app.MapControllers();
 
 app.Run();
+
+public sealed record SolicitudLogin(string? Usuario, string? Contrasena);
+
+public static class AutenticacionDemo
+{
+    public const string Usuario = "MONSTER";
+    public const string Contrasena = "MONSTER9";
+    public const string Token = "MONSTER-DEMO-TOKEN";
+
+    public static bool CredencialesValidas(string? usuario, string? contrasena) =>
+        string.Equals(usuario, Usuario, StringComparison.Ordinal) &&
+        string.Equals(contrasena, Contrasena, StringComparison.Ordinal);
+
+    public static bool TokenEsValido(string? autorizacion) =>
+        string.Equals(autorizacion, $"Bearer {Token}", StringComparison.Ordinal);
+}

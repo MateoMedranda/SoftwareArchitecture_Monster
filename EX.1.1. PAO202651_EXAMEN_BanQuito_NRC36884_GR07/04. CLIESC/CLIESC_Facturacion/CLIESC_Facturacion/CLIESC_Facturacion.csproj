@@ -49,6 +49,7 @@
   <ItemGroup>
     <Compile Include="Program.cs" />
     <Compile Include="Config\AppConfig.cs" />
+    <Compile Include="Config\AutenticacionMock.cs" />
     <Compile Include="Controladores\AmortizacionControlador.cs" />
     <Compile Include="Controladores\ClienteControlador.cs" />
     <Compile Include="Controladores\FacturaControlador.cs" />
@@ -98,6 +99,9 @@
     <Compile Include="Vistas\FormInicio.cs">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="Vistas\FormLogin.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="Vistas\FormProductoDialog.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -135,7 +139,7 @@
     <Content Include="resources\*.jpg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include=".development.env" Condition="Exists('.env')">
+    <Content Include=".development.env" Condition="Exists('.development.env')">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>

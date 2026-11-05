@@ -12,6 +12,7 @@ namespace CLICON_Facturacion
             try
             {
                 AppConfig.Load();
+                if (!AutenticacionMock.SolicitarInicioSesion()) return;
                 new MenuPrincipalVista().MostrarAsync().GetAwaiter().GetResult();
             }
             catch (Exception ex)

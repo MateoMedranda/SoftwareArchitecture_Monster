@@ -1,5 +1,13 @@
 @using CLIMOV_Facturacion.Vistas.Layout
 
+@inject SesionMock Sesion
+
+@if (!Sesion.Autenticado)
+{
+    <LoginDemo AlAutenticar="Actualizar" />
+}
+else
+{
 <Router AppAssembly="typeof(MauiProgram).Assembly">
     <Found Context="routeData">
         <RouteView RouteData="routeData" DefaultLayout="typeof(LayoutMovil)" />
@@ -17,3 +25,8 @@
         </LayoutView>
     </NotFound>
 </Router>
+}
+
+@code {
+    private void Actualizar() => StateHasChanged();
+}

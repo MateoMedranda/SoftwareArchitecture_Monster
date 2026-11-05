@@ -113,6 +113,23 @@ var app = builder.Build();
 // Convierte las excepciones de negocio en respuestas RespuestaGenerica.
 app.UseMiddleware<ManejadorErrores>();
 
+app.Use(async (contexto, siguiente) =>
+{
+    var ruta = contexto.Request.Path;
+    var esPublica = HttpMethods.IsOptions(contexto.Request.Method) ||
+                    ruta.StartsWithSegments("/api/autenticacion/login") ||
+                    ruta.StartsWithSegments("/openapi");
+
+    if (!esPublica && !AutenticacionDemo.TokenEsValido(contexto.Request.Headers.Authorization.ToString()))
+    {
+        contexto.Response.StatusCode = StatusCodes.Status401Unauthorized;
+        await contexto.Response.WriteAsJsonAsync(new { exitoso = false, mensaje = "Debe iniciar sesión para usar el sistema." });
+        return;
+    }
+
+    await siguiente();
+});
+
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
@@ -120,6 +137,27 @@ if (app.Environment.IsDevelopment())
 
 app.UseCors("PermitirClientes");
 app.UseAuthorization();
+
+app.MapPost("/api/autenticacion/login", (SolicitudLogin solicitud) =>
+    AutenticacionDemo.CredencialesValidas(solicitud.Usuario, solicitud.Contrasena)
+        ? Results.Ok(new { token = AutenticacionDemo.Token, usuario = AutenticacionDemo.Usuario })
+        : Results.Unauthorized());
 app.MapControllers();
 
 app.Run();
+
+public sealed record SolicitudLogin(string? Usuario, string? Contrasena);
+
+public static class AutenticacionDemo
+{
+    public const string Usuario = "MONSTER";
+    public const string Contrasena = "MONSTER9";
+    public const string Token = "MONSTER-DEMO-TOKEN";
+
+    public static bool CredencialesValidas(string? usuario, string? contrasena) =>
+        string.Equals(usuario, Usuario, StringComparison.Ordinal) &&
+        string.Equals(contrasena, Contrasena, StringComparison.Ordinal);
+
+    public static bool TokenEsValido(string? autorizacion) =>
+        string.Equals(autorizacion, $"Bearer {Token}", StringComparison.Ordinal);
+}

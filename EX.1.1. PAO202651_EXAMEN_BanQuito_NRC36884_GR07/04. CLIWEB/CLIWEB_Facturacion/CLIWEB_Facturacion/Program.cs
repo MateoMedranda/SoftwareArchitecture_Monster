@@ -12,8 +12,13 @@ AppConfig.Cargar(builder.Environment.ContentRootPath);
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
+builder.Services.AddScoped<SesionMock>();
+
 // Un HttpClient por circuito con la URL base configurada en .env.
-builder.Services.AddScoped(_ => new HttpClient
+builder.Services.AddScoped(servicios => new HttpClient(new AutorizacionMockHandler(servicios.GetRequiredService<SesionMock>())
+{
+    InnerHandler = new HttpClientHandler()
+})
 {
     BaseAddress = new Uri(AppConfig.ApiBaseUrl),
     Timeout = TimeSpan.FromSeconds(AppConfig.TimeoutSegundos)

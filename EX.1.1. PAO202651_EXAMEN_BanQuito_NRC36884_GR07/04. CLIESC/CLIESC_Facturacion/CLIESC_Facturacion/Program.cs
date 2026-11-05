@@ -18,6 +18,11 @@ namespace CLIESC_Facturacion
 
             AppConfig.Load();
 
+            using (var login = new FormLogin())
+            {
+                if (login.ShowDialog() != DialogResult.OK) return;
+            }
+
             var inicio = new FormInicio();
             Navegacion.RegistrarInicio(inicio);
             Application.Run(inicio);

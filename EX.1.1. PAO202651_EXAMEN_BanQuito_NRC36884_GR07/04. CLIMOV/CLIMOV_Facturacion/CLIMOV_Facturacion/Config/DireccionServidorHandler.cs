@@ -6,6 +6,10 @@ namespace CLIMOV_Facturacion.Config;
 /// </summary>
 public sealed class DireccionServidorHandler : DelegatingHandler
 {
+    private readonly SesionMock _sesion;
+
+    public DireccionServidorHandler(SesionMock sesion) => _sesion = sesion;
+
     protected override Task<HttpResponseMessage> SendAsync(
         HttpRequestMessage request,
         CancellationToken cancellationToken)
@@ -13,6 +17,11 @@ public sealed class DireccionServidorHandler : DelegatingHandler
         if (request.RequestUri is { IsAbsoluteUri: true } uri)
         {
             request.RequestUri = new Uri(new Uri(AppConfig.ApiBaseUrl), uri.PathAndQuery);
+        }
+
+        if (_sesion.Autenticado)
+        {
+            request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", SesionMock.TokenDemo);
         }
 
         return base.SendAsync(request, cancellationToken);

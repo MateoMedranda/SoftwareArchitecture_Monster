@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using System.Net;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Runtime.Serialization.Json;
 using System.Text;
 using System.Threading.Tasks;
@@ -31,6 +32,7 @@ namespace CLIESC_Facturacion.Servicios
                 BaseAddress = new Uri(baseUrl),
                 Timeout = TimeSpan.FromSeconds(AppConfig.TimeoutSeconds)
             };
+            _cliente.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", AutenticacionMock.Token);
         }
 
         public Task<T> GetAsync<T>(string ruta)

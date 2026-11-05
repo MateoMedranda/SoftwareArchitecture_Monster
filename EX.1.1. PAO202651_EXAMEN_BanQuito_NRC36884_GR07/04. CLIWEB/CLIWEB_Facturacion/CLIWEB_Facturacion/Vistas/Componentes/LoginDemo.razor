@@ -1,0 +1,46 @@
+@inject SesionMock Sesion
+
+<section class="login-pantalla">
+    <div class="login-tarjeta">
+        <div class="login-marca">M</div>
+        <span class="etiqueta etiqueta-morada">Acceso seguro</span>
+        <h1>Bienvenido</h1>
+        <p>Inicie sesión para acceder al sistema de facturación.</p>
+        <div class="grupo-campo">
+            <label for="usuario">Usuario</label>
+            <input id="usuario" class="campo" autocomplete="username" placeholder="Ingrese su usuario" @bind="usuario" />
+        </div>
+        <div class="grupo-campo">
+            <label for="contrasena">Contraseña</label>
+            <input id="contrasena" class="campo" type="password" autocomplete="current-password" placeholder="Ingrese su contraseña" @bind="contrasena" @onkeydown="AlPresionarTecla" />
+        </div>
+        @if (!string.IsNullOrWhiteSpace(error))
+        {
+            <div class="alerta alerta-error">@error</div>
+        }
+        <button type="button" class="boton boton-morado login-boton" @onclick="Ingresar">Ingresar</button>
+    </div>
+</section>
+
+@code {
+    [Parameter] public EventCallback AlAutenticar { get; set; }
+    private string usuario = string.Empty;
+    private string contrasena = string.Empty;
+    private string? error;
+
+    private async Task Ingresar()
+    {
+        if (!Sesion.Iniciar(usuario, contrasena))
+        {
+            error = "Usuario o contraseña incorrectos.";
+            return;
+        }
+        error = null;
+        await AlAutenticar.InvokeAsync();
+    }
+
+    private async Task AlPresionarTecla(KeyboardEventArgs e)
+    {
+        if (e.Key == "Enter") await Ingresar();
+    }
+}
