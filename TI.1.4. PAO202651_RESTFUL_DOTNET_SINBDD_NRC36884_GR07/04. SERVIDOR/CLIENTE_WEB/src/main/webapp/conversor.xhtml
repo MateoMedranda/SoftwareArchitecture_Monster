@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="jakarta.faces.html"
+      xmlns:f="jakarta.faces.core"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:ui="jakarta.faces.facelets">
+<h:head>
+    <title>Conversor de Unidades</title>
+    <h:outputStylesheet name="css/estilos.css"/>
+</h:head>
+<h:body>
+    <main class="panel">
+        <header class="barra">
+            <div>
+                <strong>Monster RESTful</strong>
+                <span class="usuario">Bienvenido, #{sesionBean.usuarioAutenticado}</span>
+            </div>
+            <h:form>
+                <p:commandButton value="Cerrar sesión" action="#{conversorBean.cerrarSesion}"
+                                 ajax="false" styleClass="boton-secundario"/>
+            </h:form>
+        </header>
+
+        <h1 class="login-titulo">Conversor de Unidades</h1>
+        <h:form id="formConversor">
+            <div class="campo">
+                <p:outputLabel value="Tipo de conversión"/>
+                <p:selectOneRadio value="#{conversorBean.tipoConversion}" layout="responsive"
+                                  styleClass="radio-espaciado">
+                    <f:selectItem itemLabel="Longitud" itemValue="longitud"/>
+                    <f:selectItem itemLabel="Masa" itemValue="masa"/>
+                    <f:selectItem itemLabel="Temperatura" itemValue="temperatura"/>
+                    <p:ajax event="change" listener="#{conversorBean.onTipoCambio}"
+                            process="@this" update="@form"/>
+                </p:selectOneRadio>
+            </div>
+
+            <div class="campo">
+                <p:outputLabel for="valor" value="Valor"/>
+                <p:inputNumber id="valor" value="#{conversorBean.valor}" decimalPlaces="4"/>
+            </div>
+
+            <ui:include src="#{conversorBean.vistaUnidades}"/>
+
+            <p:commandButton value="Convertir" action="#{conversorBean.convertir}"
+                             update="@form" ajax="true" styleClass="boton-login"/>
+
+            <section class="resultado" rendered="#{not empty conversorBean.resultado}">
+                <span>Resultado</span>
+                <strong>#{conversorBean.resultado.valorConvertido}</strong>
+                <p>#{conversorBean.resultado.valorOriginal} #{conversorBean.resultado.unidadOrigen}
+                    = #{conversorBean.resultado.valorConvertido} #{conversorBean.resultado.unidadDestino}</p>
+            </section>
+            <p:messages id="mensajes" showDetail="true" closable="true"/>
+        </h:form>
+    </main>
+</h:body>
+</html>
