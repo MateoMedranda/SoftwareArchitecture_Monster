@@ -1,0 +1,3 @@
+# Application Configuration for Payara
+# Note: Actual config is in META-INF/microprofile-config.properties
+# This file is kept for reference only

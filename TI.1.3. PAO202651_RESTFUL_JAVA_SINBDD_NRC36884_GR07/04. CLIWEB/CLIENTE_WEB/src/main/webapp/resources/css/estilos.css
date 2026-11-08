@@ -1,0 +1,66 @@
+:root {
+    font-family: "Segoe UI", Arial, sans-serif;
+    color: #24303f;
+    background: #cbdff7;
+}
+
+body { margin: 0; min-width: 320px; }
+
+.login-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 24px;
+    box-sizing: border-box;
+}
+
+.login-card, .panel {
+    background: #fff;
+    border-radius: 14px;
+    box-shadow: 0 12px 30px rgba(0, 0, 0, .12);
+}
+
+.login-card { width: 100%; max-width: 380px; padding: 32px 28px; text-align: center; }
+.panel { max-width: 720px; margin: 40px auto; padding: 28px; }
+
+.marca-monster {
+    display: inline-grid;
+    place-items: center;
+    width: 62px;
+    height: 62px;
+    border-radius: 50%;
+    background: #254a87;
+    color: #fff;
+    font-size: 2rem;
+    font-weight: 700;
+}
+
+.login-titulo { margin: 12px 0 8px; color: #1f2d3d; font-size: 1.5rem; }
+.subtitulo { margin: 0 0 24px; color: #5a6b7d; }
+.campo { text-align: left; margin-bottom: 16px; }
+.campo label, .campo .ui-outputlabel { display: block; margin-bottom: 6px; color: #5a6b7d; }
+.campo .ui-inputfield, .campo .ui-selectonemenu { width: 100% !important; box-sizing: border-box; }
+.boton-login { width: 100%; margin: 8px 0 18px; }
+.boton-secundario { margin-left: 8px; }
+
+.barra {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    border-bottom: 1px solid #e3e8ee;
+    padding-bottom: 12px;
+    margin-bottom: 16px;
+}
+.usuario { display: block; color: #5a6b7d; font-size: .9rem; margin-top: 3px; }
+.radio-espaciado { display: flex; gap: 18px; flex-wrap: wrap; }
+.resultado { margin: 20px 0; padding: 16px; border-radius: 8px; background: #f2f7ff; }
+.resultado span { display: block; color: #5a6b7d; font-size: .85rem; }
+.resultado strong { display: block; color: #254a87; font-size: 1.8rem; margin-top: 4px; }
+.resultado p { margin: 8px 0 0; }
+
+@media (max-width: 640px) {
+    .panel { margin: 16px; padding: 20px; }
+    .barra { align-items: flex-start; flex-direction: column; }
+}

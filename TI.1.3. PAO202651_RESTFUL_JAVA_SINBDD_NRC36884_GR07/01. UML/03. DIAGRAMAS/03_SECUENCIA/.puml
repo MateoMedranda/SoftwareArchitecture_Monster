@@ -1,0 +1,26 @@
+@startuml
+title "DS_09_ERROR_VALIDACION_400"
+autonumber
+
+actor "APLICACION" as Aplicacion
+participant "CONVERSION_VISTA" as ConversionVista
+participant "CONVERSION_CONTROLADOR" as ConversionControlador
+participant "CLIENTE_REST_CONVERSOR" as ClienteRest
+participant "FILTRO_AUTENTICACION" as FiltroAutenticacion
+participant "API_REST_CONVERSOR" as ApiRest
+
+Aplicacion -> ConversionVista: Ingresa datos incompletos
+ConversionVista -> ConversionControlador: solicitarConversionMasa(valor, unidadInicial, unidadFinal)
+ConversionControlador -> ClienteRest: convertirMasa(tokenSesion, valorNulo, unidadInicial, unidadFinal)
+
+ClienteRest -> FiltroAutenticacion: GET /api/conversor-unidades/convertirMasa\nAuthorization: Bearer token
+FiltroAutenticacion --> ApiRest: solicitud autorizada
+
+ApiRest -> ApiRest: validarDatosConversion(valor, unidadInicial, unidadFinal)
+ApiRest --> ClienteRest: 400 {"mensaje":"Valor y unidades son obligatorios"}
+
+ClienteRest --> ConversionControlador: error de validacion
+ConversionControlador --> ConversionVista: mostrar mensaje de validacion
+ConversionVista --> Aplicacion: solicitar correccion de datos
+
+@enduml

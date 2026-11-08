@@ -1,0 +1,90 @@
+<?xml version='1.0' encoding='UTF-8'?><!-- Published by XML-WS Runtime (https://github.com/eclipse-ee4j/metro-jax-ws). Runtime's version is Eclipse Metro/4.0.4.payara-p1 (FISH-10142-Metro-4.0.4-fa01c0b; 2025-07-11T17:44:37+0100) XMLWS-Impl/4.0.3 XMLWS-API/4.0.2 XMLB-Impl/4.0.5 XMLB-API/4.0.2 git-revision#fa01c0b. --><xs:schema xmlns:tns="http://ws.monster.edu.ec/" xmlns:xs="http://www.w3.org/2001/XMLSchema" version="1.0" targetNamespace="http://ws.monster.edu.ec/">
+
+<xs:element name="cambiarContrasenia" type="tns:cambiarContrasenia"/>
+
+<xs:element name="cambiarContraseniaResponse" type="tns:cambiarContraseniaResponse"/>
+
+<xs:element name="convertirLongitud" type="tns:convertirLongitud"/>
+
+<xs:element name="convertirLongitudResponse" type="tns:convertirLongitudResponse"/>
+
+<xs:element name="convertirMasa" type="tns:convertirMasa"/>
+
+<xs:element name="convertirMasaResponse" type="tns:convertirMasaResponse"/>
+
+<xs:element name="convertirTemperatura" type="tns:convertirTemperatura"/>
+
+<xs:element name="convertirTemperaturaResponse" type="tns:convertirTemperaturaResponse"/>
+
+<xs:element name="login" type="tns:login"/>
+
+<xs:element name="loginResponse" type="tns:loginResponse"/>
+
+<xs:complexType name="login">
+<xs:sequence>
+<xs:element name="usuario" type="xs:string" minOccurs="0"/>
+<xs:element name="contrasenia" type="xs:string" minOccurs="0"/>
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="loginResponse">
+<xs:sequence>
+<xs:element name="return" type="xs:string" minOccurs="0"/>
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="convertirMasa">
+<xs:sequence>
+<xs:element name="valor" type="xs:double"/>
+<xs:element name="unidadInicial" type="xs:string" minOccurs="0"/>
+<xs:element name="unidadFinal" type="xs:string" minOccurs="0"/>
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="convertirMasaResponse">
+<xs:sequence>
+<xs:element name="return" type="xs:double"/>
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="convertirLongitud">
+<xs:sequence>
+<xs:element name="valor" type="xs:double"/>
+<xs:element name="unidadInicial" type="xs:string" minOccurs="0"/>
+<xs:element name="unidadFinal" type="xs:string" minOccurs="0"/>
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="convertirLongitudResponse">
+<xs:sequence>
+<xs:element name="return" type="xs:double"/>
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="convertirTemperatura">
+<xs:sequence>
+<xs:element name="valor" type="xs:double"/>
+<xs:element name="unidadInicial" type="xs:string" minOccurs="0"/>
+<xs:element name="unidadFinal" type="xs:string" minOccurs="0"/>
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="convertirTemperaturaResponse">
+<xs:sequence>
+<xs:element name="return" type="xs:double"/>
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="cambiarContrasenia">
+<xs:sequence>
+<xs:element name="contraseniaActual" type="xs:string" minOccurs="0"/>
+<xs:element name="contraseniaNueva" type="xs:string" minOccurs="0"/>
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="cambiarContraseniaResponse">
+<xs:sequence>
+<xs:element name="return" type="xs:string" minOccurs="0"/>
+</xs:sequence>
+</xs:complexType>
+</xs:schema>

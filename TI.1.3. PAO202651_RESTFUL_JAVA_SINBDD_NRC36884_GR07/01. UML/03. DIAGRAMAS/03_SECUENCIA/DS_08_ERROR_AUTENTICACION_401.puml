@@ -1,0 +1,34 @@
+@startuml
+title "DS_08_ERROR_AUTENTICACION_401"
+autonumber
+
+actor "APLICACION" as Aplicacion
+participant "CONVERSION_VISTA" as ConversionVista
+participant "CONVERSION_CONTROLADOR" as ConversionControlador
+participant "CLIENTE_REST_CONVERSOR" as ClienteRest
+participant "FILTRO_AUTENTICACION" as FiltroAutenticacion
+participant "API_REST_CONVERSOR" as ApiRest
+
+Aplicacion -> ConversionVista: Solicita conversion protegida
+ConversionVista -> ConversionControlador: solicitarConversion(...)
+ConversionControlador -> ClienteRest: convertir...(tokenSesion, ...)
+
+alt token ausente
+    ClienteRest -> FiltroAutenticacion: GET /api/conversor-unidades/convertir...\nSin Authorization
+    FiltroAutenticacion --> ClienteRest: 401 {"mensaje":"Se requiere Authorization"}
+else token invalido
+    ClienteRest -> FiltroAutenticacion: GET /api/conversor-unidades/convertir...\nAuthorization: Bearer token_invalido
+    FiltroAutenticacion --> ClienteRest: 401 {"mensaje":"Token invalido o expirado"}
+end
+
+ClienteRest --> ConversionControlador: error de autenticacion
+ConversionControlador -> ConversionControlador: limpia tokenSesion local
+ConversionControlador --> ConversionVista: mostrar error y redirigir a login
+ConversionVista --> Aplicacion: solicitar nuevo inicio de sesion
+
+note right of ApiRest
+La API no se ejecuta cuando el filtro
+interrumpe la solicitud con 401.
+end note
+
+@enduml
