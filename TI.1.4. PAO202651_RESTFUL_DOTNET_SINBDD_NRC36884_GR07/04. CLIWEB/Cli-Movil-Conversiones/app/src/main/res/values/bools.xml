@@ -1,6 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <!-- false: los desplegables muestran el simbolo (m, °C...);
-         true: muestran el nombre completo (Metro, Celsius...). -->
-    <bool name="mostrar_nombres_completos_unidad">false</bool>
-</resources>
