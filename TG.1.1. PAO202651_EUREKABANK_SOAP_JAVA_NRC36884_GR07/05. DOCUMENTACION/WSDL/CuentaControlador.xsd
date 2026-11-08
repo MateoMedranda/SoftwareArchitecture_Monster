@@ -1,0 +1,141 @@
+<?xml version='1.0' encoding='UTF-8'?><!-- Published by XML-WS Runtime (https://github.com/eclipse-ee4j/metro-jax-ws). Runtime's version is Eclipse Metro/4.0.4.payara-p1 (FISH-10142-Metro-4.0.4-fa01c0b; 2025-07-11T17:44:37+0100) XMLWS-Impl/4.0.3 XMLWS-API/4.0.2 XMLB-Impl/4.0.5 XMLB-API/4.0.2 git-revision#fa01c0b. --><xs:schema xmlns:tns="http://servicios.monster.edu.ec/" xmlns:xs="http://www.w3.org/2001/XMLSchema" version="1.0" targetNamespace="http://servicios.monster.edu.ec/">
+
+<xs:element name="TransaccionFault" nillable="true" type="tns:respuestaError"/>
+
+<xs:element name="actualizarCuenta" type="tns:actualizarCuenta"/>
+
+<xs:element name="actualizarCuentaResponse" type="tns:actualizarCuentaResponse"/>
+
+<xs:element name="eliminarCuenta" type="tns:eliminarCuenta"/>
+
+<xs:element name="eliminarCuentaResponse" type="tns:eliminarCuentaResponse"/>
+
+<xs:element name="insertarCuenta" type="tns:insertarCuenta"/>
+
+<xs:element name="insertarCuentaResponse" type="tns:insertarCuentaResponse"/>
+
+<xs:element name="listarCuentas" type="tns:listarCuentas"/>
+
+<xs:element name="listarCuentasPorUsuario" type="tns:listarCuentasPorUsuario"/>
+
+<xs:element name="listarCuentasPorUsuarioResponse" type="tns:listarCuentasPorUsuarioResponse"/>
+
+<xs:element name="listarCuentasResponse" type="tns:listarCuentasResponse"/>
+
+<xs:element name="obtenerCuenta" type="tns:obtenerCuenta"/>
+
+<xs:element name="obtenerCuentaResponse" type="tns:obtenerCuentaResponse"/>
+
+<xs:element name="respuestaError" type="tns:respuestaError"/>
+
+<xs:element name="token" nillable="true" type="xs:string"/>
+
+<xs:complexType name="listarCuentasPorUsuario">
+<xs:sequence>
+<xs:element name="usuarioId" type="xs:string" minOccurs="0"/>
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="listarCuentasPorUsuarioResponse">
+<xs:sequence>
+<xs:element name="return" type="tns:cuentaDTO" minOccurs="0" maxOccurs="unbounded"/>
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="cuentaDTO">
+<xs:sequence>
+<xs:element name="cuentaEstado" type="xs:string" minOccurs="0"/>
+<xs:element name="cuentaId" type="xs:string" minOccurs="0"/>
+<xs:element name="cuentaSaldo" type="xs:decimal" minOccurs="0"/>
+<xs:element name="sucursalId" type="xs:string" minOccurs="0"/>
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="respuestaError">
+<xs:complexContent>
+<xs:extension base="tns:exception">
+<xs:sequence>
+<xs:element name="codigo" type="xs:string" minOccurs="0"/>
+<xs:element name="mensaje" type="xs:string" minOccurs="0"/>
+<xs:element name="detalle" type="xs:string" minOccurs="0"/>
+</xs:sequence>
+</xs:extension>
+</xs:complexContent>
+</xs:complexType>
+
+<xs:complexType name="exception">
+<xs:complexContent>
+<xs:extension base="tns:throwable">
+<xs:sequence/>
+</xs:extension>
+</xs:complexContent>
+</xs:complexType>
+
+<xs:complexType name="throwable">
+<xs:sequence>
+<xs:element name="stackTrace" type="tns:stackTraceElement" nillable="true" minOccurs="0" maxOccurs="unbounded"/>
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="stackTraceElement" final="extension restriction">
+<xs:sequence/>
+</xs:complexType>
+
+<xs:complexType name="eliminarCuenta">
+<xs:sequence>
+<xs:element name="cuentaId" type="xs:string" minOccurs="0"/>
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="eliminarCuentaResponse">
+<xs:sequence>
+<xs:element name="exitoso" type="xs:boolean"/>
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="insertarCuenta">
+<xs:sequence>
+<xs:element name="cuenta" type="tns:cuentaDTO" minOccurs="0"/>
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="insertarCuentaResponse">
+<xs:sequence>
+<xs:element name="exitoso" type="xs:boolean"/>
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="actualizarCuenta">
+<xs:sequence>
+<xs:element name="cuenta" type="tns:cuentaDTO" minOccurs="0"/>
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="actualizarCuentaResponse">
+<xs:sequence>
+<xs:element name="exitoso" type="xs:boolean"/>
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="obtenerCuenta">
+<xs:sequence>
+<xs:element name="cuentaId" type="xs:string" minOccurs="0"/>
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="obtenerCuentaResponse">
+<xs:sequence>
+<xs:element name="cuenta" type="tns:cuentaDTO" minOccurs="0"/>
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="listarCuentas">
+<xs:sequence/>
+</xs:complexType>
+
+<xs:complexType name="listarCuentasResponse">
+<xs:sequence>
+<xs:element name="return" type="tns:cuentaDTO" minOccurs="0" maxOccurs="unbounded"/>
+</xs:sequence>
+</xs:complexType>
+</xs:schema>

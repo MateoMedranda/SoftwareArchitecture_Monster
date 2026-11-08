@@ -1,0 +1,35 @@
+services:
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2025-latest
+    container_name: eurekabank_sqlserver
+    environment: { ACCEPT_EULA: "Y", MSSQL_SA_PASSWORD: "EurekaBank_2026!", MSSQL_PID: "Developer" }
+    ports: ["1433:1433"]
+    volumes: ["sqlserver_data:/var/opt/mssql"]
+    healthcheck:
+      test: ["CMD-SHELL", "/opt/mssql-tools18/bin/sqlcmd -C -S localhost -U sa -P $$MSSQL_SA_PASSWORD -Q 'SELECT 1' || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 20
+      start_period: 30s
+  sql-init:
+    # SQL Server actual incluye sqlcmd 18 en /opt/mssql-tools18/bin.
+    # Se reutiliza la imagen oficial para no depender de una imagen tools inexistente.
+    image: mcr.microsoft.com/mssql/server:2025-latest
+    depends_on: { sqlserver: { condition: service_healthy } }
+    environment: { ACCEPT_EULA: "Y", MSSQL_SA_PASSWORD: "EurekaBank_2026!" }
+    volumes: ["./01-modelo.sql:/scripts/01-modelo.sql:ro", "./02-datos.sql:/scripts/02-datos.sql:ro"]
+    entrypoint: ["/bin/bash", "-c"]
+    command:
+      - |
+        set -e
+        SQLCMD="/opt/mssql-tools18/bin/sqlcmd -C -S sqlserver -U sa -P $$MSSQL_SA_PASSWORD"
+        until $$SQLCMD -Q "SELECT 1" >/dev/null 2>&1; do sleep 2; done
+        EXISTS=$$($$SQLCMD -h -1 -W -Q "SET NOCOUNT ON; SELECT CASE WHEN DB_ID(N'arquitectura_db') IS NOT NULL AND OBJECT_ID(N'arquitectura_db.dbo.USUARIO', N'U') IS NOT NULL THEN 1 ELSE 0 END" | tr -d '\r')
+        if [ "$$EXISTS" = "1" ]; then
+          echo "arquitectura_db ya existe; no se modifican datos."
+        else
+          $$SQLCMD -i /scripts/01-modelo.sql
+          $$SQLCMD -i /scripts/02-datos.sql
+        fi
+    restart: "no"
+volumes: { sqlserver_data: {} }

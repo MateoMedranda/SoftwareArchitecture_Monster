@@ -1,0 +1,251 @@
+openapi: 3.0.3
+info:
+  title: EUREKABANK API REST
+  version: 1.0.0
+  description: |
+    API REST de EUREKABANK. Conserva las reglas de negocio del servidor original:
+    control por roles, movimientos auditables, transferencias atómicas, reversas y disponibilidad de cuentas.
+servers:
+  - url: http://localhost:8080/EUREKABANK-RESTFUL/api
+    description: Payara local
+tags:
+  - name: Autenticación
+  - name: Usuarios
+  - name: Cuentas
+  - name: Transacciones
+  - name: Asignaciones
+paths:
+  /auth/login:
+    post:
+      tags: [Autenticación]
+      summary: Inicia sesión y devuelve un JWT
+      operationId: login
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/SolicitudLogin'}
+            example: {usuario: admin, contrasenia: secreto}
+      responses:
+        '200': {description: Sesión creada, content: {application/json: {schema: {$ref: '#/components/schemas/RespuestaLogin'}}}}
+        '401': {$ref: '#/components/responses/Error'}
+  /auth/logout:
+    post:
+      tags: [Autenticación]
+      summary: Revoca el JWT actual
+      security: [{bearerAuth: []}]
+      responses: {'200': {description: Token revocado, content: {application/json: {schema: {type: boolean}}}}, '401': {$ref: '#/components/responses/Error'}}
+  /auth/verificar:
+    get:
+      tags: [Autenticación]
+      summary: Verifica el JWT actual
+      security: [{bearerAuth: []}]
+      responses: {'200': {description: Token válido, content: {application/json: {schema: {$ref: '#/components/schemas/RespuestaLogin'}}}}, '401': {$ref: '#/components/responses/Error'}}
+  /usuarios:
+    get:
+      tags: [Usuarios]
+      summary: Lista usuarios o busca por nombre
+      security: [{bearerAuth: []}]
+      parameters: [{$ref: '#/components/parameters/Nombre'}]
+      responses: {'200': {description: Usuarios, content: {application/json: {schema: {type: array, items: {$ref: '#/components/schemas/Usuario'}}}}}, '401': {$ref: '#/components/responses/Error'}, '403': {$ref: '#/components/responses/Error'}}
+    post:
+      tags: [Usuarios]
+      summary: Crea un usuario (ADMIN)
+      security: [{bearerAuth: []}]
+      requestBody: {$ref: '#/components/requestBodies/Usuario'}
+      responses: {'200': {description: Creado, content: {application/json: {schema: {type: boolean}}}}, '400': {$ref: '#/components/responses/Error'}, '403': {$ref: '#/components/responses/Error'}}
+  /usuarios/{id}:
+    parameters: [{$ref: '#/components/parameters/Id'}]
+    get:
+      tags: [Usuarios]
+      summary: Obtiene un usuario
+      security: [{bearerAuth: []}]
+      responses: {'200': {description: Usuario, content: {application/json: {schema: {$ref: '#/components/schemas/Usuario'}}}}, '404': {$ref: '#/components/responses/Error'}}
+    put:
+      tags: [Usuarios]
+      summary: Actualiza un usuario (ADMIN)
+      security: [{bearerAuth: []}]
+      requestBody: {$ref: '#/components/requestBodies/Usuario'}
+      responses: {'200': {description: Actualizado, content: {application/json: {schema: {type: boolean}}}}, '403': {$ref: '#/components/responses/Error'}}
+    delete:
+      tags: [Usuarios]
+      summary: Elimina un usuario (ADMIN)
+      security: [{bearerAuth: []}]
+      responses: {'200': {description: Eliminado, content: {application/json: {schema: {type: boolean}}}}, '403': {$ref: '#/components/responses/Error'}}
+  /usuarios/{id}/perfil:
+    get:
+      tags: [Usuarios]
+      summary: Obtiene usuario y sus cuentas asignadas
+      security: [{bearerAuth: []}]
+      parameters: [{$ref: '#/components/parameters/Id'}]
+      responses: {'200': {description: Perfil bancario, content: {application/json: {schema: {$ref: '#/components/schemas/PerfilBancario'}}}}, '403': {$ref: '#/components/responses/Error'}}
+  /cuentas:
+    get:
+      tags: [Cuentas]
+      summary: Lista cuentas, opcionalmente por usuario
+      security: [{bearerAuth: []}]
+      parameters: [{$ref: '#/components/parameters/UsuarioId'}]
+      responses: {'200': {description: Cuentas, content: {application/json: {schema: {type: array, items: {$ref: '#/components/schemas/Cuenta'}}}}}}
+    post:
+      tags: [Cuentas]
+      summary: Crea una cuenta
+      security: [{bearerAuth: []}]
+      requestBody: {$ref: '#/components/requestBodies/Cuenta'}
+      responses: {'200': {description: Creada, content: {application/json: {schema: {type: boolean}}}}, '400': {$ref: '#/components/responses/Error'}}
+  /cuentas/clientes:
+    get:
+      tags: [Cuentas]
+      summary: Lista clientes elegibles como titulares
+      security: [{bearerAuth: []}]
+      responses: {'200': {description: Clientes, content: {application/json: {schema: {type: array, items: {$ref: '#/components/schemas/ClienteCuenta'}}}}}}
+  /cuentas/para-usuario/{usuarioId}:
+    post:
+      tags: [Cuentas]
+      summary: Crea y asigna una cuenta a un usuario
+      security: [{bearerAuth: []}]
+      parameters: [{$ref: '#/components/parameters/UsuarioIdPath'}]
+      responses: {'200': {description: Cuenta creada, content: {application/json: {schema: {$ref: '#/components/schemas/Cuenta'}}}}}
+  /cuentas/disponibilidades:
+    get:
+      tags: [Cuentas]
+      summary: Lista disponibilidades temporales
+      security: [{bearerAuth: []}]
+      responses: {'200': {description: Disponibilidades, content: {application/json: {schema: {type: array, items: {$ref: '#/components/schemas/EstadoCuenta'}}}}}}
+  /cuentas/{id}:
+    parameters: [{$ref: '#/components/parameters/Id'}]
+    get:
+      tags: [Cuentas]
+      summary: Obtiene una cuenta
+      security: [{bearerAuth: []}]
+      responses: {'200': {description: Cuenta, content: {application/json: {schema: {$ref: '#/components/schemas/Cuenta'}}}}, '404': {$ref: '#/components/responses/Error'}}
+    put:
+      tags: [Cuentas]
+      summary: Actualiza una cuenta
+      security: [{bearerAuth: []}]
+      requestBody: {$ref: '#/components/requestBodies/Cuenta'}
+      responses: {'200': {description: Actualizada, content: {application/json: {schema: {type: boolean}}}}}
+    delete:
+      tags: [Cuentas]
+      summary: Elimina una cuenta
+      security: [{bearerAuth: []}]
+      responses: {'200': {description: Eliminada, content: {application/json: {schema: {type: boolean}}}}}
+  /cuentas/{id}/disponibilidad:
+    get:
+      tags: [Cuentas]
+      summary: Consulta disponibilidad de una cuenta
+      security: [{bearerAuth: []}]
+      parameters: [{$ref: '#/components/parameters/Id'}]
+      responses: {'200': {description: Estado, content: {application/json: {schema: {$ref: '#/components/schemas/EstadoCuenta'}}}}}
+  /cuentas/{id}/disponibilidad/esperar:
+    get:
+      tags: [Cuentas]
+      summary: Espera un cambio de disponibilidad (long polling)
+      security: [{bearerAuth: []}]
+      parameters:
+        - {$ref: '#/components/parameters/Id'}
+        - {name: versionConocida, in: query, schema: {type: integer, format: int64, default: 0}}
+        - {name: esperaMaximaMs, in: query, schema: {type: integer, format: int64, default: 30000, maximum: 30000}}
+      responses: {'200': {description: Estado resultante, content: {application/json: {schema: {$ref: '#/components/schemas/EstadoCuenta'}}}}}
+  /cuentas/{id}/disponibilidad/recuperar:
+    post:
+      tags: [Cuentas]
+      summary: Recupera una cuenta bloqueada
+      security: [{bearerAuth: []}]
+      parameters: [{$ref: '#/components/parameters/Id'}]
+      responses: {'200': {description: Estado recuperado, content: {application/json: {schema: {$ref: '#/components/schemas/EstadoCuenta'}}}}}
+  /transacciones:
+    get:
+      tags: [Transacciones]
+      summary: Lista transacciones; filtra por cuentaId o usuarioId
+      security: [{bearerAuth: []}]
+      parameters:
+        - {name: cuentaId, in: query, schema: {type: string}}
+        - {$ref: '#/components/parameters/UsuarioId'}
+      responses: {'200': {description: Movimientos, content: {application/json: {schema: {type: array, items: {$ref: '#/components/schemas/Transaccion'}}}}}}
+  /transacciones/movimientos:
+    post:
+      tags: [Transacciones]
+      summary: Registra un ingreso o retiro
+      security: [{bearerAuth: []}]
+      requestBody: {required: true, content: {application/json: {schema: {$ref: '#/components/schemas/SolicitudMovimiento'}, example: {tipo: INGRESO, cuentaId: '1234567890', monto: 100.00}}}}
+      responses: {'200': {description: Movimiento creado, content: {application/json: {schema: {$ref: '#/components/schemas/Transaccion'}}}}, '400': {$ref: '#/components/responses/Error'}}
+  /transacciones/transferencias:
+    post:
+      tags: [Transacciones]
+      summary: Transfiere fondos en una transacción atómica
+      security: [{bearerAuth: []}]
+      requestBody: {required: true, content: {application/json: {schema: {$ref: '#/components/schemas/SolicitudTransferencia'}}}}
+      responses: {'200': {description: Transferencia auditada, content: {application/json: {schema: {$ref: '#/components/schemas/Transferencia'}}}}, '400': {$ref: '#/components/responses/Error'}}
+  /transacciones/{id}:
+    parameters: [{$ref: '#/components/parameters/Id'}]
+    get:
+      tags: [Transacciones]
+      summary: Obtiene una transacción
+      security: [{bearerAuth: []}]
+      responses: {'200': {description: Transacción, content: {application/json: {schema: {$ref: '#/components/schemas/Transaccion'}}}}, '404': {$ref: '#/components/responses/Error'}}
+    delete:
+      tags: [Transacciones]
+      summary: Operación no permitida; los movimientos son inmutables
+      security: [{bearerAuth: []}]
+      responses: {'409': {$ref: '#/components/responses/Error'}}
+  /transacciones/{id}/reversa:
+    post:
+      tags: [Transacciones]
+      summary: Registra la reversa de un movimiento simple (ADMIN/CAJERO)
+      security: [{bearerAuth: []}]
+      parameters: [{$ref: '#/components/parameters/Id'}]
+      responses: {'200': {description: Reversa creada, content: {application/json: {schema: {$ref: '#/components/schemas/Transaccion'}}}}, '409': {$ref: '#/components/responses/Error'}}
+  /asignaciones:
+    get:
+      tags: [Asignaciones]
+      summary: Lista asignaciones por cuentaId o usuarioId
+      security: [{bearerAuth: []}]
+      parameters: [{name: cuentaId, in: query, schema: {type: string}}, {$ref: '#/components/parameters/UsuarioId'}]
+      responses: {'200': {description: Asignaciones, content: {application/json: {schema: {type: array, items: {$ref: '#/components/schemas/Asignacion'}}}}}, '400': {$ref: '#/components/responses/Error'}}
+    post:
+      tags: [Asignaciones]
+      summary: Asigna una cuenta a un usuario
+      security: [{bearerAuth: []}]
+      requestBody: {required: true, content: {application/json: {schema: {$ref: '#/components/schemas/SolicitudAsignacion'}}}}
+      responses: {'200': {description: Asignada, content: {application/json: {schema: {type: boolean}}}}}
+    delete:
+      tags: [Asignaciones]
+      summary: Quita una asignación
+      security: [{bearerAuth: []}]
+      parameters: [{name: cuentaId, in: query, required: true, schema: {type: string}}, {name: usuarioId, in: query, required: true, schema: {type: string}}]
+      responses: {'200': {description: Desasignada, content: {application/json: {schema: {type: boolean}}}}}
+  /asignaciones/cuentas:
+    get:
+      tags: [Asignaciones]
+      summary: Busca cuentas por nombre o usuario
+      security: [{bearerAuth: []}]
+      parameters: [{name: nombreOUsuario, in: query, schema: {type: string}}]
+      responses: {'200': {description: Cuentas, content: {application/json: {schema: {type: array, items: {$ref: '#/components/schemas/Cuenta'}}}}}}
+components:
+  securitySchemes:
+    bearerAuth: {type: http, scheme: bearer, bearerFormat: JWT}
+  parameters:
+    Id: {name: id, in: path, required: true, schema: {type: string}}
+    UsuarioId: {name: usuarioId, in: query, schema: {type: string}}
+    UsuarioIdPath: {name: usuarioId, in: path, required: true, schema: {type: string}}
+    Nombre: {name: nombre, in: query, schema: {type: string}}
+  requestBodies:
+    Usuario: {required: true, content: {application/json: {schema: {$ref: '#/components/schemas/Usuario'}}}}
+    Cuenta: {required: true, content: {application/json: {schema: {$ref: '#/components/schemas/Cuenta'}}}}
+  responses:
+    Error: {description: Error de negocio, content: {application/json: {schema: {$ref: '#/components/schemas/Error'}, example: {codigo: ACCESO_DENEGADO, mensaje: No tiene permisos para esta operación, detalle: token}}}}
+  schemas:
+    SolicitudLogin: {type: object, required: [usuario, contrasenia], properties: {usuario: {type: string}, contrasenia: {type: string, format: password}}}
+    SolicitudMovimiento: {type: object, required: [tipo, cuentaId, monto], properties: {tipo: {type: string, enum: [INGRESO, RETIRO]}, cuentaId: {type: string}, monto: {type: number, format: decimal}}}
+    SolicitudTransferencia: {type: object, required: [cuentaOrigenId, cuentaDestinoId, monto], properties: {cuentaOrigenId: {type: string}, cuentaDestinoId: {type: string}, monto: {type: number, format: decimal}}}
+    SolicitudAsignacion: {type: object, required: [cuentaId, usuarioId], properties: {cuentaId: {type: string}, usuarioId: {type: string}}}
+    RespuestaLogin: {type: object, properties: {exitoso: {type: boolean}, token: {type: string}, usuarioId: {type: string}, rolId: {type: string}, rolNombre: {type: string}, usuarioNombre: {type: string}, mensaje: {type: string}}}
+    Usuario: {type: object, properties: {usuarioId: {type: string}, rolId: {type: string}, usuarioNombre: {type: string}, usuarioApellido: {type: string}, usuarioTelefono: {type: string}, usuarioUsuario: {type: string}, usuarioContraseania: {type: string, writeOnly: true}}}
+    Cuenta: {type: object, properties: {cuentaId: {type: string}, cuentaNumero: {type: string}, sucursalId: {type: string}, sucursalNombre: {type: string}, cuentaSaldo: {type: number, format: decimal}, cuentaEstado: {type: string}}}
+    ClienteCuenta: {type: object, properties: {usuarioId: {type: string}, nombreCompleto: {type: string}, usuario: {type: string}}}
+    EstadoCuenta: {type: object, properties: {cuentaId: {type: string}, estado: {type: string, enum: [DISPONIBLE, BLOQUEADA]}, version: {type: integer, format: int64}, bloqueada: {type: boolean}}}
+    Transaccion: {type: object, properties: {transaccionId: {type: string}, cuentaId: {type: string}, transaccionSaldo: {type: number, format: decimal}, transaccionTipo: {type: string}, transaccionSaldoAnterior: {type: number, format: decimal}, transaccionSaldoPosterior: {type: number, format: decimal}, transaccionCreadoEn: {type: string, format: date-time}, transaccionCreadoPor: {type: string}}}
+    Transferencia: {type: object, properties: {transferenciaId: {type: string}, cuentaOrigenId: {type: string}, cuentaDestinoId: {type: string}, monto: {type: number, format: decimal}, debito: {$ref: '#/components/schemas/Transaccion'}, credito: {$ref: '#/components/schemas/Transaccion'}, creadoEn: {type: string, format: date-time}}}
+    PerfilBancario: {type: object, properties: {usuario: {$ref: '#/components/schemas/Usuario'}, cuentas: {type: array, items: {$ref: '#/components/schemas/Cuenta'}}}}
+    Asignacion: {type: object, properties: {cuentaId: {type: string}, usuarioId: {type: string}}}
+    Error: {type: object, properties: {codigo: {type: string}, mensaje: {type: string}, detalle: {type: string, nullable: true}}}

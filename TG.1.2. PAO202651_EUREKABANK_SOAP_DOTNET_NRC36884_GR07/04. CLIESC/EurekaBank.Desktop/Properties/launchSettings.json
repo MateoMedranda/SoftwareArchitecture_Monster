@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "EurekaBank.Desktop": {
+      "commandName": "Project",
+      "environmentVariables": {
+        "EUREKABANK_URL": "http://localhost:51241/EurekaBankSoap.svc"
+      }
+    }
+  }
+}

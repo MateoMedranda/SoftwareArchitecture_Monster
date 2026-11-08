@@ -1,0 +1,11 @@
+<Project>
+  <!-- Conserva las propiedades comunes del repositorio al usar este archivo más cercano. -->
+  <Import Project="$(MSBuildThisFileDirectory)..\Directory.Build.props" />
+
+  <PropertyGroup>
+    <!-- MAUI/Android genera clases Java con nombres extensos. Fuera del árbol profundo del proyecto se evita XA5301/MAX_PATH. -->
+    <BaseIntermediateOutputPath>C:\ebuild\EurekaBankMobile\obj\</BaseIntermediateOutputPath>
+    <!-- El obj anterior queda en el proyecto, pero no puede tratarse como código fuente. -->
+    <DefaultItemExcludes>$(DefaultItemExcludes);$(MSBuildProjectDirectory)\obj\**</DefaultItemExcludes>
+  </PropertyGroup>
+</Project>

@@ -1,0 +1,7 @@
+**/.development.env
+/target/
+/nbproject/private/
+/build/
+/.idea/
+*.iml
+*.log

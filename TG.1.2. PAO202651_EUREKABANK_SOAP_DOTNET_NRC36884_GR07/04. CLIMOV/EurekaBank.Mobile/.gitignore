@@ -1,0 +1,13 @@
+# .NET MAUI / Android build products
+bin/
+obj/
+*.apk
+*.aab
+*.apks
+*.keystore
+*.jks
+
+# Android / MAUI local state
+platforms/android/.gradle/
+Resources/Raw/*.keystore
+Properties/launchSettings.local.json

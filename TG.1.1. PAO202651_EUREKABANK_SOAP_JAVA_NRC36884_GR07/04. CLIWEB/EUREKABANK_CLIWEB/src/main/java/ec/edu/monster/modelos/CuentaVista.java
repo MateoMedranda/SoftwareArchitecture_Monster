@@ -1,0 +1,3 @@
+package ec.edu.monster.modelos;
+import java.math.BigDecimal;
+public class CuentaVista {private final String id,numero,estado,sucursal;private final BigDecimal saldo;private String disponibilidad="DISPONIBLE";public CuentaVista(String id,String numero,BigDecimal saldo,String estado,String sucursal){this.id=id;this.numero=numero;this.saldo=saldo;this.estado=estado;this.sucursal=sucursal;}public String getId(){return id;}public String getNumero(){return numero;}public BigDecimal getSaldo(){return saldo;}public String getEstado(){return estado;}public String getSucursal(){return sucursal;}public String getDisponibilidad(){return disponibilidad;}public void setDisponibilidad(String v){disponibilidad=v==null?"DISPONIBLE":v;}}

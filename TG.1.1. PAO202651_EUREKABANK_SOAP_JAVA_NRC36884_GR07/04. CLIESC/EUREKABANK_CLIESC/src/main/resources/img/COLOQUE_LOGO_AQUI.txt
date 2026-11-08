@@ -1,0 +1,4 @@
+Coloque aquí su imagen PNG con el nombre exacto: logo.png
+
+Ruta final: src/main/resources/img/logo.png
+La aplicación ya intenta cargarla al iniciar sesión; si no existe, muestra el monograma de respaldo.
