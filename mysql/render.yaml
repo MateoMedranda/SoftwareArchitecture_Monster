@@ -1,0 +1,24 @@
+# Render Blueprint (opcional) - despliegue de MySQL como servicio web.
+# Nota: Render enruta HTTP a $PORT y hace health check HTTP. MySQL no sirve HTTP,
+# por lo que en el tier gratuito puede marcarse como unhealthy. Para uso real
+# como BDD remota considerar Render Managed Postgres o un proveedor con TCP.
+services:
+  - type: web
+    name: eurekabank-mysql
+    runtime: docker
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    plan: free
+    envVars:
+      - key: MYSQL_ROOT_PASSWORD
+        sync: false
+      - key: MYSQL_DATABASE
+        value: arquitectura_db
+      - key: MYSQL_USER
+        value: MONSTER
+      - key: MYSQL_PASSWORD
+        sync: false
+      - key: PORT
+        value: "3306"
+    # Health check deshabilitado a nivel de path (MySQL no responde HTTP)
+    healthCheckPath: /
