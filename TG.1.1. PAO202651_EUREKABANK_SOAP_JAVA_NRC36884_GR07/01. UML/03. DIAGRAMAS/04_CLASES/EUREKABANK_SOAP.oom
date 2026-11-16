@@ -1466,7 +1466,6 @@ Shadow=0</a:DisplayPreferences>
 <a:PageMargins>((315,354), (433,354))</a:PageMargins>
 <a:PageOrientation>1</a:PageOrientation>
 <a:PaperSource>1</a:PaperSource>
-<a:Flags>1</a:Flags>
 <c:Symbols>
 <o:PackageSymbol Id="o6">
 <a:ModificationDate>1793843412</a:ModificationDate>
@@ -24641,7 +24640,7 @@ import java.util.concurrent.locks.ReentrantLock;
 <a:Creator>USER</a:Creator>
 <a:ModificationDate>1793843410</a:ModificationDate>
 <a:Modifier>USER</a:Modifier>
-<a:Parameter.DataType>DisponibilidadCuentaServicio.Operacion&lt;T&gt;</a:Parameter.DataType>
+<a:Parameter.DataType>ec.edu.monster.servicios.DisponibilidadCuentaServicio.Operacion&lt;T&gt;</a:Parameter.DataType>
 <c:ObjectDataType>
 <o:Interface Ref="o1164"/>
 </c:ObjectDataType>
@@ -27245,7 +27244,7 @@ transferencias se revierten con una nueva transferencia en sentido contrario.
 <a:Creator>USER</a:Creator>
 <a:ModificationDate>1793843410</a:ModificationDate>
 <a:Modifier>USER</a:Modifier>
-<a:Parameter.DataType>TransaccionServicio.TrabajoBD&lt;T&gt;</a:Parameter.DataType>
+<a:Parameter.DataType>ec.edu.monster.servicios.TransaccionServicio.TrabajoBD&lt;T&gt;</a:Parameter.DataType>
 <c:ObjectDataType>
 <o:Interface Ref="o1168"/>
 </c:ObjectDataType>
