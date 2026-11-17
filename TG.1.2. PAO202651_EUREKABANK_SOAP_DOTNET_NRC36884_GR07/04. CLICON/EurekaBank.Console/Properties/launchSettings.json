@@ -1,0 +1,14 @@
+{
+  "profiles": {
+    "EurekaBank.Console": {
+      "commandName": "Project",
+      "environmentVariables": {
+        "EUREKABANK_URL": "http://localhost:51241/EurekaBankSoap.svc"
+      }
+    },
+    "WSL": {
+      "commandName": "WSL2",
+      "distributionName": ""
+    }
+  }
+}
