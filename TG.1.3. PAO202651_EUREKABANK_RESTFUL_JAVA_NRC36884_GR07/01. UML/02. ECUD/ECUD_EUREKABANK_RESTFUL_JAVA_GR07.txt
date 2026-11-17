@@ -1,0 +1,1429 @@
+Tema
+ESPECIFICACIÓN DE CASOS DE USO DETALLADO SISTEMA DE GESTIÓN BANCARIA “EUREKABANK”
+Autores
+LÓPEZ GUANO GABRIEL MATÍAS
+MEDRANDA VALLADARES MATEO DAVID
+PAREJA MOREIRA MARCELO ALEJANDRO
+Tutor
+Ing. Eduardo Mauricio Campaña Ortega MIS.MDU.CCNA.CCIA.
+PhD. (c) Ingeniería de Software PhD. (c) Seguridad Información
+Fecha
+05/11/2026
+
+TABLA DE CONTENIDOS
+ESPECIFICACIÓN DE CASOS DE USO DETALLADO SISTEMA EUREKABANK
+TABLA DE CONTENIDOS
+ÍNDICE DE TABLAS
+ESPECIFICACIÓN DE CASOS DE USO DETALLADO
+ECUD 01: AUTENTICAR USUARIO
+ECUD 02: CERRAR SESIÓN
+ECUD 03: GESTIONAR TRANSACCIONES
+ECUD 04: CONSULTAR HISTORIAL DE TRANSACCIONES
+ECUD 05: GESTIONAR CUENTAS
+ECUD 06: GESTIONAR USUARIOS
+ECUD 07: GESTIONAR ASIGNACIONES DE CUENTA
+ECUD 08: CONSULTAR PERFIL BANCARIO
+ECUD 09: CONSULTAR DISPONIBILIDAD DE CUENTA
+ECUD 10: RECUPERAR DISPONIBILIDAD DE CUENTA
+
+ÍNDICE DE TABLAS
+Tabla 1. ECUD — CU-01: Autenticar usuario
+Tabla 2. ECUD — CU-02: Cerrar sesión
+Tabla 3. ECUD — CU-03: Gestionar transacciones
+Tabla 4. ECUD — CU-03.1: Registrar ingreso
+Tabla 5. ECUD — CU-03.2: Registrar retiro
+Tabla 6. ECUD — CU-03.3: Realizar transferencia
+Tabla 7. ECUD — CU-03.4: Reversar transacción
+Tabla 8. ECUD — CU-04: Consultar historial de transacciones
+Tabla 9. ECUD — CU-05: Gestionar cuentas
+Tabla 10. ECUD — CU-05.1: Crear y asignar cuenta a cliente
+Tabla 11. ECUD — CU-05.2: Consultar cuentas
+Tabla 12. ECUD — CU-05.3: Actualizar cuenta
+Tabla 13. ECUD — CU-05.4: Eliminar cuenta
+Tabla 14. ECUD — CU-06: Gestionar usuarios
+Tabla 15. ECUD — CU-06.1: Crear usuario
+Tabla 16. ECUD — CU-06.2: Consultar usuarios
+Tabla 17. ECUD — CU-06.3: Actualizar usuario
+Tabla 18. ECUD — CU-06.4: Eliminar usuario
+Tabla 19. ECUD — CU-07: Gestionar asignaciones de cuenta
+Tabla 20. ECUD — CU-08: Consultar perfil bancario
+Tabla 21. ECUD — CU-09: Consultar disponibilidad de cuenta
+Tabla 22. ECUD — CU-10: Recuperar disponibilidad de cuenta
+
+ESPECIFICACIÓN DE CASOS DE USO DETALLADO
+A continuación, se muestra la Especificación de Casos de uso Detallado (ECUD) para el sistema de gestión bancaria “EurekaBank”, implementado mediante servicios RESTful en Java y persistencia en MySQL.
+
+ECUD 01: AUTENTICAR USUARIO
+A continuación, se muestra la especificación del caso de uso CU-01: Autenticar usuario.
+Tabla 1. ECUD — CU-01: Autenticar usuario
+ECUD — CU-01: AUTENTICAR USUARIO
+Nombre caso de uso:
+Autenticar usuario
+Identificador:
+CU-01
+Descripción:
+Permite al usuario registrado iniciar sesión mediante sus credenciales personales. El sistema valida las credenciales y devuelve un token JWT con la identidad y el rol del usuario.
+Meta:
+Verificar la identidad y establecer acceso autenticado a las funciones que corresponden al rol del usuario.
+Estado:
+Activo
+Versión:
+1.0
+Autor(es):
+Gabriel López, Mateo Medranda, Marcelo Pareja
+Fecha creación:
+05/11/2026
+Fecha modificación:
+05/11/2026
+Gráfico:
+Diagrama de casos de uso: CU_Sistema_General. Caso relacionado: Autenticar usuario.
+Datos de entrada:
+Nombre de usuario y contraseña.
+Precondiciones:
+El servicio REST de EurekaBank y la base de datos MySQL deben estar disponibles.
+El usuario debe estar registrado y habilitado en el sistema.
+Postcondiciones:
+Éxito: el sistema devuelve una respuesta de autenticación exitosa con token JWT, identificador y rol del usuario.
+Fallo: el sistema deniega el acceso y devuelve un error de autenticación; no crea una sesión válida.
+Flujo básico — Inicio de sesión exitoso.
+N°
+Actor
+Sistema
+1
+El usuario abre el cliente de EurekaBank que utilizará.
+2
+El sistema muestra el formulario de inicio de sesión.
+3
+El usuario ingresa nombre de usuario y contraseña y selecciona “Iniciar sesión”.
+4
+El sistema valida que ambos campos estén completos.
+5
+El sistema envía las credenciales en una solicitud REST POST /auth/login con contenido JSON.
+6
+El sistema verifica las credenciales contra los usuarios registrados y determina el rol del usuario.
+7
+El sistema genera un token JWT y devuelve la respuesta de autenticación.
+8
+El cliente almacena el token para incluirlo en el encabezado Authorization: Bearer en las solicitudes protegidas y muestra el menú correspondiente al rol.
+Flujo alternativo
+4a) El usuario deja vacío el nombre de usuario o la contraseña.
+4a.1) El sistema indica que las credenciales son obligatorias y solicita completar los campos.
+Vuelve al paso 3.
+6a) El usuario no existe o la contraseña no coincide.
+6a.1) El sistema deniega el acceso y devuelve un mensaje de autenticación fallida.
+Termina.
+6b) El servicio o la base de datos no están disponibles.
+6b.1) El sistema informa que no fue posible completar la autenticación.
+Termina.
+Casos de uso incluidos:
+──
+Casos de uso extendidos:
+──
+
+ECUD 02: CERRAR SESIÓN
+A continuación, se muestra la especificación del caso de uso CU-02: Cerrar sesión.
+Tabla 2. ECUD — CU-02: Cerrar sesión
+ECUD — CU-02: CERRAR SESIÓN
+Nombre caso de uso:
+Cerrar sesión
+Identificador:
+CU-02
+Descripción:
+Permite al usuario terminar su sesión revocando el token JWT actual y eliminando las credenciales temporales del cliente.
+Meta:
+Evitar el uso posterior de la sesión desde el cliente que solicita el cierre.
+Estado:
+Activo
+Versión:
+1.0
+Autor(es):
+Gabriel López, Mateo Medranda, Marcelo Pareja
+Fecha creación:
+05/11/2026
+Fecha modificación:
+05/11/2026
+Gráfico:
+Diagrama de casos de uso: CU_Sistema_General. Caso relacionado: Autenticar usuario.
+Datos de entrada:
+Token JWT vigente enviado mediante Authorization: Bearer.
+Precondiciones:
+El usuario debe haber iniciado sesión y conservar el token de autenticación.
+Postcondiciones:
+Éxito: el token queda revocado por el servicio y el cliente elimina el token local.
+Fallo: el cliente limpia las credenciales locales y el sistema informa que el token era inválido o ya estaba revocado.
+Flujo básico — Cierre de sesión exitoso.
+N°
+Actor
+Sistema
+1
+El usuario selecciona “Cerrar sesión” en el cliente.
+2
+El cliente envía una solicitud REST POST /auth/logout con el token en Authorization: Bearer.
+3
+El sistema valida el token y registra su revocación.
+4
+El sistema confirma la operación.
+5
+El cliente elimina el token almacenado y muestra el formulario de inicio de sesión.
+Flujo alternativo
+3a) El token ya expiró, fue revocado o no es válido.
+3a.1) El cliente elimina el token local y muestra el formulario de inicio de sesión.
+Termina.
+Casos de uso incluidos:
+──
+Casos de uso extendidos:
+──
+
+ECUD 03: GESTIONAR TRANSACCIONES
+A continuación, se muestra la especificación del caso de uso CU-03: Gestionar transacciones.
+Tabla 3. ECUD — CU-03: Gestionar transacciones
+ECUD — CU-03: GESTIONAR TRANSACCIONES
+Nombre caso de uso:
+Gestionar transacciones
+Identificador:
+CU-03
+Descripción:
+Permite al usuario autorizado registrar ingresos, retiros y transferencias sobre cuentas bancarias. Las operaciones actualizan el saldo y dejan un registro auditable en la base de datos.
+Meta:
+Procesar movimientos monetarios de manera autorizada, consistente y atómica.
+Estado:
+Activo
+Versión:
+1.0
+Autor(es):
+Gabriel López, Mateo Medranda, Marcelo Pareja
+Fecha creación:
+05/11/2026
+Fecha modificación:
+05/11/2026
+Gráfico:
+Diagrama de casos de uso: CU_Sistema_General. Casos relacionados: Realizar Transacción, Verificar Cuenta y Verificar Saldo.
+Datos de entrada:
+Tipo de movimiento, número o identificador de cuenta y monto; para transferencias, cuenta de origen y cuenta de destino.
+Precondiciones:
+El usuario debe estar autenticado con token vigente.
+El usuario debe tener rol ADMIN o CAJERO para registrar ingresos y retiros. Para transferir debe estar autenticado y tener permiso sobre la cuenta de origen.
+Las cuentas involucradas deben existir y estar activas.
+Postcondiciones:
+Éxito: los saldos quedan actualizados y se registra la transacción o los movimientos de débito y crédito asociados.
+Fallo: no se modifica parcialmente el saldo; se devuelve el error correspondiente.
+Flujo básico — Registro de movimiento exitoso.
+N°
+Actor
+Sistema
+1
+El usuario autorizado abre el módulo de transacciones.
+2
+El sistema muestra las opciones de ingreso, retiro y transferencia.
+3
+El usuario selecciona el tipo de operación e ingresa las cuentas y el monto solicitado.
+4
+El cliente envía la solicitud JSON al endpoint REST correspondiente, incluyendo el token JWT.
+5
+El sistema valida token, rol o permisos sobre la cuenta, formato de la solicitud, existencia y estado de las cuentas y que el monto sea mayor que cero.
+6
+El sistema obtiene el bloqueo exclusivo de disponibilidad de las cuentas y bloquea las filas necesarias durante la transacción JDBC.
+7
+El sistema valida el saldo cuando la operación lo requiere, registra el movimiento y actualiza los saldos en una transacción atómica.
+8
+El sistema confirma el resultado y devuelve los datos del movimiento o de la transferencia.
+9
+El cliente presenta el resultado y actualiza la información de la cuenta.
+Flujo alternativo
+5a) El token está ausente, expirado o revocado.
+5a.1) El sistema rechaza la solicitud y devuelve un error de autenticación.
+Termina.
+5b) El usuario no tiene rol o permiso sobre la cuenta, la cuenta no existe o no está activa, el monto es inválido, el origen y destino son iguales o el saldo es insuficiente.
+5b.1) El sistema rechaza la operación e informa el motivo sin modificar los saldos.
+Termina.
+7a) Ocurre un error al registrar el movimiento o actualizar los saldos.
+7a.1) El sistema revierte la transacción JDBC y devuelve un error; los datos permanecen consistentes.
+Termina.
+Casos de uso incluidos:
+CU-01: Autenticar usuario.
+CU-09: Consultar disponibilidad de cuenta.
+Casos de uso extendidos:
+──
+
+ECUD 03.1: REGISTRAR INGRESO
+A continuación, se muestra la especificación del caso de uso CU-03.1: Registrar ingreso.
+Tabla 4. ECUD — CU-03.1: Registrar ingreso
+ECUD — CU-03.1: REGISTRAR INGRESO
+Nombre caso de uso:
+Registrar ingreso
+Identificador:
+CU-03.1
+Descripción:
+Permite acreditar un monto positivo en una cuenta bancaria activa y registrar el movimiento como INGRESO.
+Meta:
+Incrementar el saldo de la cuenta y conservar el saldo anterior, el saldo posterior, el usuario que realizó la operación y la fecha.
+Estado:
+Activo
+Versión:
+1.0
+Autor(es):
+Gabriel López, Mateo Medranda, Marcelo Pareja
+Fecha creación:
+05/11/2026
+Fecha modificación:
+05/11/2026
+Gráfico:
+Diagrama de casos de uso: CU_Sistema_General. Caso relacionado: Realizar Transacción.
+Datos de entrada:
+Cuenta y monto mayor que cero. Solicitud REST POST /transacciones/movimientos con tipo INGRESO.
+Precondiciones:
+El usuario tiene sesión válida y rol ADMIN o CAJERO.
+La cuenta existe, está activa y el usuario está autorizado para operar sobre ella.
+Postcondiciones:
+Éxito: el saldo se incrementa y se registra un movimiento INGRESO.
+Fallo: el saldo y el historial no cambian.
+Flujo básico — Ingreso exitoso.
+N°
+Actor
+Sistema
+1
+El cajero selecciona “Registrar ingreso”.
+2
+El sistema solicita cuenta y monto.
+3
+El cajero ingresa los datos y confirma la operación.
+4
+El sistema valida token, rol, cuenta y monto.
+5
+El sistema bloquea temporalmente la cuenta para evitar operaciones concurrentes.
+6
+El sistema registra el movimiento INGRESO y actualiza el saldo de forma atómica.
+7
+El sistema devuelve la transacción creada y el saldo posterior.
+Flujo alternativo
+4a) El monto no es numérico, está vacío o es menor o igual que cero, la cuenta no existe, no está activa o el usuario no tiene permiso.
+4a.1) El sistema rechaza el ingreso y devuelve el detalle del error.
+Termina.
+6a) Ocurre un error de base de datos.
+6a.1) El sistema revierte la operación y no conserva cambios parciales.
+Termina.
+Casos de uso incluidos:
+CU-01: Autenticar usuario.
+CU-09: Consultar disponibilidad de cuenta.
+Casos de uso extendidos:
+CU-03: Gestionar transacciones.
+
+ECUD 03.2: REGISTRAR RETIRO
+A continuación, se muestra la especificación del caso de uso CU-03.2: Registrar retiro.
+Tabla 5. ECUD — CU-03.2: Registrar retiro
+ECUD — CU-03.2: REGISTRAR RETIRO
+Nombre caso de uso:
+Registrar retiro
+Identificador:
+CU-03.2
+Descripción:
+Permite debitar un monto positivo de una cuenta bancaria activa cuando el saldo disponible es suficiente.
+Meta:
+Disminuir el saldo de forma controlada y registrar el movimiento como RETIRO.
+Estado:
+Activo
+Versión:
+1.0
+Autor(es):
+Gabriel López, Mateo Medranda, Marcelo Pareja
+Fecha creación:
+05/11/2026
+Fecha modificación:
+05/11/2026
+Gráfico:
+Diagrama de casos de uso: CU_Sistema_General. Caso relacionado: Realizar Transacción.
+Datos de entrada:
+Cuenta y monto mayor que cero. Solicitud REST POST /transacciones/movimientos con tipo RETIRO.
+Precondiciones:
+El usuario tiene sesión válida y rol ADMIN o CAJERO.
+La cuenta existe, está activa, el usuario tiene permiso y dispone de saldo suficiente.
+Postcondiciones:
+Éxito: el saldo disminuye y el sistema registra un movimiento RETIRO.
+Fallo: no se efectúa el débito ni se modifica el historial.
+Flujo básico — Retiro exitoso.
+N°
+Actor
+Sistema
+1
+El cajero selecciona “Registrar retiro”.
+2
+El sistema solicita cuenta y monto.
+3
+El cajero ingresa los datos y confirma la operación.
+4
+El sistema valida token, rol, cuenta, permiso y monto.
+5
+El sistema bloquea temporalmente la cuenta y comprueba el saldo disponible.
+6
+El sistema registra el movimiento RETIRO y actualiza el saldo en una transacción atómica.
+7
+El sistema devuelve la transacción y el saldo posterior.
+Flujo alternativo
+4a) El monto no es válido, la cuenta no existe o el usuario no está autorizado.
+4a.1) El sistema rechaza el retiro y detalla el error.
+Termina.
+5a) El saldo disponible es menor que el monto solicitado.
+5a.1) El sistema rechaza el retiro e informa saldo insuficiente; no modifica la cuenta.
+Termina.
+6a) Ocurre un error de persistencia.
+6a.1) El sistema revierte la transacción y conserva el saldo anterior.
+Termina.
+Casos de uso incluidos:
+CU-01: Autenticar usuario.
+CU-09: Consultar disponibilidad de cuenta.
+Casos de uso extendidos:
+CU-03: Gestionar transacciones.
+
+ECUD 03.3: REALIZAR TRANSFERENCIA
+A continuación, se muestra la especificación del caso de uso CU-03.3: Realizar transferencia.
+Tabla 6. ECUD — CU-03.3: Realizar transferencia
+ECUD — CU-03.3: REALIZAR TRANSFERENCIA
+Nombre caso de uso:
+Realizar transferencia
+Identificador:
+CU-03.3
+Descripción:
+Permite transferir un monto positivo desde una cuenta de origen hacia otra cuenta de destino.
+Meta:
+Debitar y acreditar los saldos como una sola operación, dejando ambos movimientos vinculados por la referencia de transferencia.
+Estado:
+Activo
+Versión:
+1.0
+Autor(es):
+Gabriel López, Mateo Medranda, Marcelo Pareja
+Fecha creación:
+05/11/2026
+Fecha modificación:
+05/11/2026
+Gráfico:
+Diagrama de casos de uso: CU_Sistema_General. Caso relacionado: Realizar Transacción.
+Datos de entrada:
+Identificador o número público de cuenta de origen, identificador o número público de cuenta de destino y monto mayor que cero.
+Precondiciones:
+El usuario tiene sesión válida.
+Ambas cuentas existen y están activas; el usuario tiene autorización sobre la cuenta de origen y saldo suficiente.
+Las cuentas de origen y destino deben ser distintas.
+Postcondiciones:
+Éxito: el sistema actualiza ambos saldos y registra débito y crédito en una transacción atómica.
+Fallo: se revierten los cambios y no queda aplicada parcialmente la transferencia.
+Flujo básico — Transferencia exitosa.
+N°
+Actor
+Sistema
+1
+El usuario selecciona “Realizar transferencia”.
+2
+El sistema solicita las cuentas de origen y destino, y el monto.
+3
+El usuario ingresa la información y confirma la operación.
+4
+El sistema valida token, permisos, cuentas, diferencia entre cuentas y monto.
+5
+El sistema obtiene bloqueos exclusivos en orden estable y bloquea las filas de ambas cuentas.
+6
+El sistema comprueba que el saldo de origen sea suficiente.
+7
+El sistema registra el débito y el crédito con una referencia común y actualiza los dos saldos dentro de una sola transacción JDBC.
+8
+El sistema confirma la transferencia y devuelve sus datos, incluidos los dos movimientos.
+Flujo alternativo
+4a) Una cuenta no existe, las cuentas son iguales, el monto no es válido o el usuario no tiene permiso sobre la cuenta de origen.
+4a.1) El sistema rechaza la solicitud sin modificar saldos.
+Termina.
+6a) El saldo de origen es insuficiente.
+6a.1) El sistema rechaza la transferencia e informa el motivo.
+Termina.
+7a) Se produce un error al guardar uno de los movimientos o actualizar los saldos.
+7a.1) El sistema ejecuta rollback y no conserva ningún cambio parcial.
+Termina.
+Casos de uso incluidos:
+CU-01: Autenticar usuario.
+CU-09: Consultar disponibilidad de cuenta.
+Casos de uso extendidos:
+CU-03: Gestionar transacciones.
+
+ECUD 03.4: REVERSAR TRANSACCIÓN
+A continuación, se muestra la especificación del caso de uso CU-03.4: Reversar transacción.
+Tabla 7. ECUD — CU-03.4: Reversar transacción
+ECUD — CU-03.4: REVERSAR TRANSACCIÓN
+Nombre caso de uso:
+Reversar transacción
+Identificador:
+CU-03.4
+Descripción:
+Permite registrar una transacción compensatoria para revertir un movimiento simple ya registrado. El movimiento original se conserva en el historial.
+Meta:
+Corregir una operación elegible mediante una nueva transacción auditable, sin borrar ni modificar el registro original.
+Estado:
+Activo
+Versión:
+1.0
+Autor(es):
+Gabriel López, Mateo Medranda, Marcelo Pareja
+Fecha creación:
+05/11/2026
+Fecha modificación:
+05/11/2026
+Gráfico:
+Diagrama de casos de uso: CU_Sistema_General. Caso relacionado: Realizar Transacción.
+Datos de entrada:
+Identificador de la transacción que se desea reversar y token JWT.
+Precondiciones:
+El usuario tiene sesión válida y permiso para reversar la transacción.
+La transacción existe y es un movimiento simple elegible; no debe haberse reversado previamente.
+Postcondiciones:
+Éxito: se registra el movimiento inverso y se actualiza el saldo; se conserva el movimiento original.
+Fallo: no se modifica el movimiento original ni el saldo.
+Flujo básico — Reversa exitosa.
+N°
+Actor
+Sistema
+1
+El usuario autorizado abre el historial y selecciona un movimiento simple.
+2
+El sistema muestra los datos del movimiento y la opción “Reversar”.
+3
+El usuario solicita la reversa.
+4
+El sistema valida token, permisos, existencia y elegibilidad del movimiento.
+5
+El sistema obtiene el bloqueo exclusivo de la cuenta y valida su estado y saldo aplicable.
+6
+El sistema registra la transacción compensatoria y actualiza el saldo de manera atómica.
+7
+El sistema confirma la reversa y presenta el nuevo movimiento asociado.
+Flujo alternativo
+4a) La transacción no existe, ya fue reversada o no es elegible para reversa.
+4a.1) El sistema rechaza la solicitud y explica el motivo.
+Termina.
+5a) La reversa no es posible según el saldo o estado actual de la cuenta.
+5a.1) El sistema rechaza la operación sin cambiar los datos.
+Termina.
+Casos de uso incluidos:
+CU-01: Autenticar usuario.
+Casos de uso extendidos:
+CU-03: Gestionar transacciones.
+
+ECUD 04: CONSULTAR HISTORIAL DE TRANSACCIONES
+A continuación, se muestra la especificación del caso de uso CU-04: Consultar historial de transacciones.
+Tabla 8. ECUD — CU-04: Consultar historial de transacciones
+ECUD — CU-04: CONSULTAR HISTORIAL DE TRANSACCIONES
+Nombre caso de uso:
+Consultar historial de transacciones
+Identificador:
+CU-04
+Descripción:
+Permite consultar los movimientos de una cuenta, los movimientos asociados a un usuario, una transacción por su identificador o el historial completo según el permiso del usuario.
+Meta:
+Mostrar datos auditables de los movimientos sin alterar los registros financieros.
+Estado:
+Activo
+Versión:
+1.0
+Autor(es):
+Gabriel López, Mateo Medranda, Marcelo Pareja
+Fecha creación:
+05/11/2026
+Fecha modificación:
+05/11/2026
+Gráfico:
+Diagrama de casos de uso: CU_Sistema_General. Caso relacionado: Consultar Historial.
+Datos de entrada:
+Filtro opcional cuentaId, usuarioId o identificador de transacción.
+Precondiciones:
+El usuario debe tener token JWT válido.
+El usuario debe contar con permiso para consultar el recurso solicitado.
+Postcondiciones:
+Éxito: se devuelve la transacción o lista de transacciones correspondiente.
+Fallo: se devuelve un error de autenticación, autorización o recurso inexistente.
+Flujo básico — Consulta por cuenta.
+N°
+Actor
+Sistema
+1
+El usuario abre la sección “Transacciones” o “Historial”.
+2
+El sistema presenta los filtros de cuenta y usuario permitidos.
+3
+El usuario ingresa el identificador de cuenta y solicita la búsqueda.
+4
+El cliente envía GET /transacciones?cuentaId={cuentaId} con el token JWT.
+5
+El sistema valida token y permiso, consulta los movimientos de la cuenta y los ordena según los datos recuperados.
+6
+El sistema devuelve la lista con identificador, cuenta, monto, tipo, saldos anterior y posterior, fecha y usuario que la creó.
+7
+El cliente muestra el historial al usuario.
+Flujo alternativo
+5a) El token es inválido o el usuario no tiene permiso para el historial solicitado.
+5a.1) El sistema deniega la consulta y devuelve el error correspondiente.
+Termina.
+5b) El identificador no corresponde a un recurso existente o no hay resultados.
+5b.1) El sistema informa que no se encontraron transacciones para los criterios indicados.
+Termina.
+Casos de uso incluidos:
+CU-01: Autenticar usuario.
+Casos de uso extendidos:
+──
+
+ECUD 05: GESTIONAR CUENTAS
+A continuación, se muestra la especificación del caso de uso CU-05: Gestionar cuentas.
+Tabla 9. ECUD — CU-05: Gestionar cuentas
+ECUD — CU-05: GESTIONAR CUENTAS
+Nombre caso de uso:
+Gestionar cuentas
+Identificador:
+CU-05
+Descripción:
+Permite al personal autorizado crear, consultar, actualizar o eliminar cuentas y asociar cuentas a sus titulares. Las cuentas nuevas comienzan con saldo cero.
+Meta:
+Mantener las cuentas y su titularidad sin permitir la modificación directa del saldo desde las operaciones de mantenimiento.
+Estado:
+Activo
+Versión:
+1.0
+Autor(es):
+Gabriel López, Mateo Medranda, Marcelo Pareja
+Fecha creación:
+05/11/2026
+Fecha modificación:
+05/11/2026
+Gráfico:
+Diagrama de casos de uso: CU_Sistema_General. Caso relacionado: Verificar Cuenta.
+Datos de entrada:
+Datos de la cuenta o cliente titular, identificador de cuenta y token JWT.
+Precondiciones:
+El usuario tiene sesión válida. Las operaciones de mantenimiento de cuentas se autorizan a ADMIN o CAJERO.
+Para crear una cuenta para cliente debe existir el usuario titular con rol CLIENTE.
+Postcondiciones:
+Éxito: la cuenta se crea, consulta, actualiza o elimina según la operación; las cuentas nuevas se crean con saldo cero.
+Fallo: el sistema devuelve el error y no modifica los datos de forma parcial.
+Flujo básico — Gestión de cuentas.
+N°
+Actor
+Sistema
+1
+El usuario autorizado abre el módulo “Cuentas”.
+2
+El sistema muestra la lista de cuentas y las acciones disponibles según el rol.
+3
+El usuario selecciona crear, consultar, actualizar o eliminar.
+4
+Para crear, el usuario selecciona un cliente titular y solicita crear la cuenta; para las otras operaciones, proporciona el identificador o número de cuenta.
+5
+El cliente envía la solicitud REST correspondiente con el token JWT.
+6
+El sistema valida token, rol, existencia del recurso y reglas del caso: número de cuenta de diez dígitos, saldo inicial cero y datos permitidos.
+7
+El sistema persiste la operación y, al crear para un usuario, genera y asigna la cuenta al titular.
+8
+El sistema devuelve el resultado o los datos actualizados.
+9
+El cliente confirma la operación y refresca la lista.
+Flujo alternativo
+6a) El usuario no está autenticado o no tiene rol autorizado.
+6a.1) El sistema deniega la operación y no modifica la cuenta.
+Termina.
+6b) La cuenta o titular no existe, el número no tiene diez dígitos o el saldo inicial no es cero.
+6b.1) El sistema devuelve el motivo de validación.
+Vuelve al paso 4.
+6c) Se intenta modificar el saldo mediante mantenimiento.
+6c.1) El sistema rechaza el cambio. El saldo se modifica mediante transacciones bancarias.
+Termina.
+Casos de uso incluidos:
+CU-01: Autenticar usuario.
+Casos de uso extendidos:
+──
+
+ECUD 05.1: CREAR Y ASIGNAR CUENTA A CLIENTE
+A continuación, se muestra la especificación del caso de uso CU-05.1: Crear y asignar cuenta a cliente.
+Tabla 10. ECUD — CU-05.1: Crear y asignar cuenta a cliente
+ECUD — CU-05.1: CREAR Y ASIGNAR CUENTA A CLIENTE
+Nombre caso de uso:
+Crear y asignar cuenta a cliente
+Identificador:
+CU-05.1
+Descripción:
+Permite a ADMIN o CAJERO crear una cuenta bancaria para un cliente elegible. El sistema genera los identificadores, crea la cuenta con saldo cero y registra la asignación al cliente.
+Meta:
+Crear una cuenta con titularidad registrada y saldo inicial controlado.
+Estado:
+Activo
+Versión:
+1.0
+Autor(es):
+Gabriel López, Mateo Medranda, Marcelo Pareja
+Fecha creación:
+05/11/2026
+Fecha modificación:
+05/11/2026
+Gráfico:
+Diagrama de casos de uso: CU_Sistema_General. Caso relacionado: Verificar Cuenta.
+Datos de entrada:
+Identificador del usuario titular con rol CLIENTE. Solicitud REST POST /cuentas/para-usuario/{usuarioId}.
+Precondiciones:
+El usuario que realiza la operación tiene token válido y rol ADMIN o CAJERO.
+El titular existe y tiene rol CLIENTE.
+Postcondiciones:
+Éxito: la cuenta se crea con número público único y saldo cero y queda asignada al titular.
+Fallo: no se crea una cuenta parcial ni una asignación incompleta.
+Flujo básico — Creación de cuenta exitosa.
+N°
+Actor
+Sistema
+1
+El cajero abre la opción “Crear cuenta”.
+2
+El sistema presenta los clientes elegibles para ser titulares.
+3
+El cajero selecciona al cliente y confirma la creación.
+4
+El cliente envía la solicitud REST POST /cuentas/para-usuario/{usuarioId} con el token.
+5
+El sistema valida el rol del solicitante y verifica que el cliente exista.
+6
+El sistema genera la cuenta con saldo cero, un identificador interno y un número público único, y registra su asignación al cliente.
+7
+El sistema devuelve los datos de la cuenta creada.
+8
+El cliente muestra la confirmación y el número de cuenta.
+Flujo alternativo
+5a) El solicitante no está autenticado, no tiene rol ADMIN o CAJERO, o el titular no existe.
+5a.1) El sistema rechaza la solicitud y devuelve el error.
+Termina.
+6a) Ocurre un error al persistir la cuenta o la asignación.
+6a.1) El sistema no deja un registro parcial y devuelve el error.
+Termina.
+Casos de uso incluidos:
+CU-01: Autenticar usuario.
+Casos de uso extendidos:
+CU-05: Gestionar cuentas.
+
+ECUD 05.2: CONSULTAR CUENTAS
+A continuación, se muestra la especificación del caso de uso CU-05.2: Consultar cuentas.
+Tabla 11. ECUD — CU-05.2: Consultar cuentas
+ECUD — CU-05.2: CONSULTAR CUENTAS
+Nombre caso de uso:
+Consultar cuentas
+Identificador:
+CU-05.2
+Descripción:
+Permite listar las cuentas accesibles al usuario o consultar una cuenta por su identificador. El listado puede filtrarse por usuarioId.
+Meta:
+Presentar información vigente de las cuentas según los permisos del usuario.
+Estado:
+Activo
+Versión:
+1.0
+Autor(es):
+Gabriel López, Mateo Medranda, Marcelo Pareja
+Fecha creación:
+05/11/2026
+Fecha modificación:
+05/11/2026
+Gráfico:
+Diagrama de casos de uso: CU_Sistema_General. Caso relacionado: Verificar Cuenta.
+Datos de entrada:
+Filtro opcional usuarioId o identificador de cuenta.
+Precondiciones:
+El usuario tiene token JWT válido.
+Postcondiciones:
+Éxito: se devuelve una lista de cuentas o los datos de la cuenta solicitada.
+Fallo: el sistema deniega el acceso o devuelve que la cuenta no existe.
+Flujo básico — Consulta de cuenta.
+N°
+Actor
+Sistema
+1
+El usuario abre la sección “Cuentas”.
+2
+El cliente solicita GET /cuentas o GET /cuentas?usuarioId={usuarioId}.
+3
+El sistema valida el token y el alcance de consulta permitido para el rol.
+4
+El sistema consulta y devuelve las cuentas correspondientes.
+5
+El usuario selecciona una cuenta y el cliente solicita GET /cuentas/{id}.
+6
+El sistema devuelve los datos de la cuenta solicitada.
+7
+El cliente presenta los datos al usuario.
+Flujo alternativo
+3a) Token inválido o consulta no autorizada.
+3a.1) El sistema devuelve un error de autenticación o autorización.
+Termina.
+6a) La cuenta solicitada no existe.
+6a.1) El sistema informa que no se encontró la cuenta.
+Termina.
+Casos de uso incluidos:
+CU-01: Autenticar usuario.
+Casos de uso extendidos:
+CU-05: Gestionar cuentas.
+
+ECUD 05.3: ACTUALIZAR CUENTA
+A continuación, se muestra la especificación del caso de uso CU-05.3: Actualizar cuenta.
+Tabla 12. ECUD — CU-05.3: Actualizar cuenta
+ECUD — CU-05.3: ACTUALIZAR CUENTA
+Nombre caso de uso:
+Actualizar cuenta
+Identificador:
+CU-05.3
+Descripción:
+Permite a un usuario autorizado actualizar los datos editables de una cuenta existente, sin alterar su saldo por esta vía.
+Meta:
+Mantener los datos administrativos de la cuenta preservando la integridad del saldo.
+Estado:
+Activo
+Versión:
+1.0
+Autor(es):
+Gabriel López, Mateo Medranda, Marcelo Pareja
+Fecha creación:
+05/11/2026
+Fecha modificación:
+05/11/2026
+Gráfico:
+Diagrama de casos de uso: CU_Sistema_General. Caso relacionado: Verificar Cuenta.
+Datos de entrada:
+Identificador de cuenta y datos editables. Solicitud PUT /cuentas/{id}.
+Precondiciones:
+El usuario tiene token válido y rol ADMIN o CAJERO.
+La cuenta existe.
+Postcondiciones:
+Éxito: se actualizan los campos admitidos; el saldo conserva su valor.
+Fallo: la cuenta permanece sin cambios.
+Flujo básico — Actualización exitosa.
+N°
+Actor
+Sistema
+1
+El usuario autorizado selecciona una cuenta y la opción “Actualizar”.
+2
+El sistema presenta los datos editables.
+3
+El usuario modifica los campos permitidos y confirma.
+4
+El cliente envía PUT /cuentas/{id} con el token JWT.
+5
+El sistema valida rol, identificador y datos recibidos.
+6
+El sistema actualiza la cuenta sin permitir la modificación directa del saldo.
+7
+El sistema devuelve confirmación y el cliente actualiza la vista.
+Flujo alternativo
+5a) Token o rol no autorizado, la cuenta no existe o los datos son inválidos.
+5a.1) El sistema rechaza la solicitud e informa el error.
+Termina.
+Casos de uso incluidos:
+CU-01: Autenticar usuario.
+Casos de uso extendidos:
+CU-05: Gestionar cuentas.
+
+ECUD 05.4: ELIMINAR CUENTA
+A continuación, se muestra la especificación del caso de uso CU-05.4: Eliminar cuenta.
+Tabla 13. ECUD — CU-05.4: Eliminar cuenta
+ECUD — CU-05.4: ELIMINAR CUENTA
+Nombre caso de uso:
+Eliminar cuenta
+Identificador:
+CU-05.4
+Descripción:
+Permite a un usuario autorizado solicitar la eliminación de una cuenta existente, sujeto a las restricciones de integridad referencial y de negocio.
+Meta:
+Retirar una cuenta únicamente cuando su eliminación sea válida para los datos relacionados.
+Estado:
+Activo
+Versión:
+1.0
+Autor(es):
+Gabriel López, Mateo Medranda, Marcelo Pareja
+Fecha creación:
+05/11/2026
+Fecha modificación:
+05/11/2026
+Gráfico:
+Diagrama de casos de uso: CU_Sistema_General. Caso relacionado: Verificar Cuenta.
+Datos de entrada:
+Identificador de cuenta y token JWT. Solicitud DELETE /cuentas/{id}.
+Precondiciones:
+El usuario tiene token válido y rol ADMIN o CAJERO.
+La cuenta existe y no hay restricciones referenciales que impidan eliminarla.
+Postcondiciones:
+Éxito: el sistema confirma la eliminación.
+Fallo: la cuenta y sus datos permanecen según las restricciones de base de datos.
+Flujo básico — Eliminación de cuenta.
+N°
+Actor
+Sistema
+1
+El usuario autorizado selecciona una cuenta y la opción “Eliminar”.
+2
+El sistema muestra la cuenta seleccionada y solicita confirmación.
+3
+El usuario confirma la eliminación.
+4
+El cliente envía DELETE /cuentas/{id} con el token JWT.
+5
+El sistema valida token, rol e identificador de cuenta.
+6
+El sistema solicita la eliminación a la base de datos.
+7
+El sistema confirma la operación y el cliente retira la cuenta de la lista.
+Flujo alternativo
+3a) El usuario cancela la operación.
+3a.1) El sistema conserva la cuenta sin cambios.
+Termina.
+5a) Token o rol no autorizado, la cuenta no existe o la base de datos impide eliminarla por datos relacionados.
+5a.1) El sistema devuelve el error y conserva los datos.
+Termina.
+Casos de uso incluidos:
+CU-01: Autenticar usuario.
+Casos de uso extendidos:
+CU-05: Gestionar cuentas.
+
+ECUD 06: GESTIONAR USUARIOS
+A continuación, se muestra la especificación del caso de uso CU-06: Gestionar usuarios.
+Tabla 14. ECUD — CU-06: Gestionar usuarios
+ECUD — CU-06: GESTIONAR USUARIOS
+Nombre caso de uso:
+Gestionar usuarios
+Identificador:
+CU-06
+Descripción:
+Permite al personal autorizado consultar usuarios y al administrador crear, actualizar o eliminar usuarios del sistema. Las operaciones de mantenimiento se restringen al rol ADMIN.
+Meta:
+Mantener usuarios y roles con acceso controlado, sin exponer las contraseñas almacenadas.
+Estado:
+Activo
+Versión:
+1.0
+Autor(es):
+Gabriel López, Mateo Medranda, Marcelo Pareja
+Fecha creación:
+05/11/2026
+Fecha modificación:
+05/11/2026
+Gráfico:
+Diagrama de casos de uso: CU_Sistema_General. Actores: Cliente Consola, Cliente Escritorio, Cliente Web y Cliente Móvil.
+Datos de entrada:
+Datos personales, nombre de usuario, rol y contraseña cuando corresponda; identificador de usuario.
+Precondiciones:
+El usuario que realiza altas, cambios o eliminaciones tiene token JWT válido y rol ADMIN.
+Postcondiciones:
+Éxito: la operación solicitada se persiste; las respuestas de consulta no incluyen contraseñas ni hashes.
+Fallo: el sistema deniega la operación o devuelve el error de validación o persistencia.
+Flujo básico — Administración de usuarios.
+N°
+Actor
+Sistema
+1
+El administrador abre el módulo “Usuarios”.
+2
+El sistema muestra la lista de usuarios disponibles y las acciones permitidas.
+3
+El administrador selecciona crear, consultar, actualizar o eliminar un usuario.
+4
+El administrador ingresa los datos requeridos o el identificador del usuario y confirma.
+5
+El cliente envía la solicitud REST correspondiente con el token JWT.
+6
+El sistema valida token, rol y datos y ejecuta la operación solicitada.
+7
+En consultas, el sistema omite el campo de contraseña antes de devolver la respuesta.
+8
+El sistema devuelve la confirmación o los datos del usuario y el cliente actualiza la vista.
+Flujo alternativo
+6a) El token no es válido o el usuario no tiene rol ADMIN para una operación de mantenimiento.
+6a.1) El sistema deniega la operación.
+Termina.
+6b) El identificador no corresponde a un usuario o los datos no pasan las restricciones de base de datos.
+6b.1) El sistema devuelve el error sin confirmar cambios.
+Termina.
+Casos de uso incluidos:
+CU-01: Autenticar usuario.
+Casos de uso extendidos:
+──
+
+ECUD 06.1: CREAR USUARIO
+A continuación, se muestra la especificación del caso de uso CU-06.1: Crear usuario.
+Tabla 15. ECUD — CU-06.1: Crear usuario
+ECUD — CU-06.1: CREAR USUARIO
+Nombre caso de uso:
+Crear usuario
+Identificador:
+CU-06.1
+Descripción:
+Permite al administrador registrar un usuario del sistema con los datos personales, nombre de usuario, rol y credencial requerida.
+Meta:
+Incorporar un usuario con identidad y rol definidos para los canales de EurekaBank.
+Estado:
+Activo
+Versión:
+1.0
+Autor(es):
+Gabriel López, Mateo Medranda, Marcelo Pareja
+Fecha creación:
+05/11/2026
+Fecha modificación:
+05/11/2026
+Gráfico:
+Diagrama de casos de uso: CU_Sistema_General.
+Datos de entrada:
+Datos del usuario enviados en JSON a POST /usuarios.
+Precondiciones:
+El solicitante debe estar autenticado y tener rol ADMIN.
+Postcondiciones:
+Éxito: el usuario queda registrado con el rol especificado.
+Fallo: no se registra el usuario y se devuelve el error correspondiente.
+Flujo básico — Creación de usuario.
+N°
+Actor
+Sistema
+1
+El administrador abre “Crear usuario”.
+2
+El sistema solicita los datos personales, usuario, rol y contraseña.
+3
+El administrador completa los campos y confirma.
+4
+El cliente envía POST /usuarios con el token JWT.
+5
+El sistema valida que el token tenga rol ADMIN y persiste el usuario.
+6
+El sistema confirma la creación.
+Flujo alternativo
+5a) El token no es válido, el solicitante no es ADMIN o la base de datos rechaza los datos.
+5a.1) El sistema devuelve el error y no confirma la creación.
+Termina.
+Casos de uso incluidos:
+CU-01: Autenticar usuario.
+Casos de uso extendidos:
+CU-06: Gestionar usuarios.
+
+ECUD 06.2: CONSULTAR USUARIOS
+A continuación, se muestra la especificación del caso de uso CU-06.2: Consultar usuarios.
+Tabla 16. ECUD — CU-06.2: Consultar usuarios
+ECUD — CU-06.2: CONSULTAR USUARIOS
+Nombre caso de uso:
+Consultar usuarios
+Identificador:
+CU-06.2
+Descripción:
+Permite a ADMIN o CAJERO listar usuarios, buscar por nombre o consultar un usuario individual según las reglas de autorización.
+Meta:
+Consultar datos de usuario sin exponer credenciales.
+Estado:
+Activo
+Versión:
+1.0
+Autor(es):
+Gabriel López, Mateo Medranda, Marcelo Pareja
+Fecha creación:
+05/11/2026
+Fecha modificación:
+05/11/2026
+Gráfico:
+Diagrama de casos de uso: CU_Sistema_General.
+Datos de entrada:
+Filtro opcional nombre o identificador de usuario.
+Precondiciones:
+El usuario tiene token válido. Para listar o buscar se requiere rol ADMIN o CAJERO; un usuario puede consultar su propio registro.
+Postcondiciones:
+Éxito: se devuelven los datos autorizados sin contraseña ni hash.
+Fallo: el sistema deniega la consulta o indica que el usuario no existe.
+Flujo básico — Búsqueda de usuario.
+N°
+Actor
+Sistema
+1
+El usuario autorizado abre la sección “Usuarios”.
+2
+El cliente envía GET /usuarios, GET /usuarios?nombre={nombre} o GET /usuarios/{id}.
+3
+El sistema valida token y permisos.
+4
+El sistema consulta los datos y elimina el campo de contraseña de la respuesta.
+5
+El sistema devuelve la lista o registro y el cliente lo presenta.
+Flujo alternativo
+3a) El usuario no está autenticado o intenta consultar un registro ajeno sin permiso.
+3a.1) El sistema deniega la consulta.
+Termina.
+4a) El usuario solicitado no existe.
+4a.1) El sistema informa que no se encontró el usuario.
+Termina.
+Casos de uso incluidos:
+CU-01: Autenticar usuario.
+Casos de uso extendidos:
+CU-06: Gestionar usuarios.
+
+ECUD 06.3: ACTUALIZAR USUARIO
+A continuación, se muestra la especificación del caso de uso CU-06.3: Actualizar usuario.
+Tabla 17. ECUD — CU-06.3: Actualizar usuario
+ECUD — CU-06.3: ACTUALIZAR USUARIO
+Nombre caso de uso:
+Actualizar usuario
+Identificador:
+CU-06.3
+Descripción:
+Permite al administrador actualizar los datos de un usuario existente.
+Meta:
+Mantener los datos de usuario y su rol conforme a las reglas de acceso del sistema.
+Estado:
+Activo
+Versión:
+1.0
+Autor(es):
+Gabriel López, Mateo Medranda, Marcelo Pareja
+Fecha creación:
+05/11/2026
+Fecha modificación:
+05/11/2026
+Gráfico:
+Diagrama de casos de uso: CU_Sistema_General.
+Datos de entrada:
+Identificador y datos actualizados del usuario mediante PUT /usuarios/{id}.
+Precondiciones:
+El solicitante tiene token JWT válido y rol ADMIN.
+El usuario que se actualizará existe.
+Postcondiciones:
+Éxito: el sistema confirma la actualización.
+Fallo: no se aplican cambios y se devuelve el error.
+Flujo básico — Actualización de usuario.
+N°
+Actor
+Sistema
+1
+El administrador busca y selecciona un usuario.
+2
+El sistema muestra los datos del usuario, excluyendo la contraseña almacenada.
+3
+El administrador modifica los campos y confirma.
+4
+El cliente envía PUT /usuarios/{id} con el token JWT.
+5
+El sistema verifica el rol ADMIN y actualiza el registro indicado.
+6
+El sistema confirma la operación.
+Flujo alternativo
+5a) El token es inválido, el rol no está autorizado, el usuario no existe o la base de datos rechaza los datos.
+5a.1) El sistema devuelve el error y conserva los datos anteriores.
+Termina.
+Casos de uso incluidos:
+CU-01: Autenticar usuario.
+Casos de uso extendidos:
+CU-06: Gestionar usuarios.
+
+ECUD 06.4: ELIMINAR USUARIO
+A continuación, se muestra la especificación del caso de uso CU-06.4: Eliminar usuario.
+Tabla 18. ECUD — CU-06.4: Eliminar usuario
+ECUD — CU-06.4: ELIMINAR USUARIO
+Nombre caso de uso:
+Eliminar usuario
+Identificador:
+CU-06.4
+Descripción:
+Permite al administrador solicitar la eliminación de un usuario existente, de acuerdo con las restricciones de integridad de la base de datos.
+Meta:
+Retirar el usuario cuando no existan restricciones que impidan eliminar sus referencias.
+Estado:
+Activo
+Versión:
+1.0
+Autor(es):
+Gabriel López, Mateo Medranda, Marcelo Pareja
+Fecha creación:
+05/11/2026
+Fecha modificación:
+05/11/2026
+Gráfico:
+Diagrama de casos de uso: CU_Sistema_General.
+Datos de entrada:
+Identificador de usuario mediante DELETE /usuarios/{id}.
+Precondiciones:
+El administrador tiene token válido y rol ADMIN.
+El usuario existe y la base de datos permite la eliminación.
+Postcondiciones:
+Éxito: el sistema confirma la eliminación.
+Fallo: el sistema conserva el usuario y devuelve el error.
+Flujo básico — Eliminación de usuario.
+N°
+Actor
+Sistema
+1
+El administrador selecciona el usuario y elige “Eliminar”.
+2
+El sistema solicita confirmación.
+3
+El administrador confirma la operación.
+4
+El cliente envía DELETE /usuarios/{id} con el token JWT.
+5
+El sistema valida el token y el rol ADMIN.
+6
+El sistema solicita eliminar el usuario de la base de datos.
+7
+El sistema confirma la operación.
+Flujo alternativo
+3a) El administrador cancela.
+3a.1) El sistema conserva el usuario.
+Termina.
+5a) El token o rol no está autorizado, el usuario no existe o hay una restricción referencial.
+5a.1) El sistema informa el error sin confirmar la eliminación.
+Termina.
+Casos de uso incluidos:
+CU-01: Autenticar usuario.
+Casos de uso extendidos:
+CU-06: Gestionar usuarios.
+
+ECUD 07: GESTIONAR ASIGNACIONES DE CUENTA
+A continuación, se muestra la especificación del caso de uso CU-07: Gestionar asignaciones de cuenta.
+Tabla 19. ECUD — CU-07: Gestionar asignaciones de cuenta
+ECUD — CU-07: GESTIONAR ASIGNACIONES DE CUENTA
+Nombre caso de uso:
+Gestionar asignaciones de cuenta
+Identificador:
+CU-07
+Descripción:
+Permite a ADMIN o CAJERO asignar o desasignar una cuenta a un usuario, consultar las asignaciones y buscar cuentas por nombre o nombre de usuario.
+Meta:
+Administrar la relación entre usuarios y cuentas que define el acceso a los servicios bancarios.
+Estado:
+Activo
+Versión:
+1.0
+Autor(es):
+Gabriel López, Mateo Medranda, Marcelo Pareja
+Fecha creación:
+05/11/2026
+Fecha modificación:
+05/11/2026
+Gráfico:
+Diagrama de casos de uso: CU_Sistema_General.
+Datos de entrada:
+CuentaId y usuarioId para asignar; cuentaId y usuarioId como parámetros para desasignar o consultar; nombreOUsuario para búsqueda.
+Precondiciones:
+El usuario tiene token válido y rol ADMIN o CAJERO para modificar y consultar asignaciones de cuentas.
+Postcondiciones:
+Éxito: la relación se crea, elimina o consulta según la solicitud.
+Fallo: la relación no se modifica y se devuelve el error.
+Flujo básico — Asignación de cuenta.
+N°
+Actor
+Sistema
+1
+El cajero abre el módulo de asignaciones.
+2
+El sistema muestra la búsqueda de usuario y cuenta.
+3
+El cajero selecciona la cuenta y el usuario titular y confirma.
+4
+El cliente envía POST /asignaciones con cuentaId y usuarioId en JSON.
+5
+El sistema valida el token y el rol ADMIN o CAJERO.
+6
+El sistema registra la relación cuenta-usuario.
+7
+El sistema confirma la asignación y actualiza la vista.
+Flujo alternativo
+5a) El usuario no está autenticado o no tiene rol ADMIN o CAJERO.
+5a.1) El sistema deniega la modificación.
+Termina.
+6a) Los datos no cumplen las restricciones de persistencia.
+6a.1) El sistema devuelve el error y no confirma la asignación.
+Termina.
+Casos de uso incluidos:
+CU-01: Autenticar usuario.
+Casos de uso extendidos:
+──
+
+ECUD 08: CONSULTAR PERFIL BANCARIO
+A continuación, se muestra la especificación del caso de uso CU-08: Consultar perfil bancario.
+Tabla 20. ECUD — CU-08: Consultar perfil bancario
+ECUD — CU-08: CONSULTAR PERFIL BANCARIO
+Nombre caso de uso:
+Consultar perfil bancario
+Identificador:
+CU-08
+Descripción:
+Permite consultar los datos de un usuario y las cuentas que tiene asignadas.
+Meta:
+Presentar un resumen bancario autorizado para el usuario solicitado.
+Estado:
+Activo
+Versión:
+1.0
+Autor(es):
+Gabriel López, Mateo Medranda, Marcelo Pareja
+Fecha creación:
+05/11/2026
+Fecha modificación:
+05/11/2026
+Gráfico:
+Diagrama de casos de uso: CU_Sistema_General.
+Datos de entrada:
+Identificador del usuario para GET /usuarios/{id}/perfil.
+Precondiciones:
+El solicitante tiene token JWT válido.
+ADMIN o CAJERO puede consultar el perfil; los demás usuarios solo pueden consultar su propio perfil.
+Postcondiciones:
+Éxito: se devuelve el usuario sin contraseña y la lista de cuentas asignadas.
+Fallo: se deniega el acceso o se informa que el usuario no existe.
+Flujo básico — Consulta de perfil.
+N°
+Actor
+Sistema
+1
+El usuario abre la sección “Perfil bancario”.
+2
+El cliente solicita el identificador del perfil propio o permitido.
+3
+El cliente envía GET /usuarios/{id}/perfil con el token JWT.
+4
+El sistema valida el token, el alcance de acceso y la existencia del usuario.
+5
+El sistema recupera los datos del usuario y sus cuentas asignadas, excluyendo la contraseña.
+6
+El sistema devuelve el perfil bancario.
+7
+El cliente presenta los datos al usuario.
+Flujo alternativo
+4a) El usuario intenta consultar un perfil ajeno sin rol ADMIN o CAJERO.
+4a.1) El sistema deniega el acceso.
+Termina.
+4b) El usuario indicado no existe.
+4b.1) El sistema informa que no se encontró el usuario.
+Termina.
+Casos de uso incluidos:
+CU-01: Autenticar usuario.
+Casos de uso extendidos:
+──
+
+ECUD 09: CONSULTAR DISPONIBILIDAD DE CUENTA
+A continuación, se muestra la especificación del caso de uso CU-09: Consultar disponibilidad de cuenta.
+Tabla 21. ECUD — CU-09: Consultar disponibilidad de cuenta
+ECUD — CU-09: CONSULTAR DISPONIBILIDAD DE CUENTA
+Nombre caso de uso:
+Consultar disponibilidad de cuenta
+Identificador:
+CU-09
+Descripción:
+Permite consultar si una cuenta está DISPONIBLE o BLOQUEADA mientras una operación financiera la utiliza. El cliente puede esperar un cambio de estado mediante long polling.
+Meta:
+Mostrar el estado temporal de disponibilidad y evitar iniciar operaciones concurrentes sobre la misma cuenta.
+Estado:
+Activo
+Versión:
+1.0
+Autor(es):
+Gabriel López, Mateo Medranda, Marcelo Pareja
+Fecha creación:
+05/11/2026
+Fecha modificación:
+05/11/2026
+Gráfico:
+Diagrama de casos de uso: CU_Sistema_General. Caso relacionado: Verificar Disponibilidad Cajero.
+Datos de entrada:
+Identificador de cuenta; opcionalmente versionConocida y esperaMaximaMs de hasta 30000 milisegundos.
+Precondiciones:
+El usuario tiene token válido y autorización para consultar la cuenta.
+La cuenta existe.
+Postcondiciones:
+Éxito: el sistema devuelve el estado, la versión y el indicador bloqueada. La consulta no cambia el estado de la cuenta.
+Fallo: el sistema deniega el acceso o informa que la cuenta no existe.
+Flujo básico — Consulta de disponibilidad.
+N°
+Actor
+Sistema
+1
+El usuario abre el panel de disponibilidad o selecciona una cuenta.
+2
+El cliente solicita GET /cuentas/{id}/disponibilidad con el token JWT.
+3
+El sistema valida token, autorización y existencia de la cuenta.
+4
+El sistema consulta el estado del bloqueo temporal y su versión.
+5
+El sistema devuelve DISPONIBLE o BLOQUEADA, versión y valor booleano bloqueada.
+6
+El cliente representa el estado en la interfaz y permite actualizarlo mediante GET /cuentas/{id}/disponibilidad/esperar.
+Flujo alternativo
+3a) El token es inválido o el usuario no tiene autorización sobre la cuenta.
+3a.1) El sistema rechaza la solicitud.
+Termina.
+3b) La cuenta no existe.
+3b.1) El sistema devuelve el error de cuenta no encontrada.
+Termina.
+6a) No se produce ningún cambio antes de agotarse el tiempo máximo de espera.
+6a.1) El sistema devuelve el estado actual para permitir una nueva consulta.
+Termina.
+Casos de uso incluidos:
+CU-01: Autenticar usuario.
+Casos de uso extendidos:
+──
+
+ECUD 10: RECUPERAR DISPONIBILIDAD DE CUENTA
+A continuación, se muestra la especificación del caso de uso CU-10: Recuperar disponibilidad de cuenta.
+Tabla 22. ECUD — CU-10: Recuperar disponibilidad de cuenta
+ECUD — CU-10: RECUPERAR DISPONIBILIDAD DE CUENTA
+Nombre caso de uso:
+Recuperar disponibilidad de cuenta
+Identificador:
+CU-10
+Descripción:
+Permite a ADMIN o CAJERO comprobar y recuperar el estado de disponibilidad de una cuenta. El servicio no libera un bloqueo mientras exista una transacción activa.
+Meta:
+Restablecer el uso cuando la cuenta ya no está siendo operada, preservando la exclusión mutua y la integridad financiera.
+Estado:
+Activo
+Versión:
+1.0
+Autor(es):
+Gabriel López, Mateo Medranda, Marcelo Pareja
+Fecha creación:
+05/11/2026
+Fecha modificación:
+05/11/2026
+Gráfico:
+Diagrama de casos de uso: CU_Sistema_General. Caso relacionado: Verificar Disponibilidad Cajero.
+Datos de entrada:
+Identificador de cuenta enviado a POST /cuentas/{id}/disponibilidad/recuperar.
+Precondiciones:
+El usuario tiene token válido y rol ADMIN o CAJERO.
+La cuenta existe.
+Postcondiciones:
+Éxito: se devuelve el estado DISPONIBLE cuando no hay operación activa.
+Fallo: no se libera una cuenta que sigue bloqueada por una transacción activa y se devuelve el error CUENTA_BLOQUEADA.
+Flujo básico — Recuperación de disponibilidad.
+N°
+Actor
+Sistema
+1
+El cajero o administrador identifica una cuenta cuyo estado necesita verificar.
+2
+El usuario selecciona “Recuperar disponibilidad”.
+3
+El cliente envía POST /cuentas/{id}/disponibilidad/recuperar con el token JWT.
+4
+El sistema valida token, rol y existencia de la cuenta.
+5
+El sistema consulta el bloqueo exclusivo activo.
+6
+Si no existe una operación activa, el sistema devuelve el estado DISPONIBLE y su versión actual.
+7
+El cliente informa que la cuenta está disponible.
+Flujo alternativo
+4a) El token es inválido, el rol no es ADMIN o CAJERO, o la cuenta no existe.
+4a.1) El sistema rechaza la solicitud y devuelve el error correspondiente.
+Termina.
+5a) La cuenta está bloqueada por una transacción que continúa en ejecución.
+5a.1) El sistema no libera el bloqueo y devuelve CUENTA_BLOQUEADA.
+Termina.
+Casos de uso incluidos:
+CU-01: Autenticar usuario.
+CU-09: Consultar disponibilidad de cuenta.
+Casos de uso extendidos:
+──
+
+
