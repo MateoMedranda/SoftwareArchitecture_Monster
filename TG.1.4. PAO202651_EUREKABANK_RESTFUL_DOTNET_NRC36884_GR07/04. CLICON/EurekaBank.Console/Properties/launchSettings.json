@@ -1,0 +1,14 @@
+{
+  "profiles": {
+    "EurekaBank.Console": {
+      "commandName": "Project",
+      "environmentVariables": {
+        "EUREKABANK_REST_URL": "http://localhost:62558/api/v1"
+      }
+    },
+    "WSL": {
+      "commandName": "WSL2",
+      "distributionName": ""
+    }
+  }
+}

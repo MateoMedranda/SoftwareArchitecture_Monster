@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "EurekaBank.Desktop": {
+      "commandName": "Project",
+      "environmentVariables": {
+        "EUREKABANK_REST_URL": "http://localhost:62558/api/v1"
+      }
+    }
+  }
+}

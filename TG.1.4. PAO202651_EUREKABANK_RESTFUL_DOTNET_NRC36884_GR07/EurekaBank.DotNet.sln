@@ -1,0 +1,32 @@
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EurekaBank.Server", "04. SERVIDOR\EurekaBank.Server\EurekaBank.Server.csproj", "{CC44ABAC-DF52-4D5F-9C1D-8DE568F33201}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EurekaBank.Console", "04. CLICON\EurekaBank.Console\EurekaBank.Console.csproj", "{1745D9DE-7E9A-48EA-8EAE-4D88C6D72F01}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EurekaBank.Web", "04. CLIWEB\EurekaBank.Web\EurekaBank.Web.csproj", "{3C7A7A3A-87C7-4F6A-9E75-F6A9D7C63301}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EurekaBank.Desktop", "04. CLIESC\EurekaBank.Desktop\EurekaBank.Desktop.csproj", "{5FD85533-7E64-4C65-92EF-778AF76C1A01}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EurekaBank.Mobile", "04. CLIMOV\EurekaBank.Mobile\EurekaBank.Mobile.csproj", "{AFCD1E3B-BBB3-4E72-A0E2-5BE4FA763D1C}"
+EndProject
+Global
+ GlobalSection(SolutionConfigurationPlatforms) = preSolution
+  Debug|Any CPU = Debug|Any CPU
+  Release|Any CPU = Release|Any CPU
+ EndGlobalSection
+ GlobalSection(ProjectConfigurationPlatforms) = postSolution
+  {CC44ABAC-DF52-4D5F-9C1D-8DE568F33201}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+  {CC44ABAC-DF52-4D5F-9C1D-8DE568F33201}.Debug|Any CPU.Build.0 = Debug|Any CPU
+  {1745D9DE-7E9A-48EA-8EAE-4D88C6D72F01}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+  {1745D9DE-7E9A-48EA-8EAE-4D88C6D72F01}.Debug|Any CPU.Build.0 = Debug|Any CPU
+  {3C7A7A3A-87C7-4F6A-9E75-F6A9D7C63301}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+  {3C7A7A3A-87C7-4F6A-9E75-F6A9D7C63301}.Debug|Any CPU.Build.0 = Debug|Any CPU
+  {5FD85533-7E64-4C65-92EF-778AF76C1A01}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+  {5FD85533-7E64-4C65-92EF-778AF76C1A01}.Debug|Any CPU.Build.0 = Debug|Any CPU
+  {AFCD1E3B-BBB3-4E72-A0E2-5BE4FA763D1C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+  {AFCD1E3B-BBB3-4E72-A0E2-5BE4FA763D1C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+ EndGlobalSection
+EndGlobal

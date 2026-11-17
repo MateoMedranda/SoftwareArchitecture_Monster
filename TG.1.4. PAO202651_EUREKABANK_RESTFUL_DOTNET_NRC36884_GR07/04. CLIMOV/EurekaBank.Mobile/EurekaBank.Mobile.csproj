@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFrameworks>net9.0-android</TargetFrameworks>
+    <OutputType>Exe</OutputType>
+    <UseMaui>true</UseMaui>
+    <SingleProject>true</SingleProject>
+    <ApplicationTitle>EUREKABANK REST</ApplicationTitle>
+    <ApplicationId>ec.edu.eurekabank.mobile.rest</ApplicationId>
+  </PropertyGroup>
+  <ItemGroup>
+    <MauiImage Include="Resources\Images\logo.jpg" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Maui.Controls" Version="9.0.120" />
+  </ItemGroup>
+</Project>

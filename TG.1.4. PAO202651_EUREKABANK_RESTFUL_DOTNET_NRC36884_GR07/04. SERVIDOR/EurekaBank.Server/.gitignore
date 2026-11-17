@@ -1,0 +1,14 @@
+# ASP.NET Core / CoreWCF server
+bin/
+obj/
+logs/
+wwwroot/swagger/
+
+# IIS publish folders and stdout diagnostics
+publish/
+PublishedWebsites/
+logs/stdout*
+
+# Local server configuration: keep appsettings.json as the development template
+appsettings.Development.json
+appsettings.Local.json
