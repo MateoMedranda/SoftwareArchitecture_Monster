@@ -12,6 +12,8 @@
         <jakartaee>11.0.0-M1</jakartaee>
         <jjwt.version>0.12.6</jjwt.version>
         <mysql.version>9.1.0</mysql.version>
+        <hikaricp.version>6.2.1</hikaricp.version>
+        <slf4j.version>2.0.16</slf4j.version>
     </properties>
 
     <dependencies>
@@ -60,6 +62,26 @@
             <artifactId>jakarta.xml.ws-api</artifactId>
             <version>4.0.2</version>
             <type>jar</type>
+        </dependency>
+
+        <!-- ═══════════════════════════════════════════════════════════ -->
+        <!-- HikariCP — Pool de conexiones JDBC embebido en el WAR      -->
+        <!-- Evita abrir una conexión física nueva por cada consulta.   -->
+        <!-- ═══════════════════════════════════════════════════════════ -->
+        <dependency>
+            <groupId>com.zaxxer</groupId>
+            <artifactId>HikariCP</artifactId>
+            <version>${hikaricp.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>${slf4j.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-jdk14</artifactId>
+            <version>${slf4j.version}</version>
         </dependency>
     </dependencies>
 
