@@ -22,4 +22,18 @@ Los bloqueos temporales de disponibilidad viven en el servidor y no modifican el
 
 # Levantamiento
 
-- docker compose up -d  
+- docker compose up -d
+
+# Pool de conexiones
+
+El servidor usa HikariCP embebido en el WAR. Las conexiones hacia MySQL/RDS se
+abren una sola vez y se reutilizan, evitando el handshake TCP/TLS por consulta.
+El tamaño se configura en `.development.env`:
+
+- `MYSQL_POOL_MAX` (por defecto 5): máximo de conexiones físicas. Con 5 clientes
+  simultáneos es suficiente; no lo suba por encima de lo que soporte RDS.
+- `MYSQL_POOL_MIN` (por defecto 2): conexiones mantenidas inactivas.
+- `MYSQL_POOL_IDLE_TIMEOUT`, `MYSQL_POOL_MAX_LIFETIME`, `MYSQL_POOL_KEEPALIVE`:
+  tiempos en milisegundos para reciclar y mantener vivas las conexiones.
+
+El pool se cierra automáticamente al detener o redesplegar la aplicación.  

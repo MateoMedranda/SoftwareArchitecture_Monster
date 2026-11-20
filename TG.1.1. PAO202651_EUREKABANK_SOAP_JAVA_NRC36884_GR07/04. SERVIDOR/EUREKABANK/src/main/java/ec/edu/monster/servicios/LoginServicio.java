@@ -172,7 +172,7 @@ public class LoginServicio {
         } catch (LoginExcepcion e) {
             throw e; // relanzar excepciones propias sin modificar
         } catch (SQLException e) {
-            LOG.severe("[LoginServicio] Error de base de datos en login: " + e.getMessage());
+            LOG.log(java.util.logging.Level.SEVERE, "[LoginServicio] Error de base de datos en login", e);
             throw new LoginExcepcion(
                 "Error al acceder a la base de datos",
                 new RespuestaError(
