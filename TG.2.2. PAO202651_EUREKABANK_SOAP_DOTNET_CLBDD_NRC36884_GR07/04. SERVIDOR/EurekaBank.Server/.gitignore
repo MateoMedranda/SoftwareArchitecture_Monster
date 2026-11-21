@@ -12,3 +12,7 @@ logs/stdout*
 # Local server configuration: keep appsettings.json as the development template
 appsettings.Development.json
 appsettings.Local.json
+
+# Secretos locales (usar .development.env.example como plantilla)
+.development.env
+.env

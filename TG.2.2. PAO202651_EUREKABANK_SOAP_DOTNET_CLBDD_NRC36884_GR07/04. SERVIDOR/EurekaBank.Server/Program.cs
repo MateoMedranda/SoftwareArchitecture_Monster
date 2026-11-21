@@ -6,7 +6,18 @@ using EurekaBank.Server;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
-builder.Services.AddDbContext<EurekaDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("EurekaBank")));
+
+// 1. Cargar .development.env desde la raíz del proyecto (si existe).
+EnvFileLoader.Load(Path.Combine(builder.Environment.ContentRootPath, ".development.env"));
+
+// 2. Re-registrar el proveedor de variables de entorno: CreateBuilder ya cargó
+//    los proveedores, así que hay que añadir uno nuevo para ver lo recién cargado.
+builder.Configuration.AddEnvironmentVariables();
+
+// 3. Cadena de conexión: override explícito > variables DB_* > error claro.
+var connectionString = ConexionDB.Build(builder.Configuration);
+
+builder.Services.AddDbContext<EurekaDbContext>(options => options.UseSqlServer(connectionString));
 builder.Services.AddScoped<EurekaBankSoapService>();
 builder.Services.AddServiceModelServices();
 builder.Services.AddServiceModelMetadata();
