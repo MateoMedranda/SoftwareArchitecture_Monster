@@ -2,9 +2,21 @@ using EurekaBank.Server;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 
+// Carga .development.env antes de construir la configuración para que las
+// variables DB_* estén disponibles al armar la cadena de conexión.
+EnvFileLoader.Load();
+
 var builder = WebApplication.CreateBuilder(args);
+var connectionString = ConexionDB.Build(builder.Configuration);
+
 builder.Services.AddDbContextPool<EurekaDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("EurekaBank")));
+    options.UseSqlServer(connectionString, sql =>
+    {
+        // Reintentos ante caídas transitorias de la instancia RDS.
+        sql.EnableRetryOnFailure(3, TimeSpan.FromSeconds(5), null);
+        sql.CommandTimeout(30);
+    }),
+    poolSize: 16);
 builder.Services.AddScoped<EurekaBankService>();
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();

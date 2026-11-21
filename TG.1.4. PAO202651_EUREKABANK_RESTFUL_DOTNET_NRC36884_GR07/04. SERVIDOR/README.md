@@ -17,7 +17,17 @@ El perfil REST usa los puertos `62557` (HTTPS) y `62558` (HTTP), distintos de la
 
 ## Base de datos
 
-Ejecute `docker compose up -d` en esta carpeta. El contenedor `sql-init` aplica el modelo y los datos al SQL Server 2022. La cadena usada por desarrollo está en `EurekaBank.Server/appsettings.json`.
+Ejecute `docker compose up -d` en esta carpeta. El contenedor `sql-init` aplica el modelo y los datos al SQL Server 2022.
+
+La cadena de conexión se construye al arrancar a partir de `EurekaBank.Server/.development.env` (variables `DB_HOST`, `DB_PORT`, `DB_NAME`, `DB_USER`, `DB_PASSWORD`). Copie `.development.env.example` como `.development.env` y complete los datos de su instancia; el archivo real está ignorado por git.
+
+Orden de precedencia:
+
+1. Variable de entorno `ConnectionStrings__EurekaBank` (override de emergencia).
+2. Variables `DB_*` del `.development.env`.
+3. `ConnectionStrings:EurekaBank` de `EurekaBank.Server/appsettings.json` (respaldo local).
+
+El pool usa un máximo de 6 conexiones por defecto (`DB_MAX_POOL=6`), pensado para una instancia SQL Server pequeña de AWS.
 
 ## IIS
 
